@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "118401270404",
+    "project_id": "cyberguard-87d6e",
+    "storage_bucket": "cyberguard-87d6e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118401270404:android:56e16412a5910978e3b8d1",
+        "android_client_info": {
+          "package_name": "com.example.cyber_security_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVbzc2_Pvu9lpfEwOxwAF3TSGzM2QA1Fk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

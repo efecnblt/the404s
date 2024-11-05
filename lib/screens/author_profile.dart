@@ -111,8 +111,8 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                     clipBehavior: Clip.none,
                     children: [
                       Positioned(
-                        top: -50,
-                        left: -50,
+                        top: MediaQuery.of(context).size.height * -0.045,
+                        left: MediaQuery.of(context).size.width * -0.12,
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.35,
                           height: MediaQuery.of(context).size.width * 0.35,
@@ -129,8 +129,9 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                         ),
                       ),
                       Positioned(
-                        top: -4,
-                        left: 1,
+                        //ORTALAMA YAPILACAK
+                        top: MediaQuery.of(context).size.height * -0.001,
+                        left: MediaQuery.of(context).size.width * -0.003,
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.15,
                           height: MediaQuery.of(context).size.width * 0.15,

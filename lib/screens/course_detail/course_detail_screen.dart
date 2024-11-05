@@ -209,7 +209,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           child: Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.32,
+                height: MediaQuery.of(context).size.height * 0.35,
                 decoration: ShapeDecoration(
                   gradient: LinearGradient(
                     begin: Alignment(0.00, -1.00),
@@ -238,6 +238,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 ),
                 child: Center(
                   child: Container(
+
                     margin: EdgeInsets.only(top: 90, right: 20, left: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -252,7 +253,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                 widget.course.name,
                                 style: TextStyle(
                                   height: 1.2,
-                                  fontSize: 28,
+                                  fontSize: MediaQuery.of(context).size.height * 0.04,
                                   fontFamily: 'Prompt',
                                   fontWeight: FontWeight.w400,
                                   color: widget.isDark
@@ -272,7 +273,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                     fontFamily: 'Prompt',
                                     fontWeight: FontWeight.w400,
                                     height: 1.2,
-                                    fontSize: 16,
+                                    fontSize: MediaQuery.of(context).size.height * 0.02,
                                     color: widget.isDark
                                         ? Colors.white70
                                         : Colors.black54,
@@ -304,7 +305,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                         child: Text(
                                           hashtag,
                                           style: TextStyle(
-                                            fontSize: 14,
+                                            fontSize: MediaQuery.of(context).size.height * 0.018,
                                             fontFamily: 'Prompt',
                                             fontWeight: FontWeight.w400,
                                             color: Colors.white,

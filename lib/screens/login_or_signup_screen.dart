@@ -34,7 +34,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
         backgroundColor: DarkTheme.backgroundColor,
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.only(top: 60),
+            padding: EdgeInsets.only(top: screenHeight*0.2),
             child: Column(
               children: [
                 Container(

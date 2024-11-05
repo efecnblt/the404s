@@ -99,7 +99,7 @@ class _DashboardState extends State<Dashboard> {
                           );
                         } else {
                           final user = snapshot.data!;
-                          return Row(
+                          return   Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -107,8 +107,8 @@ class _DashboardState extends State<Dashboard> {
                                 alignment: Alignment.center,
                                 children: [
                                   Container(
-                                    width: 110,
-                                    height: 110,
+                                    width: 125,
+                                    height: 125,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(40),
                                     ),
@@ -121,15 +121,14 @@ class _DashboardState extends State<Dashboard> {
                                     ),
                                   ),
                                   Positioned(
-                                    left: 41,
-                                    top: 37,
+                                    left: 45,
+                                    top: 40,
                                     child: SizedBox(
-                                      width: 45,
-                                      height: 45,
+                                      width: 55,
+                                      height: 55,
                                       child: CircleAvatar(
                                         radius: 45,
-                                        backgroundImage:
-                                            NetworkImage(user.imageUrl),
+                                        backgroundImage: NetworkImage(user.imageUrl),
                                       ),
                                     ),
                                   ),
@@ -139,20 +138,21 @@ class _DashboardState extends State<Dashboard> {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Text(
+                                    'Welcome back',
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? DarkTheme.textColor
+                                          : LightTheme.textColor,
+                                      fontSize: 12,
+                                      fontFamily: 'DM Sans',
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.2,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      Text(
-                                        'Welcome, ',
-                                        style: TextStyle(
-                                          color: isDark
-                                              ? DarkTheme.textColor
-                                              : LightTheme.textColor,
-                                          fontSize: 14,
-                                          fontFamily: 'DM Sans',
-                                          fontWeight: FontWeight.w700,
-                                          height: 1.2,
-                                        ),
-                                      ),
                                       Text(
                                         user.name,
                                         style: TextStyle(
@@ -172,56 +172,53 @@ class _DashboardState extends State<Dashboard> {
                                         size: 16,
                                       ),
                                     ],
-                                  )
+                                  ),
                                 ],
                               ),
-                              SizedBox(
-                                width: screenWidth * 0.13,
-                                height: screenHeight * 0.03,
-                                child: AnimatedToggleSwitch<bool>.dual(
-                                  current: isDark,
-                                  first: false,
-                                  second: true,
-                                  spacing: 5.0,
-                                  style: ToggleStyle(
-                                    backgroundColor:
-                                        isDark ? Colors.black : Colors.white,
-                                    borderColor: Colors.transparent,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: isDark
-                                            ? Colors.white12
-                                            : Colors.black26,
-                                        spreadRadius: 1,
-                                        blurRadius: 2,
-                                        offset: Offset(0, 1.5),
-                                      ),
-                                    ],
-                                  ),
-                                  borderWidth: 2.0,
-                                  height: 65,
-                                  onChanged: (b) => setState(() => isDark = b),
-                                  styleBuilder: (b) => ToggleStyle(
-                                    indicatorColor:
-                                        b ? Colors.black : Colors.white,
-                                  ),
-                                  iconBuilder: (value) => value
-                                      ? Icon(
-                                          Icons.dark_mode,
-                                          size: 20,
-                                          color: Colors.white,
-                                        )
-                                      : Icon(
-                                          Icons.light_mode,
-                                          size: 20,
-                                          color: Colors.black,
-                                        ),
-                                ),
-                              )
                             ],
                           );
                         }
                       }),
+                  SizedBox(
+                    width: screenWidth * 0.13,
+                    height: screenHeight * 0.03,
+                    child: AnimatedToggleSwitch<bool>.dual(
+                      current: isDark,
+                      first: false,
+                      second: true,
+                      spacing: 5.0,
+                      style: ToggleStyle(
+                        backgroundColor:
+                        isDark ? Colors.black : Colors.white,
+                        borderColor: Colors.transparent,
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDark ? Colors.white12 : Colors.black26,
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 1.5),
+                          ),
+                        ],
+                      ),
+                      borderWidth: 2.0,
+                      height: 65,
+                      onChanged: (b) => setState(() => isDark = b),
+                      styleBuilder: (b) => ToggleStyle(
+                        indicatorColor: b ? Colors.black : Colors.white,
+                      ),
+                      iconBuilder: (value) => value
+                          ? Icon(
+                        Icons.dark_mode,
+                        size: 20,
+                        color: Colors.white,
+                      )
+                          : Icon(
+                        Icons.light_mode,
+                        size: 20,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               Container(

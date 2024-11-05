@@ -9,8 +9,6 @@ import '../models/users.dart';
 import '../services/auth_service.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'login_or_signup_screen.dart';
-import 'profile_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String userId;

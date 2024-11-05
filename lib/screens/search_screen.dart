@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../models/authors.dart';
 import '../models/course.dart';
-import '../widgets/bottom_navigation_bar.dart';
 import 'build_card.dart';
 
 class SearchScreen extends StatefulWidget {

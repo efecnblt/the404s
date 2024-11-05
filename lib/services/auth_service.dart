@@ -152,34 +152,17 @@ class AuthService {
 
       String? displayName = user.displayName;
 
-      if (displayName != null) {
-        // Navigate to Dashboard with name and userId
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Dashboard(
-              name: displayName,
-              userId: user.uid,
-            ),
+      // Navigate to Dashboard with name and userId
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Dashboard(
+            name: displayName!,
+            userId: user.uid,
           ),
-        );
-      } else {
-        // Handle cases where displayName is null
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Sign-In Failed'),
-            content: const Text('Unable to retrieve display name.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      }
-    } on FirebaseAuthException {
+        ),
+      );
+        } on FirebaseAuthException {
       String errorMessage = 'An error occurred during Google sign-in.';
 
       // You can handle specific FirebaseAuthException codes here if needed

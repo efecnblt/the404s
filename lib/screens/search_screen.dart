@@ -107,8 +107,8 @@ class _SearchScreenState extends State<SearchScreen> {
     ];
 
     return Scaffold(
-        backgroundColor: Colors.black,
-        extendBodyBehindAppBar:
+        backgroundColor:  Color(0xFFEEEEEE),
+        extendBodyBehindAppBar:  
             true, // AppBar'ın arkasında kalan kısmın uzamasını sağlar.
 
         body: CustomScrollView(
@@ -121,7 +121,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 children: [
                   Container(
 
-                    height: MediaQuery.of(context).size.height *1.3,
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                     //decoration sildim edgeleri kaldırdım *mert
                     child:Column(
@@ -146,18 +145,13 @@ class _SearchScreenState extends State<SearchScreen> {
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 18),
                               filled: true,
-                              icon:Icon(
-                                FontAwesomeIcons.magnifyingGlass,
-                                color: Colors.white,
-                                size: 24,
-                              ) ,
-                              fillColor: Color(0xFF161719),
+                              fillColor: Colors.white,
                               labelText: 'Search for a course...',
                               hintStyle: TextStyle(
-                                color: Color(0xFF90909F),
+                                color: Colors.grey,
                               ),
                               labelStyle: TextStyle(
-                                color: Colors.white,
+                                color: Color(0xFF888888),
                                 fontSize: 16,
                                 fontFamily: 'DM Sans',
                                 fontWeight: FontWeight.w400,
@@ -169,28 +163,35 @@ class _SearchScreenState extends State<SearchScreen> {
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                                 borderSide: BorderSide(
-                                  color: Color(0xFF161719),
+                                  color: Colors.white,
                                   width: 0.0,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                                 borderSide: BorderSide(
-                                  color: Color(0xFF161719),
-                                  width: 0.0,
+                                  color: Color(0xFFE1E1E1),
+                                  width: 0.0,  
                                 ),
                               ),
-
+                              suffixIcon: Padding(
+                                padding: EdgeInsets.only(right: 15),
+                                child: Icon(
+                                  FontAwesomeIcons.magnifyingGlass,
+                                  color: Colors.black,
+                                  size: 24,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
+                              horizontal: 10, vertical: 20),
                           child: Text(
                             'Browser Category',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 18,
                               fontFamily: 'Prompt',
                               fontWeight: FontWeight.w500,
@@ -230,26 +231,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 20.0, vertical: 12.0),
                                     decoration: ShapeDecoration(
-                                      color: Color(0xFF2F2F2F),
+                                      gradient: LinearGradient(
+                                        begin: Alignment(0.00, -1.00),
+                                        end: Alignment(0, 1),
+                                        colors: [Color(0xFF21C8F6), Color(0xFF637BFF)],
+                                      ),
                                       shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 1.3, color: Colors.white),
                                         borderRadius: BorderRadius.circular(30),
                                       ),
-                                      shadows: [
-                                        BoxShadow(
-                                          color: Color(0xFF303030),
-                                          blurRadius: 30,
-                                          offset: Offset(0, 4),
-                                          spreadRadius: 0,
-                                        ),
-                                        BoxShadow(
-                                          color: Color(0x3F000000),
-                                          blurRadius: 4,
-                                          offset: Offset(0, 4),
-                                          spreadRadius: 0,
-                                        )
-                                      ],
+
                                     ),
                                     child: Text(
                                       category,
@@ -290,12 +280,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                             ),
                                           ),
                                         ),
-                                        const SizedBox(width: 7),
+                                        const SizedBox(width: 10),
                                         SizedBox(
                                           child: Text(
                                             'Recommended Courses',
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: Colors.black,
                                               fontSize: 18,
                                               fontFamily: 'Prompt',
                                               fontWeight: FontWeight.w400,
@@ -303,7 +293,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                             ),
                                           ),
                                         ),
-                                        const SizedBox(width: 7),
+                                        const SizedBox(width: 10),
                                         Container(
                                           width: 30,
                                           decoration: ShapeDecoration(
@@ -340,7 +330,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         description: courseData.description,
                                         rating: courseData.rating,
                                         level: courseData.level,
-                                        isDark: true,
+                                        isDark: false,
                                       );
                                     }).toList(),
                                   ),
@@ -363,7 +353,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     description: courseData.description,
                                     rating: courseData.rating,
                                     level: courseData.level,
-                                    isDark: true,
+                                    isDark: false,
                                   );
                                 }).toList(),
                               )
@@ -456,7 +446,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         description: courseData.description,
                                         rating: courseData.rating,
                                         level: courseData.level,
-                                        isDark: true,
+                                        isDark: false,
                                       );
                                     }).toList(),
                                   ),

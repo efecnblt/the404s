@@ -9,7 +9,7 @@ class LightTheme{
   static const Color shadowColor = Color(0xFFE3E3E3);
 
   //Dashboard Req.
-  static const Color cardBackgroundColor = Color(0xFFEAEAEA);
+  static const Color cardBackgroundColor = Color(0xFFF5F5F5);
   static const List<Color> progressCardBackground = [Color(0xFF21C8F6), Color(0xFF637BFF)];
   static const Color instructorAndLevel =  Color(0xFF90909F);
 

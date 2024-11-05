@@ -222,9 +222,13 @@ class _DashboardState extends State<Dashboard> {
               ),
               Container(
                 width: screenWidth,
-                margin: EdgeInsets.only(top: 25),
+
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
+                  border: Border.all(
+                  color: Colors.black,
+
+                  ),
                   gradient: LinearGradient(
                     colors: isDark
                         ? DarkTheme.progressCardBackground
@@ -255,8 +259,9 @@ class _DashboardState extends State<Dashboard> {
                       "Your progress in Courses",
                       style: TextStyle(
                         fontSize: 20,
+                        fontWeight: FontWeight.bold,
                         color:
-                            isDark ? DarkTheme.textColor : LightTheme.textColor,
+                            isDark ? Colors.white : Colors.white,
                       ),
                     ),
                     SizedBox(
@@ -369,13 +374,13 @@ class _DashboardState extends State<Dashboard> {
                             width: 1,
                             strokeAlign: BorderSide.strokeAlignCenter,
                             color: isDark
-                                ? DarkTheme.textColor
-                                : LightTheme.textColor,
+                                ? DarkTheme.textColor.withOpacity(0.5)
+                                : LightTheme.textColor.withOpacity(0.5),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 7),
+                    const SizedBox(width: 10),
                     Text(
                       'Recommendation',
                       style: TextStyle(
@@ -387,7 +392,7 @@ class _DashboardState extends State<Dashboard> {
                         height: 0,
                       ),
                     ),
-                    const SizedBox(width: 7),
+                    const SizedBox(width: 10),
                     Container(
                       width: 20,
                       decoration: ShapeDecoration(
@@ -396,8 +401,8 @@ class _DashboardState extends State<Dashboard> {
                             width: 1,
                             strokeAlign: BorderSide.strokeAlignCenter,
                             color: isDark
-                                ? DarkTheme.textColor
-                                : LightTheme.textColor,
+                                ? DarkTheme.textColor.withOpacity(0.5)
+                                : LightTheme.textColor.withOpacity(0.5),
                           ),
                         ),
                       ),

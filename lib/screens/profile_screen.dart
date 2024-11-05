@@ -44,7 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(0, 0, 0, 1),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: FutureBuilder<User>(
           future: _userFuture,
@@ -70,17 +70,124 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return Column(
                 children: [
                   // Üst kısım - Profil bilgileri (sabit)
+                  /*ElevatedButton(
+                    onPressed: () {
+                      // Open Modal Sheet without setState
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 15,
+                                    ),
+                                    Icon(Icons.language_outlined),
+                                    SizedBox(
+                                      width: 16,
+                                    ),
+                                    Text("Change Language",
+                                        style: TextStyle(fontSize: 16)),
+                                    SizedBox(
+                                      width: 50,
+                                    ),
+                                    DropdownButton(
+                                      items: [
+                                        DropdownMenuItem(
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 24,
+                                                height: 24,
+                                                margin: EdgeInsets.only(
+                                                    right: 10),
+                                              ),
+                                              Text("Türkçe")
+                                            ],
+                                          ),
+                                          value: "tr",
+                                        ),
+                                        DropdownMenuItem(
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 24,
+                                                height: 24,
+                                                margin: EdgeInsets.only(
+                                                    right: 10),
+                                              ),
+                                              Text("İngilizce")
+                                            ],
+                                          ),
+                                          value: "eng",
+                                        )
+                                      ],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          secilenDil = value ?? "tr";
+                                        });
+                                      },
+                                      hint: Text(secilenDil),
+                                      value: secilenDil,
+                                    ),
+                                  ],
+                                ),
+                                // Language change logic
+
+                                SwitchListTile(
+                                  value: themeState,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      themeState = value;
+                                    });
+                                  },
+                                  title: Text("Switch Theme"),
+                                  secondary: Icon(Icons.sunny),
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.logout),
+                                  title: Text('Log Out'),
+                                  onTap: () async {
+                                    final prefs = await SharedPreferences
+                                        .getInstance();
+                                    await prefs.clear();
+
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              LoginSignupScreen()),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: CircleBorder(),
+                    ),
+                    child: Icon(
+                      Icons.settings,
+                      color: Colors.white,
+                    ),
+                  ),*/
                   Container(
-                    margin: EdgeInsets.only(top: 20, left: 5),
-                    color: Colors.black,
-                    child: Row(
+                    child: Column(
                       children: [
                         const SizedBox(height: 20),
                         Stack(
-                          alignment: Alignment.bottomRight,
+                          alignment: Alignment.topRight,
                           children: [
                             CircleAvatar(
-                              radius: 40,
+                              radius: 120,
                               backgroundImage: NetworkImage(user.imageUrl),
                             ),
                             GestureDetector(
@@ -88,143 +195,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 _showImageOptions(context);
                               },
                               child: CircleAvatar(
-                                radius: 15,
+                                radius: 30,
                                 backgroundColor: Colors.white,
                                 child: Icon(
-                                  Icons.camera_alt,
-                                  size: 18,
+                                  Icons.edit,
+                                  size: 28,
                                   color: Colors.black,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(width: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              user.name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              user.email,
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Open Modal Sheet without setState
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (context) {
-                                return Container(
-                                  padding: EdgeInsets.all(16),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 15,
-                                          ),
-                                          Icon(Icons.language_outlined),
-                                          SizedBox(
-                                            width: 16,
-                                          ),
-                                          Text("Change Language",
-                                              style: TextStyle(fontSize: 16)),
-                                          SizedBox(
-                                            width: 50,
-                                          ),
-                                          DropdownButton(
-                                            items: [
-                                              DropdownMenuItem(
-                                                child: Row(
-                                                  children: [
-                                                    Container(
-                                                      width: 24,
-                                                      height: 24,
-                                                      margin: EdgeInsets.only(
-                                                          right: 10),
-                                                    ),
-                                                    Text("Türkçe")
-                                                  ],
-                                                ),
-                                                value: "tr",
-                                              ),
-                                              DropdownMenuItem(
-                                                child: Row(
-                                                  children: [
-                                                    Container(
-                                                      width: 24,
-                                                      height: 24,
-                                                      margin: EdgeInsets.only(
-                                                          right: 10),
-                                                    ),
-                                                    Text("İngilizce")
-                                                  ],
-                                                ),
-                                                value: "eng",
-                                              )
-                                            ],
-                                            onChanged: (value) {
-                                              setState(() {
-                                                secilenDil = value ?? "tr";
-                                              });
-                                            },
-                                            hint: Text(secilenDil),
-                                            value: secilenDil,
-                                          ),
-                                        ],
-                                      ),
-                                      // Language change logic
-
-                                      SwitchListTile(
-                                        value: themeState,
-                                        onChanged: (bool value) {
-                                          setState(() {
-                                            themeState = value;
-                                          });
-                                        },
-                                        title: Text("Switch Theme"),
-                                        secondary: Icon(Icons.sunny),
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.logout),
-                                        title: Text('Log Out'),
-                                        onTap: () async {
-                                          final prefs = await SharedPreferences
-                                              .getInstance();
-                                          await prefs.clear();
-
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LoginSignupScreen()),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            shape: CircleBorder(),
+                        const SizedBox(height: 10),
+                        Text(
+                          user.name,
+                          style: const TextStyle(
+                            color: Color(0xFF222222),
+                            fontSize: 24,
+                            fontFamily: 'Prompt',
+                            fontWeight: FontWeight.w400,
+                            height: 0,
                           ),
-                          child: Icon(
-                            Icons.settings,
-                            color: Colors.white,
+                        ),
+                        Text(
+                          user.email,
+                          style: const TextStyle(
+                            color: Color(0xFF888888),
+                            fontSize: 16,
+                            fontFamily: 'Prompt',
+                            fontWeight: FontWeight.w400,
+                            height: 0,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -232,11 +232,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
 
-                  SizedBox(
-                    height: 20,
-                  ),
                   // Alt kısım - Ayarlar (kaydırılabilir)
-                  Container(
+                 /* Container(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     height: 60,
                     decoration: BoxDecoration(
@@ -255,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     .zero, // Köşe yumuşatmayı sıfırla
                               ),
                               foregroundColor:
-                                  Colors.white, // Metin rengini beyaz yap
+                                  Colors.black, // Metin rengini beyaz yap
                             ),
                             onPressed: () {
                               print("Button 1 clicked!");
@@ -270,8 +267,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       child: Column(
                                         children: [
                                           Image(
-                                            image: AssetImage(
-                                                "images/bro.png"), //badge buraya gelecek
+                                            image: AssetImage("images/bro.png"),
+                                            //badge buraya gelecek
                                             height: 200,
                                             width: 200,
                                           ),
@@ -292,18 +289,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   TextSpan(
                                     text: '20.680\n', //Point will be here
                                     style: TextStyle(
-                                      fontWeight: FontWeight
-                                          .bold, // Bold font weight for "20.680"
-                                      fontSize: 16, // Font size can be adjusted
+                                      fontWeight: FontWeight.bold,
+                                      // Bold font weight for "20.680"
+                                      fontSize: 16,
+                                      // Font size can be adjusted
                                       color: Colors.white, // Text color
                                     ),
                                   ),
                                   TextSpan(
                                     text: 'Superhero', //badge will be here
                                     style: TextStyle(
-                                      fontWeight: FontWeight
-                                          .normal, // Normal font weight for "Superhero"
-                                      fontSize: 12, // Font size can be adjusted
+                                      fontWeight: FontWeight.normal,
+                                      // Normal font weight for "Superhero"
+                                      fontSize: 12,
+                                      // Font size can be adjusted
                                       color: Colors.white, // Text color
                                     ),
                                   ),
@@ -341,18 +340,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   TextSpan(
                                     text: '226\n', //Sıralama burada olacak
                                     style: TextStyle(
-                                      fontWeight: FontWeight
-                                          .bold, // Bold font weight for "20.680"
-                                      fontSize: 16, // Font size can be adjusted
+                                      fontWeight: FontWeight.bold,
+                                      // Bold font weight for "20.680"
+                                      fontSize: 16,
+                                      // Font size can be adjusted
                                       color: Colors.white, // Text color
                                     ),
                                   ),
                                   TextSpan(
                                     text: 'Leaderboard',
                                     style: TextStyle(
-                                      fontWeight: FontWeight
-                                          .normal, // Normal font weight for "Superhero"
-                                      fontSize: 12, // Font size can be adjusted
+                                      fontWeight: FontWeight.normal,
+                                      // Normal font weight for "Superhero"
+                                      fontSize: 12,
+                                      // Font size can be adjusted
                                       color: Colors.white, // Text color
                                     ),
                                   ),
@@ -389,18 +390,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   TextSpan(
                                     text: '30\n',
                                     style: TextStyle(
-                                      fontWeight: FontWeight
-                                          .bold, // Bold font weight for "20.680"
-                                      fontSize: 16, // Font size can be adjusted
+                                      fontWeight: FontWeight.bold,
+                                      // Bold font weight for "20.680"
+                                      fontSize: 16,
+                                      // Font size can be adjusted
                                       color: Colors.white, // Text color
                                     ),
                                   ),
                                   TextSpan(
                                     text: 'Daily Streak',
                                     style: TextStyle(
-                                      fontWeight: FontWeight
-                                          .normal, // Normal font weight for "Superhero"
-                                      fontSize: 12, // Font size can be adjusted
+                                      fontWeight: FontWeight.normal,
+                                      // Normal font weight for "Superhero"
+                                      fontSize: 12,
+                                      // Font size can be adjusted
                                       color: Colors.white, // Text color
                                     ),
                                   ),
@@ -413,18 +416,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
+                  ),*/
+                  /*Container(
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "ROZETLER",
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
-                  ),
-                  SingleChildScrollView(
+                  ),*/
+                 /* SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Column(children: [
                       Row(
@@ -452,14 +452,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       )
                     ]),
                   ),
-
+*/
                   Expanded(
                     child: Container(
-                      margin: EdgeInsets.only(top: 15),
+                      margin: EdgeInsets.only(top: 5),
                       padding:
                           EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                       decoration: ShapeDecoration(
-                        color: Colors.grey.shade900,
+                        color: Color(0xffffffff),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(30),
@@ -475,15 +475,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Text(
                               'Account Settings',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
+                                color: Color(0xFF90909F),
+                                fontSize: 15,
                                 fontFamily: 'DM Sans',
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w400,
+                                height: 0,
                               ),
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(bottom: 20),
+                            margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
@@ -506,10 +507,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 title: Text(
                                   "Edit profile",
                                   style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
+                                    color: Color(0xFF161719),
+                                    fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
+                                    height: 0,
                                   ),
                                 ),
                                 leading: const Icon(Icons.edit_outlined),
@@ -520,7 +522,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(bottom: 20),
+                            margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
@@ -542,10 +544,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 title: Text(
                                   "Notifications Settings",
                                   style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
+                                    color: Color(0xFF161719),
+                                    fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
+                                    height: 0,
                                   ),
                                 ),
                                 leading: const Icon(
@@ -557,7 +560,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(bottom: 10),
+                            margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
@@ -580,10 +583,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 title: Text(
                                   "Account Security",
                                   style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
+                                    color: Color(0xFF161719),
+                                    fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
+                                    height: 0,
                                   ),
                                 ),
                                 leading: const Icon(Icons.security),
@@ -599,15 +603,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Text(
                               'Support',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
+                                color: Color(0xFF90909F),
+                                fontSize: 15,
                                 fontFamily: 'DM Sans',
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w400,
+                                height: 0,
                               ),
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(bottom: 20),
+                            margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
@@ -629,10 +634,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 title: Text(
                                   "Contact us",
                                   style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
+                                    color: Color(0xFF161719),
+                                    fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
+                                    height: 0,
                                   ),
                                 ),
                                 leading: const Icon(Icons.support_agent),
@@ -643,7 +649,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(bottom: 20),
+                            margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
@@ -659,10 +665,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 title: Text(
                                   "About CyberGuard App",
                                   style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
+                                    color: Color(0xFF161719),
+                                    fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
+                                    height: 0,
                                   ),
                                 ),
                                 leading: const Icon(Icons.info_outline_rounded),

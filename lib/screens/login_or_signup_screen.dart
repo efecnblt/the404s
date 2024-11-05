@@ -37,27 +37,17 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
             padding: EdgeInsets.only(top: screenHeight*0.2),
             child: Column(
               children: [
-                Container(
+                Center(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        margin: EdgeInsets.only(right: 10),
-                        width: 75,
-                        height: 75,
+                        height: 120, // Increased size for the logo
                         decoration: ShapeDecoration(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(40),
                           ),
-                          shadows: [
-                            BoxShadow(
-                              color: Color(0xFF2A9D61),
-                              blurRadius: 80,
-                              offset: Offset(7, 7),
-                              spreadRadius: 1,
-                            )
-                          ],
                         ),
                         child: Stack(
                           alignment: Alignment.center,
@@ -65,10 +55,10 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             Align(
                               alignment: Alignment.center,
                               child: SizedBox(
-                                width: 90,
-                                height: 90,
+                                height: 120, // Adjusted size to make the logo larger
                                 child: Image.asset(
-                                  "images/cyberguard_logo.png",
+                                  "images/new_logo.png",
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
@@ -76,13 +66,13 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         ),
                       ),
                       Text(
-                        'CyberGuard',
+                        '404 Academy',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF2A9D61),
                           fontSize: 36,
                           fontFamily: 'Prompt',
-                          height: 0.01,
+                          height: 1, // Adjusted height for better text placement
                           letterSpacing: 0.34,
                         ),
                       ),

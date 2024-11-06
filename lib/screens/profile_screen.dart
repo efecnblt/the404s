@@ -625,7 +625,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Contact_Us()),
+                                      builder: (context) => ContactUsPage()),
                                 );
                               },
                               splashColor: Colors.white.withOpacity(0.1),

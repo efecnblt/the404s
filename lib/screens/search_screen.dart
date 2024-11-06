@@ -132,7 +132,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           child: TextField(
 
                             style: TextStyle(
-                              color: Color(0xFF90909F),
+                              color: Color(0xFF252525),
                             ),
                             controller: searchController,
                             onChanged: (value) {
@@ -198,6 +198,44 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                           ),
                         ),
+                        Wrap(
+                          spacing: 15.0,
+                          runSpacing: 10.0,
+                          children: categories.map((category) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  searchTerm = category;
+                                  searchController.text = category;
+                                });
+                                searchCourses(category);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 12.0),
+                                decoration: ShapeDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment(0.00, -1.00),
+                                    end: Alignment(0, 1),
+                                    colors: [Color(0xFF21C8F6), Color(0xFF637BFF)],
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+
+                                ),
+                                child: Text(
+                                  category,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -208,52 +246,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                 child: Text(
                                   'Search results for "$searchTerm"',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: Colors.black,
                                     fontSize: 18,
                                     fontFamily: 'Prompt',
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
-                            Wrap(
-                              spacing: 15.0,
-                              runSpacing: 10.0,
-                              children: categories.map((category) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      searchTerm = category;
-                                      searchController.text = category;
-                                    });
-                                    searchCourses(category);
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 20.0, vertical: 12.0),
-                                    decoration: ShapeDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment(0.00, -1.00),
-                                        end: Alignment(0, 1),
-                                        colors: [Color(0xFF21C8F6), Color(0xFF637BFF)],
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-
-                                    ),
-                                    child: Text(
-                                      category,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                            SizedBox(height: 20),
                             if(searchTerm=='') //search terme bir şey yazılmamışken not found hatasını almamak için *mert
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

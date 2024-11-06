@@ -67,7 +67,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
       );
     }
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.only(left: 15.0),
@@ -75,7 +75,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
             icon: Icon(
               Icons.arrow_circle_left_outlined,
               size: 32,
-              color: Colors.white,
+              color: Colors.black,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -89,7 +89,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
           child: Text(
             'Author details',
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontSize: 18,
               fontFamily: 'Prompt',
               fontWeight: FontWeight.w400,
@@ -130,8 +130,8 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                       ),
                       Positioned(
                         //ORTALAMA YAPILACAK
-                        top: MediaQuery.of(context).size.height * -0.001,
-                        left: MediaQuery.of(context).size.width * -0.003,
+                        top: MediaQuery.of(context).size.height * 0.007,
+                        left: MediaQuery.of(context).size.width * 0.007,
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.15,
                           height: MediaQuery.of(context).size.width * 0.15,
@@ -167,7 +167,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                                 maxLines: 1,
                                 _author!.name,
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontSize: 20,
                                   fontFamily: 'Prompt',
                                   fontWeight: FontWeight.w400,
@@ -192,7 +192,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                         child: Text(
                           _author!.department,
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                             fontSize: 18,
                             fontFamily: 'Prompt',
                             fontWeight: FontWeight.w400,
@@ -228,7 +228,6 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Container(
@@ -259,8 +258,8 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                             Text(
                               "Author reviews",
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 9.22,
+                                color: Colors.black,
+                                fontSize: 14,
                                 fontFamily: 'Prompt',
                                 fontWeight: FontWeight.w400,
                               ),
@@ -283,7 +282,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
         Expanded(
           child: Container(
             decoration: ShapeDecoration(
-              color: Colors.black,
+              color: Color(0xFFF6F6F6),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
@@ -333,7 +332,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
           rating.toString(),
           style: TextStyle(
             fontSize: 10,
-            color: Colors.white,
+            color: Colors.black,
             fontFamily: 'Prompt',
             fontWeight: FontWeight.bold,
           ),
@@ -394,13 +393,13 @@ class IconContainer extends StatelessWidget {
           children: [
             Text(
               label,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.black),
             ),
             SizedBox(height: 5),
             Text(
               value,
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 16,
                 fontFamily: 'Prompt',
                 fontWeight: FontWeight.w400,

@@ -244,20 +244,21 @@ class _CourseListItemState extends State<CourseListItem> {
           ),
         ),
         child: Container(
-          margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+
+          margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
           padding: const EdgeInsets.all(15),
           clipBehavior: Clip.antiAlias,
           decoration: ShapeDecoration(
             shadows: [
               BoxShadow(
                 color: widget.isDark
-                    ? DarkTheme.shadowColor
+                    ? Colors.transparent
                     : LightTheme.shadowColor,
                 blurRadius: 2,
               )
             ],
             color: widget.isDark
-                ? DarkTheme.cardBackgroundColor
+                ? Colors.white
                 : LightTheme.cardBackgroundColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -281,7 +282,7 @@ class _CourseListItemState extends State<CourseListItem> {
                 child: Icon(
                   widget.icon,
                   size: MediaQuery.of(context).size.height * 0.05,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(width: 15),
@@ -295,7 +296,7 @@ class _CourseListItemState extends State<CourseListItem> {
                         widget.course.name,
                         style: TextStyle(
                           color: widget.isDark
-                              ? DarkTheme.textColor
+                              ? Colors.black
                               : LightTheme.textColor,
                           fontFamily: "Prompt",
                           fontSize: 18,
@@ -309,7 +310,7 @@ class _CourseListItemState extends State<CourseListItem> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: widget.isDark
-                              ? DarkTheme.subTitleColor
+                              ? Color(0xFF161719)
                               : LightTheme.subTitleColor,
                           fontSize: 14,
                         ),
@@ -328,7 +329,7 @@ class _CourseListItemState extends State<CourseListItem> {
                           Text(widget.course.rating.toString(),
                               style: TextStyle(
                                   color: widget.isDark
-                                      ? DarkTheme.textColor
+                                      ? Colors.black
                                       : LightTheme.textColor,
                                   fontWeight: FontWeight.bold)),
                           _buildDot(),
@@ -336,7 +337,7 @@ class _CourseListItemState extends State<CourseListItem> {
                             widget.authorName,
                             style: TextStyle(
                               color: widget.isDark
-                                  ? DarkTheme.instructorAndLevel
+                                  ? Color(0xFF90909F)
                                   : LightTheme.instructorAndLevel,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -346,7 +347,7 @@ class _CourseListItemState extends State<CourseListItem> {
                             widget.course.level,
                             style: TextStyle(
                               color: widget.isDark
-                                  ? DarkTheme.instructorAndLevel
+                                  ? Color(0xFF90909F)
                                   : LightTheme.instructorAndLevel,
                             ),
                           ),

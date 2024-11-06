@@ -2,12 +2,16 @@ import 'package:cyber_security_app/OnboardingScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart'; // Oluşturulan yerelleştirme sınıfı
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent, // Durum çubuğu rengini şeffaf yapar
+  ));
   runApp(MyApp());
 }
 

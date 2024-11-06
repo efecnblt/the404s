@@ -204,7 +204,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           ],
         ),
         extendBodyBehindAppBar: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -214,7 +214,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   gradient: LinearGradient(
                     begin: Alignment(0.00, -1.00),
                     end: Alignment(0, 1),
-                    colors: [Color(0xFF2F2F2F), Color(0xFF2F2F2F)],
+                    colors: [Color(0xFF21C8F6), Color(0xFF637BFF)],
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
@@ -275,7 +275,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                     height: 1.2,
                                     fontSize: MediaQuery.of(context).size.height * 0.02,
                                     color: widget.isDark
-                                        ? Colors.white70
+                                        ? Colors.black
                                         : Colors.black54,
                                   ),
                                 ),
@@ -290,11 +290,11 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                       navigateToSearch(hashtag);
                                     },
                                     child: Card(
-                                      color: Color(0xFF2F2F2F),
+                                      color: Color(0xff185e32),
                                       elevation: 4,
                                       shape: RoundedRectangleBorder(
                                         side: BorderSide(
-                                            width: 2, color: Colors.white),
+                                            width: 2, color: Colors.transparent),
                                         borderRadius: BorderRadius.circular(30),
                                       ),
                                       child: Padding(
@@ -333,6 +333,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                       "Description",
                       style: TextStyle(
                         color: Color(0xFF888888),
+                        fontSize: 16,
+                        fontFamily: 'Prompt',
+                        fontWeight: FontWeight.w400,
+                        height: 0,
                       ),
                     ),
                     Padding(
@@ -348,7 +352,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                           fontFamily: 'Prompt',
                           fontWeight: FontWeight.w400,
                           fontSize: 16,
-                          color: widget.isDark ? Colors.white : Colors.black,
+                          color: widget.isDark ? Colors.black : Colors.black,
                         ),
                       ),
                     ),
@@ -631,7 +635,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       height: 125,
       padding: const EdgeInsets.all(15),
       decoration: ShapeDecoration(
-        color: Color(0xFF2F2F2F),
+        color: Color(0xFFF1F1FA),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -667,7 +671,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: Colors.white,
-                  width: 2,
+                  width: 1,
                 ),
               ),
               child: ClipOval(
@@ -695,7 +699,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     maxLines: 1,
                     author?.name ?? "Unknown Author",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFF161719),
                       fontSize: 20,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,

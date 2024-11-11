@@ -376,52 +376,48 @@ class AuthService {
   }
 
   // Tüm Kursları Çekme
-  static Future<List<Map<String, dynamic>>> fetchAllCourses() async {
+  static Stream<List<Map<String, dynamic>>> fetchAllCourses() {
     try {
-      // Fetch all authors first
-      QuerySnapshot authorsSnapshot =
-          await _firestore.collection('authors').get();
+      // Authors koleksiyonunu dinlemek için stream oluşturuyoruz
+      return _firestore.collection('authors').snapshots().asyncMap((authorsSnapshot) async {
+        // Kursları ve yazar bilgilerini tutacak liste
+        List<Map<String, dynamic>> coursesWithAuthorInfo = [];
 
-      // Initialize a list to store the courses with their corresponding author information
-      List<Map<String, dynamic>> coursesWithAuthorInfo = [];
+        // Her yazar dökümanını döngüye alıyoruz
+        for (var authorDoc in authorsSnapshot.docs) {
+          Map<String, dynamic> authorData = authorDoc.data() as Map<String, dynamic>;
+          String authorId = authorDoc.id;
 
-      // Iterate through each author document
-      for (var authorDoc in authorsSnapshot.docs) {
-        Map<String, dynamic> authorData =
-            authorDoc.data() as Map<String, dynamic>;
-        String authorId = authorDoc.id; // Get the authorId from the document ID
+          // Mevcut yazarın courses alt koleksiyonunu alıyoruz
+          QuerySnapshot coursesSnapshot = await _firestore
+              .collection('authors')
+              .doc(authorId)
+              .collection('courses')
+              .get();
 
-        // Fetch the courses sub-collection for the current author
-        QuerySnapshot coursesSnapshot = await _firestore
-            .collection('authors')
-            .doc(authorId)
-            .collection('courses')
-            .get();
+          // Her kursu ve yazar bilgisini ekliyoruz
+          for (var courseDoc in coursesSnapshot.docs) {
+            Map<String, dynamic> courseData = courseDoc.data() as Map<String, dynamic>;
 
-        // Iterate through the courses and map them along with their author information
-        for (var courseDoc in coursesSnapshot.docs) {
-          Map<String, dynamic> courseData =
-              courseDoc.data() as Map<String, dynamic>;
-
-          coursesWithAuthorInfo.add({
-            'course':
-                Course.fromFirestore(courseDoc), // course-specific information
-            'authorId': authorId, // author ID
-            'authorName': authorData['name'], // author's name
-            'authorRating': authorData['rating'], // author's rating
-            'authorStudentCount':
-                authorData['studentCount'], // author's student count
-            // You can add other author details like 'courseCount', 'image_url', etc.
-          });
+            coursesWithAuthorInfo.add({
+              'course': Course.fromFirestore(courseDoc), // Kurs bilgileri
+              'authorId': authorId,
+              'authorName': authorData['name'],
+              'authorRating': authorData['rating'],
+              'authorStudentCount': authorData['studentCount'],
+              // İsteğe bağlı olarak diğer yazar detayları
+            });
+          }
         }
-      }
 
-      return coursesWithAuthorInfo;
+        return coursesWithAuthorInfo;
+      });
     } catch (e) {
       print('Error fetching courses: $e');
       throw Exception('Failed to load courses');
     }
   }
+
 
   static Future<List<Course>> fetchCoursesByAuthor(String authorId) async {
     try {

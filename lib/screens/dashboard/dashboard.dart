@@ -413,8 +413,8 @@ class _DashboardState extends State<Dashboard> {
               SizedBox(
                 height: 15,
               ),
-              FutureBuilder<List<Map<String, dynamic>>>(
-                future: AuthService.fetchAllCourses(),
+              StreamBuilder<List<Map<String, dynamic>>>(
+                stream: AuthService.fetchAllCourses(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     // Veriler yükleniyor

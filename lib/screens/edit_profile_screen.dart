@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
 import 'package:cyber_security_app/screens/home_screen/home_screen.dart';
@@ -9,6 +11,7 @@ import '../models/users.dart';
 import '../services/auth_service.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String userId;
@@ -19,6 +22,9 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+
   String _newEmail = '', _newUsername = '', _newName = '';
   final _formKey = GlobalKey<FormState>();
   late Future<app_user.User> _userFuture;
@@ -76,7 +82,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         children: [
                           CircleAvatar(
                             radius: 70,
-                            backgroundImage: NetworkImage(user.imageUrl),
+                            backgroundImage: _image != null
+                                ? FileImage(_image!)
+                                : NetworkImage(user.imageUrl) as ImageProvider,
                           ),
                           // Circular icon button
                           GestureDetector(
@@ -225,43 +233,57 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
-}
 
-void _showImageOptions(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext context) {
-      return Container(
-        height: 200,
-        child: Column(
-          children: [
-            ListTile(
-              leading: Icon(Icons.camera),
-              title: Text('Camera'),
-              onTap: () {
-                // Implement camera functionality
-                Navigator.pop(context); // Close the bottom sheet
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.photo),
-              title: Text('Gallery'),
-              onTap: () {
-                // Implement gallery functionality
-                Navigator.pop(context); // Close the bottom sheet
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('Delete'),
-              onTap: () {
-                // Implement delete functionality
-                Navigator.pop(context); // Close the bottom sheet
-              },
-            ),
-          ],
-        ),
-      );
-    },
-  );
+  void _showImageOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200,
+          child: Column(
+            children: [
+              ListTile(
+                leading: Icon(Icons.camera),
+                title: Text('Camera'),
+                onTap: () async {
+                  Navigator.pop(context); // Close the bottom sheet
+                  final pickedFile =
+                      await _picker.pickImage(source: ImageSource.camera);
+                  if (pickedFile != null) {
+                    setState(() {
+                      _image = File(pickedFile.path);
+                    });
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo),
+                title: Text('Gallery'),
+                onTap: () async {
+                  Navigator.pop(context); // Close the bottom sheet
+                  final pickedFile =
+                      await _picker.pickImage(source: ImageSource.gallery);
+                  if (pickedFile != null) {
+                    setState(() {
+                      _image = File(pickedFile.path);
+                    });
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('Delete'),
+                onTap: () {
+                  Navigator.pop(context); // Close the bottom sheet
+                  setState(() {
+                    _image = null; // Remove the current image
+                  });
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }

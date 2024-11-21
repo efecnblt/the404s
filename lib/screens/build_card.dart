@@ -145,7 +145,6 @@ class BuildCard extends StatelessWidget {
     int pickColor = random.nextInt(colors.length);
     return GestureDetector(
       onTap: () {
-
         Navigator.push(
           context,
           MaterialPageRoute(

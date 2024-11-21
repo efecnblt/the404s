@@ -1,79 +1,154 @@
 import 'package:flutter/material.dart';
-import '../../models/course.dart';
-import '../../services/auth_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_security_app/models/course.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../build_card.dart';
+import '../course_detail/course_detail_screen.dart';
 
-class FavoritesScreen extends StatefulWidget {
+class FavoritesPage extends StatefulWidget {
   final String userId;
-  const FavoritesScreen({super.key, required this.userId});
+
+  const FavoritesPage({Key? key, required this.userId}) : super(key: key);
 
   @override
-  _FavoritesScreenState createState() => _FavoritesScreenState();
+  _FavoritesPageState createState() => _FavoritesPageState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> {
-  late Future<List<Map<String, dynamic>>> _favoriteCoursesFuture;
+class _FavoritesPageState extends State<FavoritesPage> {
+  late Future<List<Map<String, dynamic>>> _favoritesFuture;
 
   @override
   void initState() {
     super.initState();
-    _favoriteCoursesFuture = AuthService.fetchFavoriteCourses(widget.userId);
+    _favoritesFuture = fetchFavorites(widget.userId);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchFavorites(String userId) async {
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        List<dynamic> favorites = userDoc.data()?['favorites'] ?? [];
+        return favorites.map((favorite) => Map<String, dynamic>.from(favorite)).toList();
+      }
+      return [];
+    } catch (e) {
+      print("Favori verileri alınırken hata oluştu: $e");
+      return [];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favorilerim'),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 15.0),
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_circle_left_outlined,
+              size: 32,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: Text(
+            'Favorites',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontFamily: 'Prompt',
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _favoriteCoursesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // While the future is loading, show a loading indicator
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            // If an error occurred, display an error message
-            return Center(child: Text('Bir hata oluştu: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            // If there are no favorite courses, inform the user
-            return const Center(child: Text('Henüz favori kursunuz yok.'));
-          } else {
-            // If data is successfully fetched, build the list of favorite courses
-            final favoriteCoursesWithDetails = snapshot.data!;
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.white,
+      body: Container(
+        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: FutureBuilder<List<Map<String, dynamic>>>(
 
+          future: _favoritesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text("Bir hata oluştu."));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text("Henüz favori eklemediniz."));
+            }
+
+            final favorites = snapshot.data!;
             return ListView.builder(
-              itemCount: favoriteCoursesWithDetails.length,
+              itemCount: favorites.length,
               itemBuilder: (context, index) {
-                final courseData = favoriteCoursesWithDetails[index];
-                final Course course = Course.fromMap(
-                    courseData['course']); // Convert Map to Course instance
-                final String authorName = courseData['authorName'] as String;
-                final String authorId = courseData['authorId'] as String;
+                final favorite = favorites[index];
+                return FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('authors')
+                      .doc(favorite['authorId'])
+                      .get(),
+                  builder: (context, authorSnapshot) {
+                    if (authorSnapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (authorSnapshot.hasError || !authorSnapshot.hasData || !authorSnapshot.data!.exists) {
+                      return Center(child: Text("Yazar bilgisi alınamadı."));
+                    }
 
-                String sectionId = '';
-                if (course.sections.isNotEmpty) {
-                  sectionId = course.sections[0]['sectionId'] ?? '';
-                }
+                    final authorData = authorSnapshot.data!.data() as Map<String, dynamic>;
+                    final authorName = authorData['name'] ?? 'Bilinmeyen Yazar';
 
-                return BuildCard(
-                  userId: widget.userId,
-                  authorId: authorId,
-                  sectionId: sectionId,
-                  course: course,
-                  authorName: authorName,
-                  courseName: course.name,
-                  description: course.description,
-                  rating: course.rating,
-                  level: course.level,
-                  icon: Icons.book,
-                  isDark: false,
+                    return FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('authors')
+                          .doc(favorite['authorId'])
+                          .collection('courses')
+                          .doc(favorite['courseId'])
+                          .get(),
+                      builder: (context, courseSnapshot) {
+                        if (courseSnapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (courseSnapshot.hasError || !courseSnapshot.hasData || !courseSnapshot.data!.exists) {
+                          return Center(child: Text("Kurs bilgisi alınamadı."));
+                        }
+
+                        final course = Course.fromFirestore(courseSnapshot.data!);
+
+                        return BuildCard(
+                          userId: widget.userId,
+                          authorId: favorite['authorId'],
+                          sectionId: '',
+                          course: course,
+                          authorName: authorName, // Burada çekilen yazar adı kullanılıyor
+                          icon: FontAwesomeIcons.graduationCap,
+                          courseName: course.name,
+                          description: course.description,
+                          rating: course.rating,
+                          level: course.level,
+                          isDark: false,
+                        );
+                      },
+                    );
+                  },
                 );
+
               },
             );
-          }
-        },
+          },
+        ),
       ),
+
     );
   }
 }

@@ -32,6 +32,7 @@ class CourseDetailPage extends StatefulWidget {
 }
 
 class _CourseDetailPageState extends State<CourseDetailPage> {
+  bool isFavorite = false;
   late Future<List<Video>> _videosFuture;
   List<String> unlockedVideos = [];
   List<String> completedVideos = [];
@@ -52,12 +53,11 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   }
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  // Function to check if the course is already in the user's favorites
-  void checkIfCourseIsInFavorites() async {
+  Future<void> checkIfCourseIsInFavorites() async {
     try {
-      final userId = _auth.currentUser?.uid;
+      final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) {
-        throw Exception('User not logged in');
+        throw Exception("Kullanıcı oturumu açık değil.");
       }
 
       final userDoc = await FirebaseFirestore.instance
@@ -66,22 +66,105 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           .get();
 
       if (userDoc.exists) {
-        Map<String, dynamic> data = userDoc.data() as Map<String, dynamic>;
-
-        List<dynamic> favoriteCourses = data['favorites'] ?? [];
-
-        // Iterate through the list to check if the current course is in the favorites
-        bool found = favoriteCourses.any((favorite) {
-          return favorite['authorId'] == widget.authorId &&
-              favorite['courseId'] == widget.course.id;
-        });
-
+        List<dynamic> favorites = userDoc.data()?['favorites'] ?? [];
         setState(() {
-          isFavorite = found;
+          isFavorite = favorites.any((favorite) =>
+          favorite['courseId'] == widget.course.id &&
+              favorite['authorId'] == widget.authorId);
         });
       }
     } catch (e) {
-      print("Error checking if course is in favorites: $e");
+      print("Favori kontrolü sırasında hata oluştu: $e");
+    }
+  }
+
+  Future<void> addToFavorites() async {
+    try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) {
+        throw Exception("Kullanıcı oturumu açık değil.");
+      }
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({
+        'favorites': FieldValue.arrayUnion([
+          {
+            'courseId': widget.course.id,
+            'courseName': widget.course.name,
+            'description': widget.course.description,
+            'level': widget.course.level,
+            'department': widget.course.department,
+            'rating': widget.course.rating,
+            'ratingCount': widget.course.ratingCount,
+            'hashtags': widget.course.hashtags,
+            'authorId': widget.authorId,
+          }
+        ])
+      });
+
+      setState(() {
+        isFavorite = true;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Favorilere eklendi.")),
+      );
+    } catch (e) {
+      print("Favorilere ekleme sırasında hata oluştu: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Favorilere eklenirken bir hata oluştu.")),
+      );
+    }
+  }
+
+  Future<void> removeFromFavorites() async {
+    try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) {
+        throw Exception("Kullanıcı oturumu açık değil.");
+      }
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({
+        'favorites': FieldValue.arrayRemove([
+          {
+            'courseId': widget.course.id,
+            'courseName': widget.course.name,
+            'description': widget.course.description,
+            'level': widget.course.level,
+            'department': widget.course.department,
+            'rating': widget.course.rating,
+            'ratingCount': widget.course.ratingCount,
+            'hashtags': widget.course.hashtags,
+            'authorId': widget.authorId,
+          }
+        ])
+      });
+
+      setState(() {
+        isFavorite = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Favorilerden kaldırıldı.")),
+      );
+    } catch (e) {
+      print("Favorilerden kaldırma sırasında hata oluştu: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Favorilerden kaldırılırken bir hata oluştu.")),
+      );
+    }
+  }
+
+  void toggleFavorite() {
+    if (isFavorite) {
+      removeFromFavorites();
+    } else {
+      addToFavorites();
     }
   }
 
@@ -109,31 +192,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       }
     } catch (e) {
       print("Hashtags verileri alınırken hata oluştu: $e");
-    }
-  }
-
-  bool isFavorite = false;
-
-  void toggleFavorite() async {
-    setState(() {
-      isFavorite = !isFavorite;
-    });
-
-    try {
-      if (isFavorite) {
-        await AuthService.addFavorite(widget.course.id, widget.authorId);
-      } else {
-        await AuthService.removeFavoriteCourse(
-            widget.course.id, widget.authorId);
-      }
-    } catch (e) {
-      // If an error occurs, revert the favorite status
-      setState(() {
-        isFavorite = !isFavorite;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Favori işleminde bir hata oluştu.')),
-      );
     }
   }
 

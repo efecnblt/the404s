@@ -509,10 +509,10 @@ class _DashboardState extends State<Dashboard> {
       SearchScreen(
         userId: widget.userId,
       ),
-      FavoritesScreen(
+      FavoritesPage(
         userId: widget.userId,
       ),
-      FavoritesScreen(
+      FavoritesPage(
         userId: widget.userId,
       ),
       ProfileScreen(userId: widget.userId),

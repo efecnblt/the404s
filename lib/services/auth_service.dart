@@ -327,8 +327,7 @@ class AuthService {
   }
 
   // Function to fetch sections and their videos from Firestore
-  static Future<List<Section>> fetchSections(
-      String authorId, String courseId) async {
+  static Future<List<Section>> fetchSections(String authorId, String courseId) async {
     // Fetch all sections for a course from Firestore
     QuerySnapshot sectionsSnapshot = await FirebaseFirestore.instance
         .collection('authors')
@@ -350,8 +349,7 @@ class AuthService {
     return sections;
   }
 
-  static Future<List<Map<String, dynamic>>> fetchSectionsForCourse(
-      String authorId, String courseId) async {
+  static Future<List<Map<String, dynamic>>> fetchSectionsForCourse(String authorId, String courseId) async {
     try {
       QuerySnapshot sectionsSnapshot = await FirebaseFirestore.instance
           .collection('authors')
@@ -438,8 +436,7 @@ class AuthService {
   }
 
   // Videoyu tamamlandı olarak işaretleme
-  static Future<void> markVideoAsCompleted(
-      String authorId, String courseId, String videoId) async {
+  static Future<void> markVideoAsCompleted(String authorId, String courseId, String videoId) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
 
@@ -456,8 +453,7 @@ class AuthService {
   }
 
   // Sonraki videonun kilidini açma
-  static Future<void> unlockNextVideo(
-      String authorId, String courseId, String nextVideoId) async {
+  static Future<void> unlockNextVideo(String authorId, String courseId, String nextVideoId) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
 
@@ -525,8 +521,7 @@ class AuthService {
   }
 
   // Belirli bir kursun videolarını çekme
-  static Future<List<Video>> fetchVideos(
-      String authorId, String courseId, String sectionId) async {
+  static Future<List<Video>> fetchVideos(String authorId, String courseId, String sectionId) async {
     try {
       print(
           'Fetching videos for author: $authorId, course: $courseId, section: $sectionId');
@@ -558,8 +553,7 @@ class AuthService {
     }
   }
 
-  static Future<Video?> fetchVideo(
-      String courseId, String sectionId, String videoId) async {
+  static Future<Video?> fetchVideo(String courseId, String sectionId, String videoId) async {
     try {
       DocumentSnapshot videoDoc = await _firestore
           .collection('courses')
@@ -581,8 +575,7 @@ class AuthService {
     }
   }
 
-  static Future<void> rateCourse(
-      String authorId, String courseId, double newRating) async {
+  static Future<void> rateCourse(String authorId, String courseId, double newRating) async {
     final courseRef = FirebaseFirestore.instance
         .collection('authors')
         .doc(authorId)
@@ -629,8 +622,7 @@ class AuthService {
   }
 
   //OK
-  static Future<List<Map<String, dynamic>>> fetchFavoriteCourses(
-      String userId) async {
+  static Future<List<Map<String, dynamic>>> fetchFavoriteCourses(String userId) async {
     try {
       // Get the user's favorites from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
@@ -680,6 +672,7 @@ class AuthService {
               'course': courseData,
               'authorName': authorData['name'],
               'authorId': authorId,
+
             });
           }
         }
@@ -694,77 +687,45 @@ class AuthService {
 
   //OK
   static Future<void> addFavorite(String courseId, String authorId) async {
-    final userId = _auth.currentUser?.uid;
+    final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) {
-      throw Exception('User not logged in');
+      throw Exception("Kullanıcı oturumu açık değil.");
     }
 
-    final userRef = _firestore.collection('users').doc(userId);
+    final newFavorite = {
+      "authorId": authorId,
+      "courseId": courseId,
+    };
 
-    try {
-      await userRef.update({
-        'favorites': FieldValue.arrayUnion([
-          {
-            'authorId': authorId,
-            'courseId': courseId,
-          }
-        ]),
-      });
-    } catch (e) {
-      print('Failed to add favorite: $e');
-      rethrow;
-    }
-  }
-
-  //OK
-  static Future<void> removeFavoriteCourse(
-      String courseId, String authorId) async {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null) {
-      throw Exception('User not logged in');
-    }
-
-    DocumentReference userRef = _firestore.collection('users').doc(userId);
-
-    await _firestore.runTransaction((transaction) async {
-      // Get the current user document
-      DocumentSnapshot userSnapshot = await transaction.get(userRef);
-
-      if (!userSnapshot.exists) {
-        throw Exception('User does not exist!');
-      }
-
-      Map<String, dynamic> data = userSnapshot.data() as Map<String, dynamic>;
-
-      if (data['favorites'] == null) {
-        throw Exception('No favorites exist for this user.');
-      }
-
-      List<dynamic> favoritesList = data['favorites'] as List<dynamic>;
-
-      // Find the favorite with the matching courseId and authorId
-      Map<String, dynamic>? favoriteToRemove;
-      for (var favorite in favoritesList) {
-        if (favorite['courseId'] == courseId &&
-            favorite['authorId'] == authorId) {
-          favoriteToRemove = favorite as Map<String, dynamic>;
-          break;
-        }
-      }
-
-      if (favoriteToRemove == null) {
-        throw Exception('Favorite course not found.');
-      }
-
-      // Remove the matching favorite
-      transaction.update(userRef, {
-        'favorites': FieldValue.arrayRemove([favoriteToRemove]),
-      });
-    }).catchError((error) {
-      print('Failed to remove favorite course: $error');
-      throw error;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .update({
+      "favorites": FieldValue.arrayUnion([newFavorite]), // Yeni favoriyi ekler.
     });
   }
+
+
+  //OK
+  static Future<void> removeFavoriteCourse(String courseId, String authorId) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      throw Exception("Kullanıcı oturumu açık değil.");
+    }
+
+    final favoriteToRemove = {
+      "authorId": authorId,
+      "courseId": courseId,
+    };
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .update({
+      "favorites": FieldValue.arrayRemove([favoriteToRemove]), // Favoriyi kaldırır.
+    });
+  }
+
 
   //OK
   static Future<bool> isCourseInFavorites(

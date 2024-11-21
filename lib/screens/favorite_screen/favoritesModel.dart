@@ -45,25 +45,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 15.0),
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_circle_left_outlined,
-              size: 32,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Padding(
           padding: EdgeInsets.only(left: 20),
           child: Text(
-            'Favorites',
+            'My Favorites Courses',
             style: TextStyle(
               color: Colors.black,
               fontSize: 18,

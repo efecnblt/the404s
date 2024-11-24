@@ -15,8 +15,13 @@ import 'login_or_signup_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userId;
+  final bool isDark;
 
-  const ProfileScreen({super.key, required this.userId});
+  const ProfileScreen({
+    super.key,
+    required this.userId,
+    required this.isDark,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -44,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: widget.isDark ? Colors.black : Colors.white,
       body: SafeArea(
         child: FutureBuilder<User>(
           future: _userFuture,
@@ -196,11 +201,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                               child: CircleAvatar(
                                 radius: 30,
-                                backgroundColor: Colors.white,
+                                backgroundColor:
+                                    widget.isDark ? Colors.black : Colors.white,
                                 child: Icon(
                                   Icons.edit,
                                   size: 28,
-                                  color: Colors.black,
+                                  color: widget.isDark
+                                      ? Colors.white
+                                      : Colors.black,
                                 ),
                               ),
                             ),
@@ -209,8 +217,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 10),
                         Text(
                           user.name,
-                          style: const TextStyle(
-                            color: Color(0xFF222222),
+                          style: TextStyle(
+                            color: widget.isDark
+                                ? Colors.white
+                                : Color(0xFF222222),
                             fontSize: 24,
                             fontFamily: 'Prompt',
                             fontWeight: FontWeight.w400,
@@ -219,8 +229,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         Text(
                           user.email,
-                          style: const TextStyle(
-                            color: Color(0xFF888888),
+                          style: TextStyle(
+                            color: widget.isDark
+                                ? Colors.white
+                                : Color(0xFF888888),
                             fontSize: 16,
                             fontFamily: 'Prompt',
                             fontWeight: FontWeight.w400,
@@ -233,7 +245,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
 
                   // Alt kısım - Ayarlar (kaydırılabilir)
-                 /* Container(
+                  /* Container(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     height: 60,
                     decoration: BoxDecoration(
@@ -424,7 +436,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                   ),*/
-                 /* SingleChildScrollView(
+                  /* SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Column(children: [
                       Row(
@@ -459,7 +471,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                       decoration: ShapeDecoration(
-                        color: Color(0xffffffff),
+                        color: widget.isDark ? Colors.black : Color(0xffffffff),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(30),
@@ -469,13 +481,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: ListView(
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: Text(
                               'Account Settings',
                               style: TextStyle(
-                                color: Color(0xFF90909F),
+                                color: widget.isDark
+                                    ? Colors.white
+                                    : Color(0xFF90909F),
                                 fontSize: 15,
                                 fontFamily: 'DM Sans',
                                 fontWeight: FontWeight.w400,
@@ -488,7 +502,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
+                              color:
+                                  widget.isDark ? Colors.black : Colors.white,
                             ),
                             child: InkWell(
                               onTap: () {
@@ -498,6 +513,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   MaterialPageRoute(
                                       builder: (context) => EditProfileScreen(
                                             userId: widget.userId,
+                                            isDark: widget.isDark,
                                           )),
                                 );
                               },
@@ -506,28 +522,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: ListTile(
                                 title: Text(
                                   "Edit profile",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(Icons.edit_outlined),
-                                trailing: const Icon(
-                                    Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                leading: Icon(Icons.edit_outlined,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
+                                  Icons.arrow_circle_right_outlined,
+                                  color: widget.isDark
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
                               ),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
-                            ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
                             child: InkWell(
                               onTap: () {
                                 print('tıklandı');
@@ -535,7 +560,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          NotificationSettings()),
+                                          NotificationSettings(
+                                            isDark: widget.isDark,
+                                          )),
                                 );
                               },
                               splashColor: Colors.white.withOpacity(0.1),
@@ -543,29 +570,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: ListTile(
                                 title: Text(
                                   "Notifications Settings",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(
-                                    Icons.notifications_active_outlined),
-                                trailing: const Icon(
+                                leading: Icon(
+                                    Icons.notifications_active_outlined,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
                                     Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
-                            ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
                             child: InkWell(
                               onTap: () {
                                 print('tıklandı');
@@ -574,7 +609,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           AccountSecurityScreen(
-                                              userId: widget.userId)),
+                                            userId: widget.userId,
+                                            isDark: widget.isDark,
+                                          )),
                                 );
                               },
                               splashColor: Colors.white.withOpacity(0.1),
@@ -582,28 +619,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: ListTile(
                                 title: Text(
                                   "Account Security",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(Icons.security),
-                                trailing: const Icon(
+                                leading: Icon(Icons.security,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
                                     Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: Text(
                               'Support',
                               style: TextStyle(
-                                color: Color(0xFF90909F),
+                                color: widget.isDark
+                                    ? Colors.white
+                                    : Color(0xFF90909F),
                                 fontSize: 15,
                                 fontFamily: 'DM Sans',
                                 fontWeight: FontWeight.w400,
@@ -614,10 +660,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
-                            ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
                             child: InkWell(
                               onTap: () {
                                 //go to contact us page
@@ -625,7 +672,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ContactUsPage()),
+                                      builder: (context) =>
+                                          ContactUsPage(isDark: widget.isDark)),
                                 );
                               },
                               splashColor: Colors.white.withOpacity(0.1),
@@ -633,28 +681,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: ListTile(
                                 title: Text(
                                   "Contact us",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(Icons.support_agent),
-                                trailing: const Icon(
+                                leading: Icon(Icons.support_agent,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
                                     Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
-                            ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
                             child: InkWell(
                               onTap: () {
                                 print('tıklandı');
@@ -664,18 +720,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: ListTile(
                                 title: Text(
                                   "About CyberGuard App",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(Icons.info_outline_rounded),
-                                trailing: const Icon(
+                                leading: Icon(Icons.info_outline_rounded,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
                                     Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
                             ),
                           ),

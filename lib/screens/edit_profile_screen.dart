@@ -15,7 +15,9 @@ import 'package:image_picker/image_picker.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String userId;
-  const EditProfileScreen({super.key, required this.userId});
+  final bool isDark;
+  const EditProfileScreen(
+      {super.key, required this.userId, required this.isDark});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -43,13 +45,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.isDark ? Colors.black : Colors.white,
       appBar: AppBar(
+        backgroundColor: widget.isDark ? Colors.black : Colors.white,
         leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.arrow_left_outlined)),
-        title: Text("Edit Profile"),
+            icon: Icon(Icons.arrow_left_outlined,
+                color: widget.isDark ? Colors.white : Colors.black)),
+        title: Text(
+          "Edit Profile",
+          style: TextStyle(
+            color: widget.isDark ? Colors.white : Colors.black,
+          ),
+        ),
       ),
       body: SafeArea(
         child: FutureBuilder<User>(
@@ -94,14 +104,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             },
                             child: CircleAvatar(
                               radius: 20, // Smaller radius for the icon button
-                              backgroundColor: Colors
-                                  .yellow, // Background color for visibility
+                              backgroundColor: widget.isDark
+                                  ? Colors.black
+                                  : Colors
+                                      .white, // Background color for visibility
                               child: Icon(
-                                Icons
-                                    .camera_alt, // Icon to represent image change
-                                size: 18,
-                                color: Colors.black, // Color of the icon
-                              ),
+                                  Icons
+                                      .camera_alt, // Icon to represent image change
+                                  size: 18,
+                                  color: widget.isDark
+                                      ? Colors.white
+                                      : Colors.black // Color of the icon
+                                  ),
                             ),
                           )
                         ],
@@ -116,9 +130,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               TextFormField(
                                 autovalidateMode: AutovalidateMode.always,
                                 initialValue: user.name,
+                                style: TextStyle(
+                                  color: widget.isDark
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
                                 decoration: InputDecoration(
-                                    label: Text("Name and Surname"),
-                                    prefixIcon: Icon(Icons.person)),
+                                    label: Text(
+                                      "Name and Surname",
+                                      style: TextStyle(
+                                        color: widget.isDark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.person,
+                                      color: widget.isDark
+                                          ? Colors.white
+                                          : Colors.black,
+                                    )),
                                 onSaved: (value) {
                                   setState(() {
                                     _newName = value!;
@@ -129,6 +160,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 height: 20,
                               ),
                               TextFormField(
+                                style: TextStyle(
+                                  color: widget.isDark
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
                                 autovalidateMode: AutovalidateMode.always,
                                 validator: (value) {
                                   if (value!.length < 4 || value.length > 20) {
@@ -140,8 +176,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 autofocus: false,
                                 initialValue: user.username,
                                 decoration: InputDecoration(
-                                    label: Text("Username"),
-                                    prefixIcon: Icon(Icons.person)),
+                                    label: Text(
+                                      "Username",
+                                      style: TextStyle(
+                                          color: widget.isDark
+                                              ? Colors.white
+                                              : Colors.black),
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.person,
+                                      color: widget.isDark
+                                          ? Colors.white
+                                          : Colors.black,
+                                    )),
                                 onChanged: (value) {
                                   setState(() {
                                     _newUsername = value;
@@ -152,18 +199,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 height: 20,
                               ),
                               TextFormField(
+                                style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
                                 readOnly: true,
                                 initialValue: user.email,
                                 decoration: InputDecoration(
-                                    label: Text("E-mail"),
-                                    prefixIcon: Icon(Icons.mail)),
+                                    label: Text(
+                                      "E-mail",
+                                      style: TextStyle(
+                                          color: widget.isDark
+                                              ? Colors.white
+                                              : Colors.black),
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.mail,
+                                      color: widget.isDark
+                                          ? Colors.white
+                                          : Colors.black,
+                                    )),
                               ),
                               SizedBox(
                                 height: 20,
                               ),
                               ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.yellow),
+                                      backgroundColor: widget.isDark
+                                          ? Colors.white
+                                          : Colors.black),
                                   onPressed: () {
                                     bool _validate =
                                         _formKey.currentState!.validate();
@@ -184,8 +248,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         context: context,
                                         builder: (BuildContext context) =>
                                             AlertDialog(
-                                          content: Text(
-                                              'Değişiklikler kaydedildi!, New Username: ${user.username},New Name: ${user.name}'),
+                                          content:
+                                              Text('Değişiklikler kaydedildi!'),
                                           actions: <Widget>[
                                             TextButton(
                                               onPressed: () async {
@@ -219,7 +283,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   },
                                   child: Text(
                                     "Kaydet",
-                                    style: TextStyle(fontSize: 20),
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: widget.isDark
+                                            ? Colors.black
+                                            : Colors.white),
                                   )),
                             ],
                           ))

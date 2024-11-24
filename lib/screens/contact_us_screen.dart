@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ContactUsPage extends StatelessWidget {
+  final bool isDark;
+  ContactUsPage({super.key, required this.isDark});
   // TextEditingController’ları tanımlıyoruz
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -10,9 +12,17 @@ class ContactUsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? Colors.black : Colors.white,
       appBar: AppBar(
-        title: Text('Contact Us'),
+        iconTheme: IconThemeData(
+          color: isDark ? Colors.white : Colors.black,
+        ),
+        title: Text(
+          'Contact Us',
+          style: TextStyle(
+            color: isDark ? Colors.white : Colors.black,
+          ),
+        ),
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
@@ -24,7 +34,6 @@ class ContactUsPage extends StatelessWidget {
               Center(
                 child: Column(
                   children: [
-
                     Text(
                       '404 Academy',
                       style: TextStyle(
@@ -38,7 +47,7 @@ class ContactUsPage extends StatelessWidget {
                       'We would love to hear from you!',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey,
+                        color: isDark ? Colors.white : Colors.grey,
                       ),
                     ),
                   ],
@@ -48,7 +57,10 @@ class ContactUsPage extends StatelessWidget {
               // İsim Alanı
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  border: Border.all(
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                  color: isDark ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
@@ -60,11 +72,20 @@ class ContactUsPage extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
                   controller: nameController,
                   decoration: InputDecoration(
                     labelText: 'Name',
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                     border: InputBorder.none,
-                    prefixIcon: Icon(Icons.person),
+                    prefixIcon: Icon(
+                      Icons.person,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                   ),
                 ),
               ),
@@ -72,7 +93,10 @@ class ContactUsPage extends StatelessWidget {
               // E-posta Alanı
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  border: Border.all(
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                  color: isDark ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
@@ -84,12 +108,19 @@ class ContactUsPage extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
-
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
                   controller: emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    border:  InputBorder.none,
-                    prefixIcon: Icon(Icons.email),
+                    labelStyle:
+                        TextStyle(color: isDark ? Colors.white : Colors.black),
+                    border: InputBorder.none,
+                    prefixIcon: Icon(
+                      Icons.email,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),
@@ -98,7 +129,10 @@ class ContactUsPage extends StatelessWidget {
               // Mesaj Alanı
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  border: Border.all(
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                  color: isDark ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
@@ -110,11 +144,20 @@ class ContactUsPage extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
                   controller: messageController,
                   decoration: InputDecoration(
                     labelText: 'Message',
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                     border: InputBorder.none,
-                    prefixIcon: Icon(Icons.message),
+                    prefixIcon: Icon(
+                      Icons.message,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                   ),
                   maxLines: 5,
                 ),
@@ -161,17 +204,25 @@ class ContactUsPage extends StatelessWidget {
                   children: [
                     Text(
                       'Or reach us at:',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isDark ? Colors.white : Colors.grey,
+                      ),
                     ),
                     SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.phone, color: Color(0xff2CA459),),
+                        Icon(
+                          Icons.phone,
+                          color: Color(0xff2CA459),
+                        ),
                         SizedBox(width: 5),
                         Text(
                           '+1 (234) 567-890',
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: isDark ? Colors.white : Colors.black),
                         ),
                       ],
                     ),
@@ -183,33 +234,46 @@ class ContactUsPage extends StatelessWidget {
                         SizedBox(width: 5),
                         Text(
                           'contact@404academy.com',
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: isDark ? Colors.white : Colors.black),
                         ),
                       ],
                     ),
                     SizedBox(height: 20),
                     Text(
                       'Follow us on:',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: isDark ? Colors.white : Colors.grey),
                     ),
                     SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.facebook, color:Color(0xff2CA459),),
+                          icon: Icon(
+                            Icons.facebook,
+                            color: Color(0xff2CA459),
+                          ),
                           onPressed: () {
                             // Facebook sayfasına gitme işlemi
                           },
                         ),
                         IconButton(
-                          icon: Icon(FontAwesomeIcons.twitter, color: Color(0xff2CA459),),
+                          icon: Icon(
+                            FontAwesomeIcons.twitter,
+                            color: Color(0xff2CA459),
+                          ),
                           onPressed: () {
                             // Twitter sayfasına gitme işlemi
                           },
                         ),
                         IconButton(
-                          icon: Icon(FontAwesomeIcons.linkedin, color: Color(0xff2CA459),),
+                          icon: Icon(
+                            FontAwesomeIcons.linkedin,
+                            color: Color(0xff2CA459),
+                          ),
                           onPressed: () {
                             // LinkedIn sayfasına gitme işlemi
                           },

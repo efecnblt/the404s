@@ -11,7 +11,7 @@ import '../app_theme.dart';
 import '../build_card.dart';
 import '../profile_screen.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../search_screen.dart';
 
 class Dashboard extends StatefulWidget {
@@ -37,6 +37,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+    readSettings();
     _userCoursesFuture = AuthService.fetchUserCourses();
     _userFuture = AuthService.getUserData(widget.userId);
   }
@@ -98,7 +99,7 @@ class _DashboardState extends State<Dashboard> {
                           );
                         } else {
                           final user = snapshot.data!;
-                          return   Row(
+                          return Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -127,7 +128,8 @@ class _DashboardState extends State<Dashboard> {
                                       height: 55,
                                       child: CircleAvatar(
                                         radius: 45,
-                                        backgroundImage: NetworkImage(user.imageUrl),
+                                        backgroundImage:
+                                            NetworkImage(user.imageUrl),
                                       ),
                                     ),
                                   ),
@@ -187,8 +189,7 @@ class _DashboardState extends State<Dashboard> {
                       second: true,
                       spacing: 5.0,
                       style: ToggleStyle(
-                        backgroundColor:
-                        isDark ? Colors.black : Colors.white,
+                        backgroundColor: isDark ? Colors.black : Colors.white,
                         borderColor: Colors.transparent,
                         boxShadow: [
                           BoxShadow(
@@ -201,33 +202,34 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       borderWidth: 2.0,
                       height: 65,
-                      onChanged: (b) => setState(() => isDark = b),
+                      onChanged: (b) => setState(() {
+                        isDark = b;
+                        saveSettings();
+                      }),
                       styleBuilder: (b) => ToggleStyle(
                         indicatorColor: b ? Colors.black : Colors.white,
                       ),
                       iconBuilder: (value) => value
                           ? Icon(
-                        Icons.dark_mode,
-                        size: 20,
-                        color: Colors.white,
-                      )
+                              Icons.dark_mode,
+                              size: 20,
+                              color: Colors.white,
+                            )
                           : Icon(
-                        Icons.light_mode,
-                        size: 20,
-                        color: Colors.black,
-                      ),
+                              Icons.light_mode,
+                              size: 20,
+                              color: Colors.black,
+                            ),
                     ),
                   ),
                 ],
               ),
               Container(
                 width: screenWidth,
-
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   border: Border.all(
-                  color: Colors.black,
-
+                    color: Colors.black,
                   ),
                   gradient: LinearGradient(
                     colors: isDark
@@ -260,8 +262,7 @@ class _DashboardState extends State<Dashboard> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color:
-                            isDark ? Colors.white : Colors.white,
+                        color: isDark ? Colors.white : Colors.white,
                       ),
                     ),
                     SizedBox(
@@ -515,7 +516,10 @@ class _DashboardState extends State<Dashboard> {
       FavoritesPage(
         userId: widget.userId,
       ),
-      ProfileScreen(userId: widget.userId),
+      ProfileScreen(
+        userId: widget.userId,
+        isDark: isDark,
+      ),
     ];
 
     return WillPopScope(
@@ -551,5 +555,18 @@ class _DashboardState extends State<Dashboard> {
     } else {
       return true; // Uygulamadan çıkmaya izin ver
     }
+  }
+
+  Future<void> saveSettings() async {
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setBool('isDark', isDark);
+  }
+
+  Future<void> readSettings() async {
+    final preferences = await SharedPreferences.getInstance();
+    setState(() {
+      isDark = preferences.getBool('isDark') ?? true;
+      // Settings are loaded
+    });
   }
 }

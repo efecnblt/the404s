@@ -248,9 +248,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                   }).toList(),
                                 ),
                                 Column(
+
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    if (searchTerm.isNotEmpty)
+
+                                     if (searchTerm.isNotEmpty)
                                       Padding(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 20, vertical: 10),
@@ -304,6 +306,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       height: 0,
                                                     ),
                                                   ),
+
                                                 ),
                                                 const SizedBox(width: 10),
                                                 Container(
@@ -324,30 +327,43 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                           SizedBox(height: 10),
                                           Column(
-                                            children: recommendedCourses.map((data) {
-                                              Course courseData = data['course'];
-                                              Author authorData = data['author'];
-                                              print(authorData.name);
-                                              return BuildCard(
-                                                userId: widget.userId,
-                                                authorId: authorData.id,
-                                                sectionId:
-                                                courseData.sections.isNotEmpty
-                                                    ? courseData.sections[0].id
-                                                    : 'No Section',
-                                                course: courseData,
-                                                authorName: authorData.name,
-                                                icon: FontAwesomeIcons.graduationCap,
-                                                courseName: courseData.name,
-                                                description: courseData.description,
-                                                rating: courseData.rating,
-                                                level: courseData.level,
-                                                isDark: widget.isDark,
-                                              );
-                                            }).toList(),
+                                            children: [if (isLoading)
+                                            const Center(
+                                            child: CircularProgressIndicator(),),
+                                            Column(
+                                              children:
+                                                recommendedCourses.map((data) {
+                                                  Course courseData = data['course'];
+                                                  Author authorData = data['author'];
+                                                  print(authorData.name);
+                                                  return BuildCard(
+                                                    userId: widget.userId,
+                                                    authorId: authorData.id,
+                                                    sectionId:
+                                                    courseData.sections.isNotEmpty
+                                                        ? courseData.sections[0].id
+                                                        : 'No Section',
+                                                    course: courseData,
+                                                    authorName: authorData.name,
+                                                    icon: FontAwesomeIcons.graduationCap,
+                                                    courseName: courseData.name,
+                                                    description: courseData.description,
+                                                    rating: courseData.rating,
+                                                    level: courseData.level,
+                                                    isDark: widget.isDark,
+                                                  );
+                                                }).toList(),
+
+
+
+                                            )
+                                            ],
+
+
                                           ),
                                         ],
                                       )
+
 
                                     else if (matchingCourses.isNotEmpty)
                                       Column(
@@ -368,11 +384,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                             isDark: false,
                                           );
                                         }).toList(),
-                                      ),
-                                    if (isLoading)
-                                      const Center(
-                                        child: CircularProgressIndicator(),
                                       )
+
                                     else
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,

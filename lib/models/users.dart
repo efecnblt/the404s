@@ -25,17 +25,18 @@ class User {
   factory User.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    // Extract 'favorites' list
-    List<dynamic> favoritesList = data['favorites'] as List<dynamic>? ?? [];
-
-    // Convert each entry in the list to a FavoriteCourse object
-    List<FavoriteCourse> favoriteCourses = favoritesList.map((favoriteData) {
-      Map<String, dynamic> favoriteMap = favoriteData as Map<String, dynamic>;
-      return FavoriteCourse(
-        authorId: favoriteMap['authorId'] ?? '',
-        courseId: favoriteMap['courseId'] ?? '',
-      );
-    }).toList();
+    List<FavoriteCourse> favoriteCourses = [];
+    if (data['favorites'] is List) {
+      favoriteCourses = (data['favorites'] as List).where((favoriteData) {
+        return favoriteData is Map<String, dynamic>;
+      }).map((favoriteData) {
+        Map<String, dynamic> favoriteMap = favoriteData as Map<String, dynamic>;
+        return FavoriteCourse(
+          authorId: favoriteMap['authorId'] ?? '',
+          courseId: favoriteMap['courseId'] ?? '',
+        );
+      }).toList();
+    }
 
     return User(
       id: doc.id,
@@ -47,6 +48,7 @@ class User {
       favorites: favoriteCourses,
     );
   }
+
 
   // Convert User object to Firestore-compatible map
   Map<String, dynamic> toFirestore() {

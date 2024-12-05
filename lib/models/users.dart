@@ -57,13 +57,9 @@ class User {
       'username': username,
       'email': email,
       'image_url': imageUrl,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'favorites': favorites
-          .map((fav) => {
-                'authorId': fav.authorId,
-                'courseId': fav.courseId,
-              })
-          .toList(),
+      'createdAt': Timestamp.fromDate(createdAt), // Convert DateTime to Timestamp
+      'favorites': favorites.map((fav) => fav.toMap()).toList(), // Convert favorites to maps
     };
   }
+
 }

@@ -148,7 +148,7 @@ class BuildCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CourseDetailPage(course: course,isDark: true, authorId: authorId,sectionId: sectionId,userId: userId,),
+            builder: (context) => CourseDetailPage(course: course,isDark: isDark, authorId: authorId,sectionId: sectionId,userId: userId,),
           ),
         );
       },

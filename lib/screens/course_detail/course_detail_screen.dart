@@ -9,7 +9,6 @@ import '../../models/course.dart';
 import '../../models/sections.dart';
 import '../../models/video.dart';
 import '../../services/auth_service.dart';
-
 import '../search_page.dart';
 
 class CourseDetailPage extends StatefulWidget {
@@ -21,11 +20,11 @@ class CourseDetailPage extends StatefulWidget {
 
   const CourseDetailPage(
       {super.key,
-      required this.course,
-      required this.authorId,
-      required this.userId,
-      required this.sectionId,
-      required this.isDark});
+        required this.course,
+        required this.authorId,
+        required this.userId,
+        required this.sectionId,
+        required this.isDark});
 
   @override
   _CourseDetailPageState createState() => _CourseDetailPageState();
@@ -262,17 +261,17 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           ],
         ),
         extendBodyBehindAppBar: true,
-        backgroundColor: Colors.white,
+        backgroundColor: widget.isDark ? Colors.black :Colors.white,
         body: SingleChildScrollView(
           child: Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.35,
+                height: MediaQuery.of(context).size.height * 0.4,
                 decoration: ShapeDecoration(
                   gradient: LinearGradient(
                     begin: Alignment(0.00, -1.00),
                     end: Alignment(0, 1),
-                    colors: [Color(0xFF21C8F6), Color(0xFF637BFF)],
+                    colors: widget.isDark ?  [Colors.grey.shade700, Colors.grey.shade900]  :[Color(0xFF21C8F6), Color(0xFF637BFF)],
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
@@ -333,7 +332,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                     height: 1.2,
                                     fontSize: MediaQuery.of(context).size.height * 0.02,
                                     color: widget.isDark
-                                        ? Colors.black
+                                        ? Colors.white
                                         : Colors.black54,
                                   ),
                                 ),
@@ -403,14 +402,14 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                         isExpanded
                             ? widget.course.description
                             : widget.course.description.length > 300
-                                ? widget.course.description.substring(0, 300)
-                                : widget.course.description,
+                            ? widget.course.description.substring(0, 300)
+                            : widget.course.description,
                         textAlign: TextAlign.justify,
                         style: TextStyle(
                           fontFamily: 'Prompt',
                           fontWeight: FontWeight.w400,
                           fontSize: 16,
-                          color: widget.isDark ? Colors.black : Colors.black,
+                          color: widget.isDark ? Colors.white : Colors.black,
                         ),
                       ),
                     ),
@@ -566,6 +565,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                           builder: (context) => AuthorProfileDetail(
                             authorId: widget.authorId,
                             userId: widget.userId,
+                            isDark: widget.isDark,
                           ),
                         ),
                       );
@@ -693,7 +693,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       height: 125,
       padding: const EdgeInsets.all(15),
       decoration: ShapeDecoration(
-        color: Color(0xFFF1F1FA),
+        color:widget.isDark ? Colors.grey.shade800: Color(0xFFF1F1FA),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -735,15 +735,15 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               child: ClipOval(
                 child: author?.imageUrl != null
                     ? Image.network(
-                        author!.imageUrl, // Load image from URL
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                              "images/default_author.png"); // Fallback image
-                        },
-                      )
+                  author!.imageUrl, // Load image from URL
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                        "images/default_author.png"); // Fallback image
+                  },
+                )
                     : Image.asset(
-                        "images/default_author.png"), // Fallback if no URL
+                    "images/default_author.png"), // Fallback if no URL
               ),
             ),
           ),
@@ -757,7 +757,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     maxLines: 1,
                     author?.name ?? "Unknown Author",
                     style: TextStyle(
-                      color: Color(0xFF161719),
+                      color: widget.isDark?  Colors.white  :Color(0xFF161719),
                       fontSize: 20,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -787,7 +787,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                         ? "50+ Courses"
                         : "${(author?.courseCount ?? 0).toString()} Courses",
                     style: TextStyle(
-                      color: Color(0xFF888888),
+                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF888888),
                       fontSize: 14,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -802,7 +802,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     width: 4,
                     height: 4,
                     decoration: ShapeDecoration(
-                      color: Color(0xFF90909F),
+                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF90909F),
                       shape: OvalBorder(),
                     ),
                   ),
@@ -814,7 +814,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                         ? "1000+ Students"
                         : "${(author?.studentCount ?? 0).toString()} Students",
                     style: TextStyle(
-                      color: Color(0xFF888888),
+                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF888888),
                       fontSize: 14,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -835,7 +835,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     maxLines: 1,
                     "Course Reviews:",
                     style: TextStyle(
-                      color: Color(0xFF888888),
+                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF888888),
                       fontSize: 14,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -861,7 +861,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
 
     for (Section section in course.sections) {
       List<Video> videos =
-          await AuthService.fetchVideos(authorId, course.id, section.id);
+      await AuthService.fetchVideos(authorId, course.id, section.id);
 
       panels.add(
         ExpansionPanel(
@@ -900,7 +900,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         double starValue = index + 1;
         return Icon(
           _getStarIcon(starValue, rating),
-          color: Colors.blue,
+          color: Colors.yellow.shade900,
           size: 15, // Adjust the size of the star
         );
       })
@@ -909,7 +909,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           rating.toString(),
           style: TextStyle(
             fontSize: 12,
-            color: Colors.black,
+            color: widget.isDark?Colors.white:Colors.black,
             fontFamily: 'Prompt',
             fontWeight: FontWeight.bold,
           ),
@@ -930,7 +930,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
 
 // Determine the color of the star
   Color _getStarColor(double starValue, double rating) {
-    return rating >= starValue ? Colors.blue : Colors.grey;
+    return rating >= starValue ? Colors.yellow.shade900 : Colors.grey;
   }
 }
 

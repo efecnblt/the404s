@@ -7,8 +7,9 @@ import '../course_detail/course_detail_screen.dart';
 
 class FavoritesPage extends StatefulWidget {
   final String userId;
+  final bool isDark;
 
-  const FavoritesPage({Key? key, required this.userId}) : super(key: key);
+  const FavoritesPage({Key? key, required this.userId,required this.isDark}) : super(key: key);
 
   @override
   _FavoritesPageState createState() => _FavoritesPageState();
@@ -52,7 +53,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           child: Text(
             'My Favorites Courses',
             style: TextStyle(
-              color: Colors.black,
+              color: widget.isDark?  Colors.white : Colors.black,
               fontSize: 18,
               fontFamily: 'Prompt',
               fontWeight: FontWeight.w400,
@@ -61,7 +62,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ),
       ),
       extendBodyBehindAppBar: true,
-      backgroundColor: Colors.white,
+      backgroundColor: widget.isDark? Colors.black :Colors.white,
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -123,7 +124,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           description: course.description,
                           rating: course.rating,
                           level: course.level,
-                          isDark: false,
+                          isDark: widget.isDark,
                         );
                       },
                     );

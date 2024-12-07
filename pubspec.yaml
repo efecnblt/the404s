@@ -61,6 +61,7 @@ dependencies:
   rive: 0.11.11
   animated_toggle_switch: ^0.8.3
   chewie: ^1.8.5
+  flutter_rounded_progress_bar: 0.3.2
   flutter:
     sdk: flutter
 

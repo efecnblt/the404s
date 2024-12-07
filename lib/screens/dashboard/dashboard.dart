@@ -507,13 +507,13 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      SearchScreen(
+      SearchScreen(isDark: isDark,
         userId: widget.userId,
       ),
-      FavoritesPage(
+      FavoritesPage(isDark: isDark,
         userId: widget.userId,
       ),
-      FavoritesPage(
+      FavoritesPage(isDark: isDark,
         userId: widget.userId,
       ),
       ProfileScreen(

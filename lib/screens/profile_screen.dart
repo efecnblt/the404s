@@ -1,22 +1,29 @@
 import 'package:cyber_security_app/screens/account_security_screen.dart';
 import 'package:cyber_security_app/screens/contact_us_screen.dart';
 import 'package:cyber_security_app/screens/edit_profile_screen.dart';
-import 'package:cyber_security_app/screens/home_screen/home_screen.dart';
+import 'package:cyber_security_app/screens/language_settings_screen.dart';
 import 'package:cyber_security_app/screens/notification_settings.dart';
-import 'package:cyber_security_app/screens/premium_ad_overlay.dart';
+import 'package:cyber_security_app/screens/notification_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart';
 import '../models/users.dart';
 import '../services/auth_service.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'login_or_signup_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   final String userId;
+  final bool isDark;
+  final AppLocalizations? localizations;
 
-  const ProfileScreen({super.key, required this.userId});
+  const ProfileScreen({
+    super.key,
+    required this.userId,
+    required this.isDark,
+    required this.localizations,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -24,16 +31,19 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<app_user.User> _userFuture;
+  
 
   @override
   void initState() {
     bool themeState = false;
     super.initState();
+    
     // Initialize the future to fetch user data
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Set status bar color to transparent
       statusBarIconBrightness: Brightness.light,
       // Light icons for dark background
+      
     ));
     _userFuture = AuthService.getUserData(widget.userId);
   }
@@ -44,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: widget.isDark ? Colors.black : Colors.white,
       body: SafeArea(
         child: FutureBuilder<User>(
           future: _userFuture,
@@ -54,14 +64,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             } else if (snapshot.hasError) {
               return Center(
                 child: Text(
-                  'Bir hata oluştu: ${snapshot.error}',
+                  '${widget.localizations!.anErrorOccured}  ${snapshot.error}',
                   style: const TextStyle(color: Colors.white),
                 ),
               );
             } else if (!snapshot.hasData) {
-              return const Center(
+              return  Center(
                 child: Text(
-                  'Kullanıcı verisi bulunamadı.',
+                  widget.localizations!.userDataNotFound,
                   style: TextStyle(color: Colors.white),
                 ),
               );
@@ -192,15 +202,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                _showImageOptions(context);
+                                _showImageOptions(context ,widget.localizations! ,widget.isDark);
                               },
                               child: CircleAvatar(
                                 radius: 30,
-                                backgroundColor: Colors.white,
+                                backgroundColor:
+                                    widget.isDark ? Colors.black : Colors.white,
                                 child: Icon(
                                   Icons.edit,
                                   size: 28,
-                                  color: Colors.black,
+                                  color: widget.isDark
+                                      ? Colors.white
+                                      : Colors.black,
                                 ),
                               ),
                             ),
@@ -209,8 +222,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 10),
                         Text(
                           user.name,
-                          style: const TextStyle(
-                            color: Color(0xFF222222),
+                          style: TextStyle(
+                            color: widget.isDark
+                                ? Colors.white
+                                : Color(0xFF222222),
                             fontSize: 24,
                             fontFamily: 'Prompt',
                             fontWeight: FontWeight.w400,
@@ -219,8 +234,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         Text(
                           user.email,
-                          style: const TextStyle(
-                            color: Color(0xFF888888),
+                          style: TextStyle(
+                            color: widget.isDark
+                                ? Colors.white
+                                : Color(0xFF888888),
                             fontSize: 16,
                             fontFamily: 'Prompt',
                             fontWeight: FontWeight.w400,
@@ -233,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
 
                   // Alt kısım - Ayarlar (kaydırılabilir)
-                 /* Container(
+                  /* Container(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     height: 60,
                     decoration: BoxDecoration(
@@ -424,7 +441,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                   ),*/
-                 /* SingleChildScrollView(
+                  /* SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Column(children: [
                       Row(
@@ -459,7 +476,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                       decoration: ShapeDecoration(
-                        color: Color(0xffffffff),
+                        color: widget.isDark ? Colors.black : Color(0xffffffff),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(30),
@@ -469,13 +486,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: ListView(
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: Text(
-                              'Account Settings',
+                              widget.localizations!.accSettings,
                               style: TextStyle(
-                                color: Color(0xFF90909F),
+                                color: widget.isDark
+                                    ? Colors.white
+                                    : Color(0xFF90909F),
                                 fontSize: 15,
                                 fontFamily: 'DM Sans',
                                 fontWeight: FontWeight.w400,
@@ -488,16 +507,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
+                              color:
+                                  widget.isDark ? Colors.black : Colors.white,
                             ),
                             child: InkWell(
                               onTap: () {
-                                print('tıklandı');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => EditProfileScreen(
                                             userId: widget.userId,
+                                            isDark: widget.isDark,
+                                            localizations: widget.localizations,
                                           )),
                                 );
                               },
@@ -505,105 +526,135 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "Edit profile",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  widget.localizations!.editProfile,
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(Icons.edit_outlined),
-                                trailing: const Icon(
-                                    Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                leading: Icon(Icons.edit_outlined,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
+                                  Icons.arrow_circle_right_outlined,
+                                  color: widget.isDark
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
                               ),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
-                            ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
                             child: InkWell(
                               onTap: () {
-                                print('tıklandı');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          NotificationSettings()),
+                                          NotificationSettings(
+                                            isDark: widget.isDark,
+                                            localizations: widget.localizations,
+                                          )),
                                 );
                               },
                               splashColor: Colors.white.withOpacity(0.1),
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "Notifications Settings",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  widget.localizations!.notiSettings,
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(
-                                    Icons.notifications_active_outlined),
-                                trailing: const Icon(
+                                leading: Icon(
+                                    Icons.notifications_active_outlined,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
                                     Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
-                            ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
                             child: InkWell(
                               onTap: () {
-                                print('tıklandı');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           AccountSecurityScreen(
-                                              userId: widget.userId)),
+                                            userId: widget.userId,
+                                            isDark: widget.isDark,
+                                            localizations: widget.localizations
+                                          )),
                                 );
                               },
                               splashColor: Colors.white.withOpacity(0.1),
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "Account Security",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  widget.localizations!.accSec,
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(Icons.security),
-                                trailing: const Icon(
+                                leading: Icon(Icons.security,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
                                     Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: Text(
-                              'Support',
+                              widget.localizations!.support,
                               style: TextStyle(
-                                color: Color(0xFF90909F),
+                                color: widget.isDark
+                                    ? Colors.white
+                                    : Color(0xFF90909F),
                                 fontSize: 15,
                                 fontFamily: 'DM Sans',
                                 fontWeight: FontWeight.w400,
@@ -614,47 +665,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
-                            ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
                             child: InkWell(
                               onTap: () {
-                                //go to contact us page
-                                print('tıklandı');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ContactUsPage()),
+                                      builder: (context) =>
+                                          ContactUsPage(isDark: widget.isDark,localizations: widget.localizations,)),
                                 );
                               },
                               splashColor: Colors.white.withOpacity(0.1),
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "Contact us",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  widget.localizations!.contactUs,
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(Icons.support_agent),
-                                trailing: const Icon(
+                                leading: Icon(Icons.support_agent,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
                                     Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.white,
-                            ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
                             child: InkWell(
                               onTap: () {
                                 print('tıklandı');
@@ -663,20 +722,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "About CyberGuard App",
-                                  style: const TextStyle(
-                                    color: Color(0xFF161719),
+                                  widget.localizations!.aboutApp,
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
                                     fontSize: 18,
                                     fontFamily: 'DM Sans',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
                                 ),
-                                leading: const Icon(Icons.info_outline_rounded),
-                                trailing: const Icon(
+                                leading: Icon(Icons.info_outline_rounded,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
                                     Icons.arrow_circle_right_outlined,
-                                    color: Colors.black),
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
+                              
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(bottom: 5),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                               context,
+                                       MaterialPageRoute(builder: (context) =>  LanguageSettings(localizations: widget.localizations,isDark: widget.isDark)),
+                                            );
+                              },
+                              splashColor: Colors.white.withOpacity(0.1),
+                              highlightColor: Colors.white.withOpacity(0.05),
+                              child: ListTile(
+                                title: Text(
+                                  widget.localizations!.langSettings,
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
+                                    fontSize: 18,
+                                    fontFamily: 'DM Sans',
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
+                                ),
+                                leading: Icon(Icons.language,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
+                                    Icons.arrow_circle_right_outlined,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                              ),
+                              
                             ),
                           ),
                         ],
@@ -693,7 +803,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-void _showImageOptions(BuildContext context) {
+void _showImageOptions(BuildContext context,AppLocalizations localizations, bool isDark) {
   showModalBottomSheet(
     context: context,
     builder: (BuildContext context) {
@@ -703,7 +813,7 @@ void _showImageOptions(BuildContext context) {
           children: [
             ListTile(
               leading: Icon(Icons.camera),
-              title: Text('Camera'),
+              title: Text(localizations!.camera),
               onTap: () {
                 // Implement camera functionality
                 Navigator.pop(context); // Close the bottom sheet
@@ -711,7 +821,7 @@ void _showImageOptions(BuildContext context) {
             ),
             ListTile(
               leading: Icon(Icons.photo),
-              title: Text('Gallery'),
+              title: Text(localizations!.gallery),
               onTap: () {
                 // Implement gallery functionality
                 Navigator.pop(context); // Close the bottom sheet
@@ -719,7 +829,7 @@ void _showImageOptions(BuildContext context) {
             ),
             ListTile(
               leading: Icon(Icons.delete),
-              title: Text('Delete'),
+              title: Text(localizations!.delete),
               onTap: () {
                 // Implement delete functionality
                 Navigator.pop(context); // Close the bottom sheet

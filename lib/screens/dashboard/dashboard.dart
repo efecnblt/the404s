@@ -11,8 +11,10 @@ import '../app_theme.dart';
 import '../build_card.dart';
 import '../profile_screen.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../search_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Dashboard extends StatefulWidget {
   final String name;
@@ -37,6 +39,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+    readSettings();
     _userCoursesFuture = AuthService.fetchUserCourses();
     _userFuture = AuthService.getUserData(widget.userId);
   }
@@ -58,6 +61,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     // Ekran boyutlarını al
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
@@ -85,96 +89,105 @@ class _DashboardState extends State<Dashboard> {
                         } else if (snapshot.hasError) {
                           return Center(
                             child: Text(
-                              'Bir hata oluştu: ${snapshot.error}',
+                              '${localizations!.anErrorOccured}  ${snapshot.error}',
                               style: const TextStyle(color: Colors.white),
                             ),
                           );
                         } else if (!snapshot.hasData) {
-                          return const Center(
+                          
+                          return Center(
                             child: Text(
-                              'Kullanıcı verisi bulunamadı.',
-                              style: TextStyle(color: Colors.white),
+                              localizations!.userDataNotFound,
+                              style: const TextStyle(color: Colors.white),
                             ),
                           );
                         } else {
                           final user = snapshot.data!;
-                          return   Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Stack(
-                                alignment: Alignment.center,
+                          return Builder(
+                            builder: (context) {
+                              return Row(
+                              
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    width: 125,
-                                    height: 125,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(40),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(30),
-                                      child: Image.asset(
-                                        "images/new_logo.png",
-                                        fit: BoxFit.cover,
+                                  Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                              
+                                      Container(
+                                        width: 125,
+                                        height: 125,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(40),
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(30),
+                                          child: Image.asset(
+                                            "images/new_logo.png",
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    left: 45,
-                                    top: 40,
-                                    child: SizedBox(
-                                      width: 55,
-                                      height: 55,
-                                      child: CircleAvatar(
-                                        radius: 45,
-                                        backgroundImage: NetworkImage(user.imageUrl),
+                              
+                                      Positioned(
+                                        left: 45,
+                                        top: 40,
+                                        child: SizedBox(
+                                          width: 55,
+                                          height: 55,
+                                          child: CircleAvatar(
+                                            radius: 45,
+                                            backgroundImage:
+                                                NetworkImage(user.imageUrl),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Welcome back',
-                                    style: TextStyle(
-                                      color: isDark
-                                          ? DarkTheme.textColor
-                                          : LightTheme.textColor,
-                                      fontSize: 12,
-                                      fontFamily: 'DM Sans',
-                                      fontWeight: FontWeight.w700,
-                                      height: 1.2,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Row(
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        user.name,
+                                        localizations!.welcomeBack,
                                         style: TextStyle(
                                           color: isDark
                                               ? DarkTheme.textColor
                                               : LightTheme.textColor,
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontFamily: 'DM Sans',
                                           fontWeight: FontWeight.w700,
                                           height: 1.2,
                                         ),
                                       ),
-                                      SizedBox(width: 5),
-                                      Icon(
-                                        Icons.verified,
-                                        color: Colors.blue,
-                                        size: 16,
+                                      SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            user.name,
+                                            style: TextStyle(
+                                              color: isDark
+                                                  ? DarkTheme.textColor
+                                                  : LightTheme.textColor,
+                                              fontSize: 14,
+                                              fontFamily: 'DM Sans',
+                                              fontWeight: FontWeight.w700,
+                                              height: 1.2,
+                                            ),
+                                          ),
+                                          SizedBox(width: 5),
+                                          Icon(
+                                            Icons.verified,
+                                            color: Colors.blue,
+                                            size: 16,
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ],
-                              ),
-                            ],
+                              );
+                            }
                           );
                         }
                       }),
@@ -187,8 +200,7 @@ class _DashboardState extends State<Dashboard> {
                       second: true,
                       spacing: 5.0,
                       style: ToggleStyle(
-                        backgroundColor:
-                        isDark ? Colors.black : Colors.white,
+                        backgroundColor: isDark ? Colors.black : Colors.white,
                         borderColor: Colors.transparent,
                         boxShadow: [
                           BoxShadow(
@@ -201,33 +213,34 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       borderWidth: 2.0,
                       height: 65,
-                      onChanged: (b) => setState(() => isDark = b),
+                      onChanged: (b) => setState(() {
+                        isDark = b;
+                        saveSettings();
+                      }),
                       styleBuilder: (b) => ToggleStyle(
                         indicatorColor: b ? Colors.black : Colors.white,
                       ),
                       iconBuilder: (value) => value
                           ? Icon(
-                        Icons.dark_mode,
-                        size: 20,
-                        color: Colors.white,
-                      )
+                              Icons.dark_mode,
+                              size: 20,
+                              color: Colors.white,
+                            )
                           : Icon(
-                        Icons.light_mode,
-                        size: 20,
-                        color: Colors.black,
-                      ),
+                              Icons.light_mode,
+                              size: 20,
+                              color: Colors.black,
+                            ),
                     ),
                   ),
                 ],
               ),
               Container(
                 width: screenWidth,
-
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   border: Border.all(
-                  color: Colors.black,
-
+                    color: Colors.black,
                   ),
                   gradient: LinearGradient(
                     colors: isDark
@@ -256,12 +269,11 @@ class _DashboardState extends State<Dashboard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "Your progress in Courses",
+                      localizations!.yourProgressInCourses,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color:
-                            isDark ? Colors.white : Colors.white,
+                        color: isDark ? Colors.white : Colors.white,
                       ),
                     ),
                     SizedBox(
@@ -279,13 +291,13 @@ class _DashboardState extends State<Dashboard> {
                           // Hata oluştu
                           return Center(
                               child:
-                                  Text('Bir hata oluştu: ${snapshot.error}'));
+                                  Text( '${localizations!.anErrorOccured}  ${snapshot.error}'));
                         } else if (!snapshot.hasData ||
                             snapshot.data!.isEmpty) {
                           // Veri yok
                           return Center(
                               child: Text(
-                            'Henüz kayıtlı bir kursunuz yok.',
+                            localizations!.youDontHaveAnyRegisteredCoursesYet,
                             style: TextStyle(
                               color: isDark
                                   ? DarkTheme.textColor
@@ -333,7 +345,7 @@ class _DashboardState extends State<Dashboard> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           content:
-                                              Text('${course.name} removed')),
+                                              Text('${course.name} ${localizations.removed}')),
                                     );
                                   },
                                   child: SizedBox(
@@ -382,7 +394,7 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      'Recommendation',
+                      localizations!.recommendation,
                       style: TextStyle(
                         color:
                             isDark ? DarkTheme.textColor : LightTheme.textColor,
@@ -423,7 +435,7 @@ class _DashboardState extends State<Dashboard> {
                     // Hata oluştu
                     return Center(
                       child: Text(
-                        'Bir hata oluştu: ${snapshot.error}',
+                        '${localizations!.anErrorOccured} ${snapshot.error}',
                         style: TextStyle(
                           color: isDark ? Colors.white : Colors.black,
                         ),
@@ -433,7 +445,7 @@ class _DashboardState extends State<Dashboard> {
                     // Veri yok
                     return Center(
                       child: Text(
-                        'Henüz kayıtlı bir kursunuz yok.',
+                        localizations!.youDontHaveAnyRegisteredCoursesYet,
                         style: TextStyle(
                           color: isDark ? Colors.white : Colors.black,
                         ),
@@ -463,10 +475,10 @@ class _DashboardState extends State<Dashboard> {
                                 ConnectionState.waiting) {
                               return const CircularProgressIndicator();
                             } else if (sectionSnapshot.hasError) {
-                              return Text('Error fetching sections');
+                              return Text(localizations!.errorFethingSections);
                             } else if (!sectionSnapshot.hasData ||
                                 sectionSnapshot.data!.isEmpty) {
-                              return Text('No sections found');
+                              return Text(localizations!.noSectionFound,style: TextStyle(color: isDark? Colors.white:Colors.black),);
                             } else {
                               // Sections loaded
                               final sections = sectionSnapshot.data!;
@@ -478,7 +490,7 @@ class _DashboardState extends State<Dashboard> {
                                     'sectionId']; // Assume each section has a sectionId
                               } else {
                                 sectionId =
-                                    'No Section'; // Handle missing sections
+                                    localizations!.noSectionFound; // Handle missing sections
                               }
                               return BuildCard(
                                 userId: widget.userId,
@@ -493,6 +505,7 @@ class _DashboardState extends State<Dashboard> {
                                 rating: course.rating,
                                 level: course.level,
                                 isDark: isDark,
+                                localizations: localizations,
                               );
                             }
                           },
@@ -506,16 +519,27 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
+
       SearchScreen(
         userId: widget.userId,
+        isDark: isDark,
+        localizations: localizations,
       ),
       FavoritesPage(
         userId: widget.userId,
+        isDark: isDark,
+        localizations: localizations,
       ),
       FavoritesPage(
         userId: widget.userId,
+        isDark: isDark,
+        localizations: localizations,
       ),
-      ProfileScreen(userId: widget.userId),
+      ProfileScreen(
+        userId: widget.userId,
+        isDark: isDark,
+        localizations: localizations,
+      ),
     ];
 
     return WillPopScope(
@@ -551,5 +575,18 @@ class _DashboardState extends State<Dashboard> {
     } else {
       return true; // Uygulamadan çıkmaya izin ver
     }
+  }
+
+  Future<void> saveSettings() async {
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setBool('isDark', isDark);
+  }
+
+  Future<void> readSettings() async {
+    final preferences = await SharedPreferences.getInstance();
+    setState(() {
+      isDark = preferences.getBool('isDark') ?? true;
+      // Settings are loaded
+    });
   }
 }

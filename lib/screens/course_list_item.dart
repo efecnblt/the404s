@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../widgets/course_card.dart';
 import 'app_theme.dart';
 import 'course_detail/course_detail_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CourseListItem extends StatefulWidget {
   final Course course;
@@ -16,6 +17,7 @@ class CourseListItem extends StatefulWidget {
   final String authorId;
   final String sectionId; // Add sectionId
   final String userId; // Add sectionId
+  final AppLocalizations? localizations;
   CourseListItem(
       {super.key,
       required this.course,
@@ -24,7 +26,8 @@ class CourseListItem extends StatefulWidget {
       required this.authorName,
       required this.authorId,
       required this.userId,
-      required this.sectionId});
+      required this.sectionId,
+      required this.localizations,});
   List<Color> colors = [
     Color(0xffFE7E7E),
     Color(0xffC81004),
@@ -144,7 +147,7 @@ class _CourseListItemState extends State<CourseListItem> {
     try {
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        throw Exception('User not logged in');
+        throw Exception(widget.localizations!.userNotSignedIn);
       }
 
       final userDoc = await FirebaseFirestore.instance
@@ -192,7 +195,7 @@ class _CourseListItemState extends State<CourseListItem> {
         isFavorite = !isFavorite;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Favori işleminde bir hata oluştu.')),
+        SnackBar(content: Text(widget.localizations!.errorFav)),
       );
     }
   }
@@ -213,6 +216,7 @@ class _CourseListItemState extends State<CourseListItem> {
               authorId: widget.authorId,
               sectionId: widget.sectionId,
               userId: widget.userId,
+              localizations: widget.localizations,
             ),
           ),
         );
@@ -226,8 +230,8 @@ class _CourseListItemState extends State<CourseListItem> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(isFavorite
-                  ? 'Favorilerden kaldırıldı'
-                  : 'Favorilere eklendi'),
+                  ? widget.localizations!.removedFav
+                  : widget.localizations!.addedFav),
               duration: Duration(seconds: 2),
             ),
           );
@@ -252,13 +256,13 @@ class _CourseListItemState extends State<CourseListItem> {
             shadows: [
               BoxShadow(
                 color: widget.isDark
-                    ? Colors.transparent
+                    ? DarkTheme.shadowColor
                     : LightTheme.shadowColor,
                 blurRadius: 2,
               )
             ],
             color: widget.isDark
-                ? Colors.white
+                ? DarkTheme.cardBackgroundColor
                 : LightTheme.cardBackgroundColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -282,7 +286,7 @@ class _CourseListItemState extends State<CourseListItem> {
                 child: Icon(
                   widget.icon,
                   size: MediaQuery.of(context).size.height * 0.05,
-                  color: Colors.black,
+                  color: widget.isDark? Colors.white: Colors.black,
                 ),
               ),
               const SizedBox(width: 15),
@@ -296,7 +300,7 @@ class _CourseListItemState extends State<CourseListItem> {
                         widget.course.name,
                         style: TextStyle(
                           color: widget.isDark
-                              ? Colors.black
+                              ? DarkTheme.textColor
                               : LightTheme.textColor,
                           fontFamily: "Prompt",
                           fontSize: 18,
@@ -310,7 +314,7 @@ class _CourseListItemState extends State<CourseListItem> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: widget.isDark
-                              ? Color(0xFF161719)
+                              ? DarkTheme.subTitleColor
                               : LightTheme.subTitleColor,
                           fontSize: 14,
                         ),
@@ -329,7 +333,7 @@ class _CourseListItemState extends State<CourseListItem> {
                           Text(widget.course.rating.toString(),
                               style: TextStyle(
                                   color: widget.isDark
-                                      ? Colors.black
+                                      ? DarkTheme.textColor
                                       : LightTheme.textColor,
                                   fontWeight: FontWeight.bold)),
                           _buildDot(),
@@ -337,7 +341,7 @@ class _CourseListItemState extends State<CourseListItem> {
                             widget.authorName,
                             style: TextStyle(
                               color: widget.isDark
-                                  ? Color(0xFF90909F)
+                                  ? DarkTheme.instructorAndLevel
                                   : LightTheme.instructorAndLevel,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -347,7 +351,7 @@ class _CourseListItemState extends State<CourseListItem> {
                             widget.course.level,
                             style: TextStyle(
                               color: widget.isDark
-                                  ? Color(0xFF90909F)
+                                  ? DarkTheme.instructorAndLevel
                                   : LightTheme.instructorAndLevel,
                             ),
                           ),

@@ -9,8 +9,8 @@ import '../../models/course.dart';
 import '../../models/sections.dart';
 import '../../models/video.dart';
 import '../../services/auth_service.dart';
-
 import '../search_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final Course course;
@@ -18,14 +18,16 @@ class CourseDetailPage extends StatefulWidget {
   final String authorId;
   final String userId;
   final String sectionId;
+  final AppLocalizations? localizations;
 
   const CourseDetailPage(
       {super.key,
-      required this.course,
-      required this.authorId,
-      required this.userId,
-      required this.sectionId,
-      required this.isDark});
+        required this.course,
+        required this.authorId,
+        required this.userId,
+        required this.sectionId,
+        required this.isDark,
+        required this.localizations,});
 
   @override
   _CourseDetailPageState createState() => _CourseDetailPageState();
@@ -109,12 +111,12 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Favorilere eklendi.")),
+        SnackBar(content: Text(widget.localizations!.addedFav)),
       );
     } catch (e) {
-      print("Favorilere ekleme sırasında hata oluştu: $e");
+      print(' ${widget.localizations!.errorAddedFav}  $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Favorilere eklenirken bir hata oluştu.")),
+        SnackBar(content: Text(widget.localizations!.errorAddedFav)),
       );
     }
   }
@@ -123,7 +125,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     try {
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) {
-        throw Exception("Kullanıcı oturumu açık değil.");
+        throw Exception(widget.localizations!.userNotSignedIn);
       }
 
       await FirebaseFirestore.instance
@@ -150,12 +152,12 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Favorilerden kaldırıldı.")),
+        SnackBar(content: Text(widget.localizations!.removedFav)),
       );
     } catch (e) {
-      print("Favorilerden kaldırma sırasında hata oluştu: $e");
+      print(" ${widget.localizations!.errorRemovedFav} $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Favorilerden kaldırılırken bir hata oluştu.")),
+        SnackBar(content: Text(widget.localizations!.errorRemovedFav)),
       );
     }
   }
@@ -209,6 +211,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           course: widget.course,
           authorId: widget.authorId,
           sectionId: widget.sectionId,
+          localizations: widget.localizations,
         ),
       ),
     );
@@ -240,7 +243,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           title: Padding(
             padding: EdgeInsets.only(left: 20),
             child: Text(
-              'Course details',
+              widget.localizations!.courseDetails,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -262,17 +265,17 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           ],
         ),
         extendBodyBehindAppBar: true,
-        backgroundColor: Colors.white,
+        backgroundColor: widget.isDark ? Colors.black :Colors.white,
         body: SingleChildScrollView(
           child: Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.35,
+                height: MediaQuery.of(context).size.height * 0.4,
                 decoration: ShapeDecoration(
                   gradient: LinearGradient(
                     begin: Alignment(0.00, -1.00),
                     end: Alignment(0, 1),
-                    colors: [Color(0xFF21C8F6), Color(0xFF637BFF)],
+                    colors: widget.isDark ?  [Colors.grey.shade700, Colors.grey.shade900]  :[Color(0xFF21C8F6), Color(0xFF637BFF)],
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
@@ -333,7 +336,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                     height: 1.2,
                                     fontSize: MediaQuery.of(context).size.height * 0.02,
                                     color: widget.isDark
-                                        ? Colors.black
+                                        ? Colors.white
                                         : Colors.black54,
                                   ),
                                 ),
@@ -388,7 +391,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Description",
+                      widget.localizations!.description,
                       style: TextStyle(
                         color: Color(0xFF888888),
                         fontSize: 16,
@@ -403,14 +406,14 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                         isExpanded
                             ? widget.course.description
                             : widget.course.description.length > 300
-                                ? widget.course.description.substring(0, 300)
-                                : widget.course.description,
+                            ? widget.course.description.substring(0, 300)
+                            : widget.course.description,
                         textAlign: TextAlign.justify,
                         style: TextStyle(
                           fontFamily: 'Prompt',
                           fontWeight: FontWeight.w400,
                           fontSize: 16,
-                          color: widget.isDark ? Colors.black : Colors.black,
+                          color: widget.isDark ? Colors.white : Colors.black,
                         ),
                       ),
                     ),
@@ -422,7 +425,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                           });
                         },
                         child: Text(
-                          isExpanded ? 'Show Less' : 'Show More',
+                          isExpanded ? widget.localizations!.showLess : widget.localizations!.showMore,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.blue,
@@ -456,7 +459,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     SizedBox(
                       width: 73,
                       child: Text(
-                        'Author',
+                        widget.localizations!.author,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF888888),
@@ -492,9 +495,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator(); // Show loading indicator
                       } else if (snapshot.hasError) {
-                        return Text("Error loading author data");
+                        return Text(widget.localizations!.errorAuthorData);
                       } else if (!snapshot.hasData || snapshot.data == null) {
-                        return Text("Author data not found");
+                        return Text(widget.localizations!.noAuthorInform);
                       } else {
                         author = snapshot.data; // Assign the author data
                         return buildAuthorInfo(); // Build UI with author data
@@ -566,6 +569,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                           builder: (context) => AuthorProfileDetail(
                             authorId: widget.authorId,
                             userId: widget.userId,
+                            isDark: widget.isDark,
+                            localizations: widget.localizations,
                           ),
                         ),
                       );
@@ -599,7 +604,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Author Profile',
+                            widget.localizations!.authorProfile,
                             style: TextStyle(
                               color: Color(0xFFFCFCFF),
                               fontSize: 16,
@@ -657,7 +662,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Start Course',
+                            widget.localizations!.startCourse,
                             style: TextStyle(
                               color: Color(0xFFFCFCFF),
                               fontSize: 16,
@@ -693,7 +698,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       height: 125,
       padding: const EdgeInsets.all(15),
       decoration: ShapeDecoration(
-        color: Color(0xFFF1F1FA),
+        color:widget.isDark ? Colors.grey.shade800: Color(0xFFF1F1FA),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -735,15 +740,15 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               child: ClipOval(
                 child: author?.imageUrl != null
                     ? Image.network(
-                        author!.imageUrl, // Load image from URL
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                              "images/default_author.png"); // Fallback image
-                        },
-                      )
+                  author!.imageUrl, // Load image from URL
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                        "images/default_author.png"); // Fallback image
+                  },
+                )
                     : Image.asset(
-                        "images/default_author.png"), // Fallback if no URL
+                    "images/default_author.png"), // Fallback if no URL
               ),
             ),
           ),
@@ -755,9 +760,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 children: [
                   Text(
                     maxLines: 1,
-                    author?.name ?? "Unknown Author",
+                    author?.name ?? widget.localizations!.unknownAuthor,
                     style: TextStyle(
-                      color: Color(0xFF161719),
+                      color: widget.isDark?  Colors.white  :Color(0xFF161719),
                       fontSize: 20,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -784,10 +789,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 children: [
                   Text(
                     author!.courseCount >= 50
-                        ? "50+ Courses"
-                        : "${(author?.courseCount ?? 0).toString()} Courses",
+                        ? '${widget.localizations!.fiftyCourse}'
+                        : "${(author?.courseCount ?? 0).toString()} ${widget.localizations!.courses}",
                     style: TextStyle(
-                      color: Color(0xFF888888),
+                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF888888),
                       fontSize: 14,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -802,7 +807,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     width: 4,
                     height: 4,
                     decoration: ShapeDecoration(
-                      color: Color(0xFF90909F),
+                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF90909F),
                       shape: OvalBorder(),
                     ),
                   ),
@@ -811,10 +816,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   ),
                   Text(
                     author!.studentCount >= 1000
-                        ? "1000+ Students"
-                        : "${(author?.studentCount ?? 0).toString()} Students",
+                        ? widget.localizations!.thousandStudent
+                        : "${(author?.studentCount ?? 0).toString()} ${widget.localizations!.students}",
                     style: TextStyle(
-                      color: Color(0xFF888888),
+                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF888888),
                       fontSize: 14,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -833,9 +838,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 children: [
                   Text(
                     maxLines: 1,
-                    "Course Reviews:",
+                    widget.localizations!.authorReviews,
                     style: TextStyle(
-                      color: Color(0xFF888888),
+                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF888888),
                       fontSize: 14,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -861,14 +866,14 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
 
     for (Section section in course.sections) {
       List<Video> videos =
-          await AuthService.fetchVideos(authorId, course.id, section.id);
+      await AuthService.fetchVideos(authorId, course.id, section.id);
 
       panels.add(
         ExpansionPanel(
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
               title: Text(section.title),
-              subtitle: Text("Videos: ${videos.length}"),
+              subtitle: Text("${widget.localizations!.videos}: ${videos.length}"),
             );
           },
           body: Column(
@@ -876,9 +881,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               return ListTile(
                 leading: Icon(Icons.play_circle_fill),
                 title: Text(video.title),
-                subtitle: Text("Duration: ${video.duration} mins"),
+                subtitle: Text("${widget.localizations!.duration} ${video.duration} ${widget.localizations!.mins}"),
                 onTap: () {
-                  print("Selected video: ${video.title}");
+                  print("${widget.localizations!.selectedVideo}: ${video.title}");
                   // Burada video oynatma işlemi başlatılabilir
                   // Örneğin: navigateToVideoPlayer(video.url);
                 },
@@ -900,7 +905,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         double starValue = index + 1;
         return Icon(
           _getStarIcon(starValue, rating),
-          color: Colors.blue,
+          color: Colors.yellow.shade900,
           size: 15, // Adjust the size of the star
         );
       })
@@ -909,7 +914,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           rating.toString(),
           style: TextStyle(
             fontSize: 12,
-            color: Colors.black,
+            color: widget.isDark?Colors.white:Colors.black,
             fontFamily: 'Prompt',
             fontWeight: FontWeight.bold,
           ),
@@ -930,7 +935,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
 
 // Determine the color of the star
   Color _getStarColor(double starValue, double rating) {
-    return rating >= starValue ? Colors.blue : Colors.grey;
+    return rating >= starValue ? Colors.yellow.shade900 : Colors.grey;
   }
 }
 

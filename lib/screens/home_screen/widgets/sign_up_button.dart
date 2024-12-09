@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../constants/styles.dart';
 import '../../sign_up/sign_up.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignUpButton extends StatelessWidget {
   final double height;
@@ -27,7 +28,7 @@ class SignUpButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            "Sign Up",
+            AppLocalizations.of(context)!.signup,
             style: AppTextStyles.buttonTextStyle(fontSize),
           ),
         ),

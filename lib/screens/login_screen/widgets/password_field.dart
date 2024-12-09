@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class PasswordField extends StatelessWidget {
   final double fontSize;
   final TextEditingController controller;
@@ -45,7 +45,7 @@ class PasswordField extends StatelessWidget {
             obscureText: true,
             keyboardType: TextInputType.visiblePassword,
             decoration: InputDecoration(
-              hintText: "Password",
+              hintText: AppLocalizations.of(context)!.enterPassword,
               hintStyle: TextStyle(color: hintTextColor),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenHeight * 0.015,

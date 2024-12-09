@@ -1,52 +1,82 @@
 import 'package:cyber_security_app/OnboardingScreen.dart';
+import 'package:cyber_security_app/screens/language_settings_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'generated/l10n.dart'; // Oluşturulan yerelleştirme sınıfı
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+AppLocalizations? globalLocalizations;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  final prefs = await SharedPreferences.getInstance();
+  String? savedLanguageCode = prefs.getString('selectedLanguage') ?? 'en'; // Varsayılan 'en'
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // Durum çubuğu rengini şeffaf yapar
   ));
-  runApp(MyApp());
+  runApp(MyApp(initialLanguageCode: savedLanguageCode));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+   final String initialLanguageCode;
+  const MyApp({super.key, required this.initialLanguageCode});
 
   @override
   _MyAppState createState() => _MyAppState();
+
+   static _MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>();
 }
 
 class _MyAppState extends State<MyApp> {
-  Locale _locale = Locale('eng'); // Varsayılan dil
+ Locale _locale = Locale('en');
 
-  // Dil seçimini güncelleyen fonksiyon
   void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
     });
   }
 
+    @override
+  void initState() {
+    super.initState();
+    _locale = Locale(widget.initialLanguageCode);
+  }
+
+   void _changeLanguage(String languageCode) async {
+    setState(() {
+      _locale = Locale(languageCode);
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('selectedLanguage', languageCode);
+
+   }
+
   @override
   Widget build(BuildContext context) {
-    FirebaseAuth.instance.setLanguageCode("eng"); // İngilizce için
+    //FirebaseAuth.instance.setLanguageCode("tr");
+      globalLocalizations = AppLocalizations.of(context); // İngilizce için
     return MaterialApp(
-      locale: _locale,
-      supportedLocales: S.delegate.supportedLocales,
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: const [
-        S.delegate,
-        // Diğer gerekli delegeler
+       locale: _locale,
+      localizationsDelegates:  [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      supportedLocales: [
+     Locale('en', ''), // İngilizce
+     Locale('tr', ''), // Türkçe
+   ],
+      debugShowCheckedModeBanner: false,
+      
       home: OnboardingScreen(),
+      
     );
   }
 }

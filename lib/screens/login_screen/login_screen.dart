@@ -5,6 +5,7 @@ import '../../constants/styles.dart';
 import '../../generated/l10n.dart';
 import 'widgets/animated_title.dart';
 import 'widgets/login_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
@@ -49,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: screenHeight * 0.05),
                   // "Log in to" Metni
                   Text(
-                    S.of(context).loginTo, // Yerelleştirilmiş metin
+                    AppLocalizations.of(context)!.loginTo, // Yerelleştirilmiş metin
                     style: AppTextStyles.headingTextStyle(screenWidth * 0.12),
                   ),
                   // Animasyonlu Başlık
@@ -71,8 +72,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: EdgeInsets.symmetric(
                             horizontal: screenWidth * 0.02),
                         child: Text(
-                          S
-                              .of(context)
+                          AppLocalizations
+                              .of(context)!
                               .orLoginWithEmail, // Yerelleştirilmiş metin
                           style:
                               AppTextStyles.linkTextStyle(screenWidth * 0.05),

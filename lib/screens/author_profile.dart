@@ -4,13 +4,16 @@ import '../models/authors.dart';
 import '../models/course.dart';
 import '../services/auth_service.dart';
 import 'course_list_item.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AuthorProfileDetail extends StatefulWidget {
   final String authorId;
   final String userId;
+  final bool isDark;
+  final AppLocalizations? localizations;
 
   const AuthorProfileDetail(
-      {super.key, required this.authorId, required this.userId});
+      {super.key, required this.authorId, required this.isDark, required this.userId,required this.localizations,});
 
   @override
   _AuthorProfileDetailState createState() => _AuthorProfileDetailState();
@@ -50,24 +53,24 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text('Author Profile')),
+        appBar: AppBar(title: Text(widget.localizations!.authorProfile)),
         body: Center(child: CircularProgressIndicator()),
       );
     }
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: Text('Author Profile')),
-        body: Center(child: Text('Error: $_error')),
+        appBar: AppBar(title: Text(widget.localizations!.authorProfile)),
+        body: Center(child: Text('${widget.localizations!.error}: $_error')),
       );
     }
     if (_author == null) {
       return Scaffold(
-        appBar: AppBar(title: Text('Author Profile')),
-        body: Center(child: Text('Author not found')),
+        appBar: AppBar(title: Text(widget.localizations!.authorProfile)),
+        body: Center(child: Text(widget.localizations!.notFoundAuthor)),
       );
     }
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: widget.isDark? Colors.black: Colors.white,
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.only(left: 15.0),
@@ -75,7 +78,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
             icon: Icon(
               Icons.arrow_circle_left_outlined,
               size: 32,
-              color: Colors.black,
+              color: widget.isDark? Colors.white:Colors.black,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -87,9 +90,9 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
         title: Padding(
           padding: EdgeInsets.only(left: 20),
           child: Text(
-            'Author details',
+            widget.localizations!.authorDetails,
             style: TextStyle(
-              color: Colors.black,
+              color: widget.isDark ? Colors.white:Colors.black,
               fontSize: 18,
               fontFamily: 'Prompt',
               fontWeight: FontWeight.w400,
@@ -167,7 +170,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                                 maxLines: 1,
                                 _author!.name,
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: widget.isDark?  Colors.white :Colors.black,
                                   fontSize: 20,
                                   fontFamily: 'Prompt',
                                   fontWeight: FontWeight.w400,
@@ -192,7 +195,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                         child: Text(
                           _author!.department,
                           style: TextStyle(
-                            color: Colors.black,
+                            color: widget.isDark? Colors.white :Colors.black,
                             fontSize: 18,
                             fontFamily: 'Prompt',
                             fontWeight: FontWeight.w400,
@@ -213,7 +216,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                                 width: 5,
                               ),
                               Text(
-                                'TOP RATED',
+                                widget.localizations!.topRated,
                                 style: TextStyle(
                                   color: Color(0xFFFFC73C),
                                   fontSize: 14,
@@ -238,15 +241,17 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                       children: [
                         IconContainer(
                           icon: FontAwesomeIcons.chalkboardTeacher,
-                          label: "Total student",
+                          label: widget.localizations!.totalStudent,
                           value: _author!.studentCount.toString(),
+                          isDark: widget.isDark,
                         ),
                         SizedBox(
                           width: 15,
                         ),
                         IconContainer(
+                          isDark: widget.isDark,
                           icon: FontAwesomeIcons.bookBookmark,
-                          label: "Courses",
+                          label: widget.localizations!.courses,
                           value: _author!.courseCount.toString(),
                         ),
                         SizedBox(
@@ -256,9 +261,9 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Author reviews",
+                              widget.localizations!.authorReviews,
                               style: TextStyle(
-                                color: Colors.black,
+                                color: widget.isDark ? Colors.white :Colors.black,
                                 fontSize: 14,
                                 fontFamily: 'Prompt',
                                 fontWeight: FontWeight.w400,
@@ -282,7 +287,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
         Expanded(
           child: Container(
             decoration: ShapeDecoration(
-              color: Color(0xFFF6F6F6),
+              color: widget.isDark? Colors.grey.shade800 : Color(0xFFF6F6F6),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
@@ -302,10 +307,11 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                   userId: widget.userId,
                   sectionId: sectionId,
                   course: _courses![index],
-                  isDark: true,
+                  isDark: widget.isDark,
                   authorName: _author!.name,
                   icon: FontAwesomeIcons.personBooth,
                   authorId: _author!.id,
+                  localizations: widget.localizations,
                 );
               },
             ),
@@ -322,7 +328,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
         double starValue = index + 1;
         return Icon(
           _getStarIcon(starValue, rating),
-          color: Colors.blue,
+          color: Colors.yellow.shade900,
           size: 15, // Adjust the size of the star
         );
       })
@@ -331,8 +337,8 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
           textAlign: TextAlign.center,
           rating.toString(),
           style: TextStyle(
-            fontSize: 10,
-            color: Colors.black,
+            fontSize: 12,
+            color: widget.isDark ? Colors.white : Colors.black,
             fontFamily: 'Prompt',
             fontWeight: FontWeight.bold,
           ),
@@ -356,12 +362,14 @@ class IconContainer extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+  final bool isDark;
 
   const IconContainer({
     super.key,
     required this.icon,
     required this.label,
     required this.value,
+    required this.isDark
   });
 
   @override
@@ -393,17 +401,17 @@ class IconContainer extends StatelessWidget {
           children: [
             Text(
               label,
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: isDark ?  Colors.white :Colors.black),
             ),
             SizedBox(height: 5),
             Text(
               value,
               style: TextStyle(
-                color: Colors.black,
+                color: isDark ?  Colors.white :Colors.black,
                 fontSize: 16,
                 fontFamily: 'Prompt',
                 fontWeight: FontWeight.w400,
-                letterSpacing: 2.50,
+
               ),
             ),
           ],

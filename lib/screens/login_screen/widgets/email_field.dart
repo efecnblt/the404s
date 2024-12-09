@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EmailField extends StatelessWidget {
   final double fontSize;
@@ -45,7 +45,7 @@ class EmailField extends StatelessWidget {
             style: TextStyle(color: textColor),
             controller: controller,
             decoration: InputDecoration(
-              hintText: "Enter your name or e-mail",
+              hintText: AppLocalizations.of(context)!.enterEmail,
               hintStyle: TextStyle(color: hintTextColor),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenHeight * 0.015,

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../models/category.dart';
 import '../../../constants/styles.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CategoryList extends StatelessWidget {
   final List<Category> categories;
-
-  const CategoryList({super.key, required this.categories});
+  final AppLocalizations? localizations;    
+  const CategoryList({super.key, required this.categories,required this.localizations});
 
   void _onCategoryTap(int index) {
     print('Kategori $index tıklandı!');
@@ -17,11 +18,11 @@ class CategoryList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Kategoriler başlığı
-        const Padding(
-          padding: EdgeInsets.only(left: 20, top: 25),
+        Padding(
+          padding: const EdgeInsets.only(left: 20, top: 25),
           child: Text(
-            "Kategoriler",
-            style: TextStyle(
+            localizations!.categories,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.white,

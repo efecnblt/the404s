@@ -13,6 +13,7 @@ import '../screens/dashboard/dashboard.dart';
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
+  
   static const String baseUrl = 'https://api.cbolat.com/';
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -25,6 +26,9 @@ class AuthService {
       );
 
       User? user = userCredential.user;
+
+
+      
 
       if (user == null) {
         throw FirebaseAuthException(
@@ -207,6 +211,7 @@ class AuthService {
   }) async {
     return await _auth.createUserWithEmailAndPassword(
       email: email,
+      
       password: password,
     );
   }

@@ -8,7 +8,9 @@ import '../generated/l10n.dart';
 import '../services/auth_service.dart';
 import 'app_theme.dart';
 import 'login_screen/login_screen.dart';
-import 'login_screen/widgets/email_field.dart'; // Yerelleştirilmiş metinler için
+import 'login_screen/widgets/email_field.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Yerelleştirilmiş metinler için
 
 class LoginSignupScreen extends StatefulWidget {
   const LoginSignupScreen({super.key});
@@ -107,7 +109,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                 ),
                 SizedBox(height: 30),
                 Text(
-                  'Free app for learning cyber security things',
+                  AppLocalizations.of(context)!.slogan,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.black.withOpacity(0.25),
@@ -144,7 +146,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                 Container(
                   margin: EdgeInsets.only(bottom: 20),
                   child: CustomButton(
-                      text: "Login",
+                      text: AppLocalizations.of(context)!.login,
                       colors: [Color(0xFF637BFF), Color(0xFF21C8F6)],
                       onPressed: () {
                         AuthService.signInWithEmailAndPassword(context, "efecanbolat34@gmail.com", "123456");
@@ -160,7 +162,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                   child: Opacity(
                     opacity: 0.50,
                     child: Text(
-                      'Having trouble logging in?',
+                      AppLocalizations.of(context)!.troubleLoggingIn,
                       style: TextStyle(
                         color: Color(0xFF243656),
                         fontSize: 14,
@@ -185,11 +187,19 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                 ),
 
                 GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SignUpScreen(                 
+                                          )));
+                  },
 
                   child: Opacity(
                     opacity: 0.50,
                     child: Text(
-                      'Sign up',
+                      AppLocalizations.of(context)!.signup,
                       style: TextStyle(
                         color: Color(0xFF243656),
                         fontSize: 14,

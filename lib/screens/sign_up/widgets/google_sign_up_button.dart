@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../constants/colors.dart';
 import '../../../constants/styles.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class GoogleSignUpButton extends StatelessWidget {
   final double screenWidth;
   final double screenHeight;
@@ -35,7 +35,7 @@ class GoogleSignUpButton extends StatelessWidget {
             ),
             SizedBox(width: screenWidth * 0.02),
             Text(
-              "Sign up with Google",
+              AppLocalizations.of(context)!.signUpWithGoogle,
               style: AppTextStyles.buttonTextStyle(screenWidth * 0.05),
             ),
           ],

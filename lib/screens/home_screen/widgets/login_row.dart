@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../constants/styles.dart';
 import '../../login_screen/login_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginRow extends StatelessWidget {
   final double fontSize;
@@ -13,7 +14,7 @@ class LoginRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "Already have an account? ",
+          AppLocalizations.of(context)!.alreadyHaveAnAcc, 
           style: AppTextStyles.infoTextStyle(fontSize),
         ),
         GestureDetector(
@@ -26,7 +27,7 @@ class LoginRow extends StatelessWidget {
                 ));
           },
           child: Text(
-            "Log in",
+            AppLocalizations.of(context)!.logIn, 
             style: AppTextStyles.linkTextStyle(fontSize),
           ),
         ),

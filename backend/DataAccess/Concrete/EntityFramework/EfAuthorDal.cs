@@ -1,6 +1,7 @@
 ﻿using Core.DataAccess.EntityFramework;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,50 @@ namespace DataAccess.Concrete.EntityFramework
             }
         }
 
+        public List<TopAuthorDto> GetTopRatedAuthors()
+        {
+            using (var context = new SWContext())
+            {
+                var result = context.Authors
+                    .Where(a => a.Rating != null)
+                    .OrderByDescending(a => a.Rating)
+                    .Take(10)
+                    .Select(a => new TopAuthorDto
+                    {
+                        AuthorID = a.AuthorID,
+                        Name = a.Name,
+                        Rating = a.Rating ?? 0.0,
+                        StudentCount = a.StudentCount ?? 0,
+                        CourseCount = a.CourseCount ?? 0
+                    }).ToList();
+
+                return result;
+            }
+        }
+
+        public List<TopAuthorDto> GetAuthorsByMostStudents()
+        {
+            using (var context = new SWContext())
+            {
+                var result = context.Authors
+                    .OrderByDescending(a => a.StudentCount)
+                    .Take(10)
+                    .Select(a => new TopAuthorDto
+                    {
+                        AuthorID = a.AuthorID,
+                        Name = a.Name,
+                        Rating = a.Rating ?? 0.0,
+                        StudentCount = a.StudentCount ?? 0,
+                        CourseCount = a.CourseCount ?? 0
+                    }).ToList();
+
+                return result;
+            }
+        }
+
     }
+
+
+
 
 }

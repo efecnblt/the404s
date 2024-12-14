@@ -109,6 +109,28 @@ namespace Business.Concrete
             }
         }
 
+        public IDataResult<List<Course>> GetCoursesByLevel(int levelId)
+        {
+            return new SuccessDataResult<List<Course>>(_courseDal.GetAll(c => c.LevelId == levelId));
+        }
+
+        public IResult Delete(int courseId)
+        {
+            var courseToDelete = _courseDal.Get(c => c.CourseID == courseId);
+            if (courseToDelete == null)
+            {
+                return new ErrorResult("Course not found.");
+            }
+
+            _courseDal.Delete(courseToDelete);
+            return new SuccessResult("Course deleted successfully.");
+        }
+
+        public List<TopCourseDto> GetTopRatedCourses()
+        {
+            return _courseDal.GetTopRatedCourses();
+        }
+
 
     }
 }

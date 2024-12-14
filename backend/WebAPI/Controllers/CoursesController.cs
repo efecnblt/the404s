@@ -68,6 +68,16 @@ namespace WebAPI.Controllers
         }
 
 
+        [HttpGet("getbylevel")]
+        public IActionResult GetCoursesByLevel(int levelId)
+        {
+            var result = _courseService.GetCoursesByLevel(levelId);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Data);
+        }
 
 
 
@@ -104,6 +114,27 @@ namespace WebAPI.Controllers
                 return Ok(result); // HTTP 200 ve başarılı sonucu döndür
             }
             return BadRequest(result.Message); // HTTP 400 ve hata mesajı döndür
+        }
+
+
+        [HttpDelete("{courseId}")]
+        public IActionResult Delete(int courseId)
+        {
+            var result = _courseService.Delete(courseId);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result.Message);
+        }
+
+
+        [HttpGet("top-rated-courses")]
+        public IActionResult GetTopRatedCourses()
+        {
+            var result = _courseService.GetTopRatedCourses();
+            return Ok(result);
         }
 
 

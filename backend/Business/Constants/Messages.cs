@@ -27,5 +27,7 @@ namespace Business.Constants
         public static string CoursesListedByCategory = "Courses Listed by category id";
 
         public static string WrongRole = "Geçersiz rol seçimi.";
+
+        public static string CategoryAdded { get; internal set; }
     }
 }

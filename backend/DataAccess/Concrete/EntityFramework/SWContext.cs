@@ -28,6 +28,7 @@ namespace DataAccess.Concrete.EntityFramework
         public DbSet<Author> Authors { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Video> Videos { get; set; }
+        public DbSet<Level> Levels { get; set; }
 
 
     }

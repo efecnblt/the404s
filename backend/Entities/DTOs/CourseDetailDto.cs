@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 
 namespace Entities.DTOs
 {
-    public class CourseDetailDto:IDto
+    public class CourseDetailDto : IDto
     {
         public int CourseId { get; set; }
-        public string CourseName { get; set; }
-        public string CategoryName { get; set; }
-        public string CourseDescription { get; set; }
-
-        //public short UnitsInStock { get; set; }
-
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string CategoryName { get; set; } // Category'den alınan isim
+        public string LevelName { get; set; } // Level'den alınan isim
+        public decimal? Price { get; set; }
+        public string Image { get; set; }
     }
+
 }

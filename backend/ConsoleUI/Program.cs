@@ -6,25 +6,26 @@ using DataAccess.Concrete.EntityFramework;
 //Data Transformation Object
 //SOLID
 //Open Closed Principle mevcut koda dokunmadan yeni bir özellik eklemek
-ProductTest();
+//ProductTest();
 //CategoryTest();
 
 static void ProductTest()
 {
-    CourseManager productManager = new CourseManager(new EfCourseDal(),new CategoryManager(new EfCategoryDal()));
+    CourseManager productManager = new CourseManager(new EfCourseDal(), new CategoryManager(new EfCategoryDal()));
 
     var result = productManager.GetCourseDetails();
 
-    if(result.Success==true )
+    if (result.Success == true)
     {
-        foreach (var product in result.Data )
+        foreach (var product in result.Data)
         {
-            Console.WriteLine(product.CourseName + "/" + product.CategoryName);
+            Console.WriteLine();
         }
-    }else
+    }
+    else
     { Console.WriteLine(result.Message); }
 
-   
+
 }
 
 static void CategoryTest()

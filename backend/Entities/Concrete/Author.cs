@@ -11,10 +11,10 @@ namespace Entities.Concrete
     {
         public int AuthorID { get; set; } // Primary Key
         public string Name { get; set; } // Adı ve Soyadı
-        public float Rating { get; set; } // Ortalama Puan
-        public int StudentCount { get; set; } // Toplam Öğrenci Sayısı
-        public int CourseCount { get; set; } // Toplam Kurs Sayısı
-        public string ImageURL { get; set; } // Profil Resmi URL'si
+        public double? Rating { get; set; } // Ortalama Puan
+        public int? StudentCount { get; set; } // Toplam Öğrenci Sayısı
+        public int? CourseCount { get; set; } // Toplam Kurs Sayısı
+        public string? ImageURL { get; set; } // Profil Resmi URL'si
 
     }
 }

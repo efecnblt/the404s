@@ -14,20 +14,45 @@ namespace DataAccess.Concrete.EntityFramework
     {
         public List<CourseDetailDto> GetCourseDetails()
         {
-            using (SWContext context = new SWContext())
+            using (var context = new SWContext())
             {
-                var result = from p in context.Courses
-                             join c in context.Categories
-                             on p.CategoryId equals c.CategoryId
+                var result = from c in context.Courses
+                             join cat in context.Categories on c.CategoryId equals cat.CategoryId
+                             join lvl in context.Levels on c.LevelId equals lvl.LevelId
                              select new CourseDetailDto
                              {
-                                 CourseId = p.CourseID,
-                                 CourseName = p.Name,
-                                 CategoryName = c.Name,
-                                 
+                                 CourseId = c.CourseID,
+                                 Name = c.Name,
+                                 Description = c.Description,
+                                 CategoryName = cat.Name, // Category ismi
+                                 LevelName = lvl.Name, // Level ismi
+                                 Price = c.Price,
+                                 Image = c.Image
                              };
+
                 return result.ToList();
             }
         }
+        public List<TopCourseDto> GetTopRatedCourses()
+        {
+            using (var context = new SWContext())
+            {
+                var result = context.Courses
+                    .Where(c => c.Rating != null)
+                    .OrderByDescending(c => c.Rating)
+                    .Take(10)
+                    .Select(c => new TopCourseDto
+                    {
+                        CourseID = c.CourseID,
+                        Name = c.Name,
+                        Rating = c.Rating ?? 0,
+                        RatingCount = c.RatingCount ?? 0,
+                        TotalStudentCount = c.TotalStudentCount ?? 0
+                    }).ToList();
+
+                return result;
+            }
+        }
+
     }
 }

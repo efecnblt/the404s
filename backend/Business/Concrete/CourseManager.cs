@@ -96,8 +96,11 @@ namespace Business.Concrete
                 // Güncellenebilir alanları atayın
                 courseToUpdate.Description = course.Description;
                 courseToUpdate.Name = course.Name;
-                courseToUpdate.Rating = course.Rating;
-                courseToUpdate.RatingCount = course.RatingCount;
+                courseToUpdate.Image = course.Image;
+                courseToUpdate.Price = course.Price;
+                courseToUpdate.Hashtags = course.Hashtags;
+                courseToUpdate.LevelId = course.LevelId;
+                courseToUpdate.CategoryId = course.CategoryId;
 
                 _courseDal.Update(courseToUpdate); // Veri erişim katmanında güncelle
                 return new SuccessResult("Course updated successfully.");
@@ -131,6 +134,25 @@ namespace Business.Concrete
             return _courseDal.GetTopRatedCourses();
         }
 
+
+        public IResult UpdateDiscount(int courseId, decimal discountPercentage)
+        {
+            var courseToUpdate = _courseDal.Get(c => c.CourseID == courseId);
+            if (courseToUpdate == null)
+            {
+                return new ErrorResult("Course not found.");
+            }
+
+            if (discountPercentage < 0 || discountPercentage > 100)
+            {
+                return new ErrorResult("Invalid discount percentage. Must be between 0 and 100.");
+            }
+
+            courseToUpdate.Discount = discountPercentage;
+            _courseDal.Update(courseToUpdate);
+
+            return new SuccessResult("Discount updated successfully.");
+        }
 
     }
 }

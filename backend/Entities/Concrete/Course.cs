@@ -17,6 +17,7 @@ namespace Entities.Concrete
         public double? Rating { get; set; }
         public int? RatingCount { get; set; }
         public decimal? Price { get; set; }
+        public decimal? Discount { get; set; }
         public int? TotalStudentCount { get; set; }
         public string Image { get; set; }
         public string Hashtags { get; set; }

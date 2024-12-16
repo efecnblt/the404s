@@ -9,6 +9,7 @@ class QuizPage extends StatefulWidget {
   final QuizQuestion question;
   final int totalQuestions;
   final List<String> shuffleAnswers;
+  
 
   QuizPage({
     required this.currentQuestionIndex,

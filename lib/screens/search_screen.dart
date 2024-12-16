@@ -158,7 +158,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                       filled: true,
                                       fillColor: widget.isDark ? Colors.grey.shade800 :Colors.white,
                                       labelText: widget.localizations!.searchForaCourse,
+                                      hintStyle: TextStyle(
+                                        color: Colors.grey,
+                                      ),
                                       labelStyle: TextStyle(
+                                        color: widget.isDark ? Colors.grey.shade200:Color(0xFF888888),
                                         fontSize: 16,
                                         fontFamily: 'DM Sans',
                                         fontWeight: FontWeight.w400,

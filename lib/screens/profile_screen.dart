@@ -6,7 +6,6 @@ import 'package:cyber_security_app/screens/edit_profile_screen.dart';
 import 'package:cyber_security_app/screens/language_settings_screen.dart';
 import 'package:cyber_security_app/screens/leaderboard_screen.dart';
 import 'package:cyber_security_app/screens/login_or_signup_screen.dart';
-import 'package:cyber_security_app/screens/logout_screen.dart';
 import 'package:cyber_security_app/screens/notification_settings.dart';
 import 'package:cyber_security_app/screens/notification_settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';

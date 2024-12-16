@@ -5,15 +5,19 @@ import 'package:cyber_security_app/models/users.dart' as app_user;
 import 'package:cyber_security_app/services/auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String userId;
   final bool isDark;
+  final AppLocalizations? localizations;
 
   const EditProfileScreen({
     super.key,
     required this.userId,
     required this.isDark,
+    required this.localizations
   });
 
   @override
@@ -21,6 +25,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  
   File? _image;
   final ImagePicker _picker = ImagePicker();
   String _newName = '', _newUsername = '';
@@ -46,7 +51,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          content: Text('Değişiklikler kaydedildi!'),
+          content: Text(widget.localizations!.changesSaved),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -61,7 +66,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          content: Text('Değişiklikler kaydedilemedi! Hata: $e'),
+          content: Text('${widget.localizations!.changesNotSaved}  $e'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -77,6 +82,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: widget.isDark ? Colors.black : Colors.white,
       appBar: AppBar(
@@ -91,7 +97,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
         title: Text(
-          "Edit Profile",
+          widget.localizations!.editProfile,
           style: TextStyle(
             color: widget.isDark ? Colors.white : Colors.black,
           ),
@@ -106,15 +112,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             } else if (snapshot.hasError) {
               return Center(
                 child: Text(
-                  'Bir hata oluştu: ${snapshot.error}',
+                  '${widget.localizations!.anErrorOccured} ${snapshot.error}',
                   style: const TextStyle(color: Colors.white),
                 ),
               );
             } else if (!snapshot.hasData) {
-              return const Center(
+              return Center(
                 child: Text(
-                  'Kullanıcı verisi bulunamadı.',
-                  style: TextStyle(color: Colors.white),
+                  widget.localizations!.userDataNotFound,
+                  style: const TextStyle(color: Colors.white),
                 ),
               );
             } else {
@@ -134,7 +140,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              _showImageOptions(context);
+                              _showImageOptions(context,widget.localizations! ,widget.isDark);
                             },
                             child: CircleAvatar(
                               radius: 20,
@@ -166,7 +172,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               decoration: InputDecoration(
                                 label: Text(
-                                  "Name and Surname",
+                                  widget.localizations!.nameAndSurname,
                                   style: TextStyle(
                                     color: widget.isDark
                                         ? Colors.white
@@ -194,7 +200,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               decoration: InputDecoration(
                                 label: Text(
-                                  "Username",
+                                  widget.localizations!.username,
                                   style: TextStyle(
                                     color: widget.isDark
                                         ? Colors.white
@@ -243,7 +249,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               onPressed: () => _saveChanges(user),
                               child: Text(
-                                "Kaydet",
+                                widget.localizations!.save,
                                 style: TextStyle(
                                   fontSize: 20,
                                   color: widget.isDark
@@ -266,7 +272,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  void _showImageOptions(BuildContext context) {
+  void _showImageOptions(BuildContext context,AppLocalizations localizations, bool isDark) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -276,7 +282,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               ListTile(
                 leading: Icon(Icons.camera),
-                title: Text('Camera'),
+                title: Text(localizations!.camera),
                 onTap: () async {
                   Navigator.pop(context);
                   final pickedFile =
@@ -290,7 +296,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               ListTile(
                 leading: Icon(Icons.photo),
-                title: Text('Gallery'),
+                title: Text(localizations!.gallery),
                 onTap: () async {
                   Navigator.pop(context);
                   final pickedFile =
@@ -304,7 +310,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               ListTile(
                 leading: Icon(Icons.delete),
-                title: Text('Delete'),
+                title: Text(localizations!.delete),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {

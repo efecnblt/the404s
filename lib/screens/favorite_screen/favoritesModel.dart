@@ -4,12 +4,14 @@ import 'package:cyber_security_app/models/course.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../build_card.dart';
 import '../course_detail/course_detail_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FavoritesPage extends StatefulWidget {
   final String userId;
   final bool isDark;
+  final AppLocalizations? localizations;
 
-  const FavoritesPage({Key? key, required this.userId,required this.isDark}) : super(key: key);
+  const FavoritesPage({Key? key, required this.userId,required this.isDark,required this.localizations}) : super(key: key);
 
   @override
   _FavoritesPageState createState() => _FavoritesPageState();
@@ -51,7 +53,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         title: Padding(
           padding: EdgeInsets.only(left: 20),
           child: Text(
-            'My Favorites Courses',
+            widget.localizations!.myFavCourses,
             style: TextStyle(
               color: widget.isDark?  Colors.white : Colors.black,
               fontSize: 18,
@@ -72,9 +74,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center(child: Text("Bir hata oluştu."));
+              return Center(child: Text(widget.localizations!.anErrorOccured));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text("Henüz favori eklemediniz."));
+              return Center(child: Text(widget.localizations!.noFavourite));
             }
 
             final favorites = snapshot.data!;
@@ -91,7 +93,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     if (authorSnapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (authorSnapshot.hasError || !authorSnapshot.hasData || !authorSnapshot.data!.exists) {
-                      return Center(child: Text("Yazar bilgisi alınamadı."));
+                      return Center(child: Text(widget.localizations!.noAuthorInform));
                     }
 
                     final authorData = authorSnapshot.data!.data() as Map<String, dynamic>;
@@ -108,7 +110,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         if (courseSnapshot.connectionState == ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         } else if (courseSnapshot.hasError || !courseSnapshot.hasData || !courseSnapshot.data!.exists) {
-                          return Center(child: Text("Kurs bilgisi alınamadı."));
+                          return Center(child: Text(widget.localizations!.noCourseInform));
                         }
 
                         final course = Course.fromFirestore(courseSnapshot.data!);
@@ -125,6 +127,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           rating: course.rating,
                           level: course.level,
                           isDark: widget.isDark,
+                          localizations: widget.localizations,
                         );
                       },
                     );

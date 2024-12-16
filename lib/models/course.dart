@@ -40,7 +40,7 @@ class Course {
   factory Course.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    print('Raw data: ${data}');
+
 
     // Handle sections
     List<dynamic> sectionsData = (data['sections'] is List)

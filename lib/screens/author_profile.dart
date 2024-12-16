@@ -4,14 +4,16 @@ import '../models/authors.dart';
 import '../models/course.dart';
 import '../services/auth_service.dart';
 import 'course_list_item.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AuthorProfileDetail extends StatefulWidget {
   final String authorId;
   final String userId;
   final bool isDark;
+  final AppLocalizations? localizations;
 
   const AuthorProfileDetail(
-      {super.key, required this.authorId, required this.isDark, required this.userId});
+      {super.key, required this.authorId, required this.isDark, required this.userId,required this.localizations,});
 
   @override
   _AuthorProfileDetailState createState() => _AuthorProfileDetailState();
@@ -51,20 +53,20 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text('Author Profile')),
+        appBar: AppBar(title: Text(widget.localizations!.authorProfile)),
         body: Center(child: CircularProgressIndicator()),
       );
     }
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: Text('Author Profile')),
-        body: Center(child: Text('Error: $_error')),
+        appBar: AppBar(title: Text(widget.localizations!.authorProfile)),
+        body: Center(child: Text('${widget.localizations!.error}: $_error')),
       );
     }
     if (_author == null) {
       return Scaffold(
-        appBar: AppBar(title: Text('Author Profile')),
-        body: Center(child: Text('Author not found')),
+        appBar: AppBar(title: Text(widget.localizations!.authorProfile)),
+        body: Center(child: Text(widget.localizations!.notFoundAuthor)),
       );
     }
     return Scaffold(
@@ -88,7 +90,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
         title: Padding(
           padding: EdgeInsets.only(left: 20),
           child: Text(
-            'Author details',
+            widget.localizations!.authorDetails,
             style: TextStyle(
               color: widget.isDark ? Colors.white:Colors.black,
               fontSize: 18,
@@ -214,7 +216,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                                 width: 5,
                               ),
                               Text(
-                                'TOP RATED',
+                                widget.localizations!.topRated,
                                 style: TextStyle(
                                   color: Color(0xFFFFC73C),
                                   fontSize: 14,
@@ -239,7 +241,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                       children: [
                         IconContainer(
                           icon: FontAwesomeIcons.chalkboardTeacher,
-                          label: "Total student",
+                          label: widget.localizations!.totalStudent,
                           value: _author!.studentCount.toString(),
                           isDark: widget.isDark,
                         ),
@@ -249,7 +251,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                         IconContainer(
                           isDark: widget.isDark,
                           icon: FontAwesomeIcons.bookBookmark,
-                          label: "Courses",
+                          label: widget.localizations!.courses,
                           value: _author!.courseCount.toString(),
                         ),
                         SizedBox(
@@ -259,7 +261,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Author reviews",
+                              widget.localizations!.authorReviews,
                               style: TextStyle(
                                 color: widget.isDark ? Colors.white :Colors.black,
                                 fontSize: 14,
@@ -309,6 +311,7 @@ class _AuthorProfileDetailState extends State<AuthorProfileDetail> {
                   authorName: _author!.name,
                   icon: FontAwesomeIcons.personBooth,
                   authorId: _author!.id,
+                  localizations: widget.localizations,
                 );
               },
             ),

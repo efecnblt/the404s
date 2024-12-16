@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../models/course.dart';
 import 'course_detail/course_detail_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BuildCard extends StatelessWidget {
 
@@ -22,6 +23,7 @@ class BuildCard extends StatelessWidget {
     required this.authorId,
     required this.userId,
     required this.sectionId,
+    required this.localizations,
   });
 
   final IconData icon;
@@ -35,6 +37,7 @@ class BuildCard extends StatelessWidget {
   final String authorId; // Yeni eklenen parametre
   final String userId; // Yeni eklenen parametre
   final String sectionId; // Yeni eklenen parametre
+  final AppLocalizations? localizations;
 
   List<Color> colors = [
     Color(0xffFE7E7E),
@@ -148,7 +151,7 @@ class BuildCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CourseDetailPage(course: course,isDark: isDark, authorId: authorId,sectionId: sectionId,userId: userId,),
+            builder: (context) => CourseDetailPage(course: course,isDark: isDark, authorId: authorId,sectionId: sectionId,userId: userId,localizations: localizations,),
           ),
         );
       },

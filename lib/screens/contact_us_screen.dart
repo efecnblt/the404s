@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class ContactUsPage extends StatelessWidget {
   final bool isDark;
-  ContactUsPage({super.key, required this.isDark});
+  final AppLocalizations? localizations;
+  ContactUsPage({super.key, required this.isDark,required this.localizations});
   // TextEditingController’ları tanımlıyoruz
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -18,7 +22,7 @@ class ContactUsPage extends StatelessWidget {
           color: isDark ? Colors.white : Colors.black,
         ),
         title: Text(
-          'Contact Us',
+          localizations!.contactUs ,
           style: TextStyle(
             color: isDark ? Colors.white : Colors.black,
           ),
@@ -44,7 +48,7 @@ class ContactUsPage extends StatelessWidget {
                     ),
                     SizedBox(height: 5),
                     Text(
-                      'We would love to hear from you!',
+                      localizations!.wouldHear,
                       style: TextStyle(
                         fontSize: 16,
                         color: isDark ? Colors.white : Colors.grey,
@@ -77,7 +81,7 @@ class ContactUsPage extends StatelessWidget {
                   ),
                   controller: nameController,
                   decoration: InputDecoration(
-                    labelText: 'Name',
+                    labelText: localizations!.nameAndSurname,
                     labelStyle: TextStyle(
                       color: isDark ? Colors.white : Colors.black,
                     ),
@@ -149,7 +153,7 @@ class ContactUsPage extends StatelessWidget {
                   ),
                   controller: messageController,
                   decoration: InputDecoration(
-                    labelText: 'Message',
+                    labelText: localizations!.message,
                     labelStyle: TextStyle(
                       color: isDark ? Colors.white : Colors.black,
                     ),
@@ -178,7 +182,7 @@ class ContactUsPage extends StatelessWidget {
                     // Kullanıcıya geri bildirim
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Your message has been sent!'),
+                        content: Text(localizations!.messageSent),
                         backgroundColor: Colors.teal,
                       ),
                     );
@@ -191,7 +195,7 @@ class ContactUsPage extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Send Message',
+                    localizations!.sendMessage,
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
@@ -203,7 +207,7 @@ class ContactUsPage extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'Or reach us at:',
+                      localizations!.orReach,
                       style: TextStyle(
                         fontSize: 16,
                         color: isDark ? Colors.white : Colors.grey,
@@ -242,7 +246,7 @@ class ContactUsPage extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'Follow us on:',
+                      localizations!.followUs,
                       style: TextStyle(
                           fontSize: 16,
                           color: isDark ? Colors.white : Colors.grey),

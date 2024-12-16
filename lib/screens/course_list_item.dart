@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../widgets/course_card.dart';
 import 'app_theme.dart';
 import 'course_detail/course_detail_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CourseListItem extends StatefulWidget {
   final Course course;
@@ -16,6 +17,7 @@ class CourseListItem extends StatefulWidget {
   final String authorId;
   final String sectionId; // Add sectionId
   final String userId; // Add sectionId
+  final AppLocalizations? localizations;
   CourseListItem(
       {super.key,
       required this.course,
@@ -24,7 +26,8 @@ class CourseListItem extends StatefulWidget {
       required this.authorName,
       required this.authorId,
       required this.userId,
-      required this.sectionId});
+      required this.sectionId,
+      required this.localizations,});
   List<Color> colors = [
     Color(0xffFE7E7E),
     Color(0xffC81004),
@@ -144,7 +147,7 @@ class _CourseListItemState extends State<CourseListItem> {
     try {
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        throw Exception('User not logged in');
+        throw Exception(widget.localizations!.userNotSignedIn);
       }
 
       final userDoc = await FirebaseFirestore.instance
@@ -192,7 +195,7 @@ class _CourseListItemState extends State<CourseListItem> {
         isFavorite = !isFavorite;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Favori işleminde bir hata oluştu.')),
+        SnackBar(content: Text(widget.localizations!.errorFav)),
       );
     }
   }
@@ -213,6 +216,7 @@ class _CourseListItemState extends State<CourseListItem> {
               authorId: widget.authorId,
               sectionId: widget.sectionId,
               userId: widget.userId,
+              localizations: widget.localizations,
             ),
           ),
         );
@@ -226,8 +230,8 @@ class _CourseListItemState extends State<CourseListItem> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(isFavorite
-                  ? 'Favorilerden kaldırıldı'
-                  : 'Favorilere eklendi'),
+                  ? widget.localizations!.removedFav
+                  : widget.localizations!.addedFav),
               duration: Duration(seconds: 2),
             ),
           );

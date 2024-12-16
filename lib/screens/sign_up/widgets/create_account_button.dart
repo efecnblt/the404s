@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../constants/styles.dart';
 import '../../../constants/colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CreateAccountButton extends StatelessWidget {
   final double screenWidth;
@@ -27,7 +28,7 @@ class CreateAccountButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            "Create Account",
+            AppLocalizations.of(context)?.createAccount ?? "Create an account",
             style: AppTextStyles.buttonTextStyle(screenWidth * 0.05),
           ),
         ),

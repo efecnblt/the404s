@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../constants/styles.dart';
 import '../../../generated/l10n.dart';
 import '../../sign_up/sign_up.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignUpPrompt extends StatelessWidget {
   final double fontSize;
@@ -13,7 +15,7 @@ class SignUpPrompt extends StatelessWidget {
     return Column(
       children: [
         Text(
-          S.of(context).noAccount,
+          AppLocalizations.of(context)!.noAccount,
           style: AppTextStyles.labelTextStyle(fontSize),
         ),
         GestureDetector(
@@ -24,7 +26,7 @@ class SignUpPrompt extends StatelessWidget {
             );
           },
           child: Text(
-            S.of(context).signup,
+            AppLocalizations.of(context)!.signup,
             style: AppTextStyles.linkTextStyle(fontSize),
           ),
         ),

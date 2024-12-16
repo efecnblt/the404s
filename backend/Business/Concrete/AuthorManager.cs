@@ -70,6 +70,19 @@ namespace Business.Concrete
         {
             return _authorDal.GetAuthorsByMostStudents();
         }
+
+        public IDataResult<AuthorProfileDto> GetAuthorProfile(int authorId)
+        {
+            var authorProfile = _authorDal.GetAuthorProfile(authorId);
+            if (authorProfile == null)
+            {
+                return new ErrorDataResult<AuthorProfileDto>("Author not found.");
+            }
+
+            return new SuccessDataResult<AuthorProfileDto>(authorProfile, "Author profile retrieved successfully.");
+
+        }
+
     }
 
 }

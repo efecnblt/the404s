@@ -1,7 +1,9 @@
+
 import 'package:cyber_security_app/screens/login_or_signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'generated/l10n.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // OnboardingPage widget'ınızın tanımı burada olmalı veya ayrı bir dosyada tanımlanmalıdır.
 
 class OnboardingScreen extends StatefulWidget {
@@ -44,18 +46,18 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       // Onboarding sayfaları
       OnboardingPage(
         image: 'images/resim1.png',
-        title: S.of(context).learnAnytimeTitle,
-        description: S.of(context).learnAnytimeDescription,
+        title: AppLocalizations.of(context)!.learnAnytimeTitle,
+        description: AppLocalizations.of(context)!.learnAnytimeDescription,
       ),
       OnboardingPage(
         image: 'images/resim2.png',
-        title: S.of(context).trackProgressTitle,
-        description: S.of(context).trackProgressDescription,
+        title: AppLocalizations.of(context)!.trackProgressTitle,
+        description: AppLocalizations.of(context)!.trackProgressDescription,
       ),
       OnboardingPage(
         image: 'images/resim3.png',
-        title: S.of(context).joinCommunityTitle,
-        description: S.of(context).joinCommunityDescription,
+        title: AppLocalizations.of(context)!.joinCommunityTitle,
+        description: AppLocalizations.of(context)!.joinCommunityDescription,
       ),
     ];
   }
@@ -67,10 +69,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     await _animationController.reverse();
 
     if (_currentIndex == _buildPages().length - 1) {
+      print(AppLocalizations.of(context));
       // Son sayfadaysa Login veya Signup ekranına geçiş yap
       Navigator.pushReplacement(
         context,
+
         MaterialPageRoute(builder: (context) => LoginSignupScreen()),
+
       );
     } else {
       _controller.nextPage(

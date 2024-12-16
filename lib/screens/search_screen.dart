@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/authors.dart';
 import '../models/course.dart';
 import 'build_card.dart';
@@ -11,8 +10,9 @@ class SearchScreen extends StatefulWidget {
   final String? initialHashtag;
   final String userId;
   final bool isDark;
+  final AppLocalizations? localizations;
 
-  const SearchScreen({super.key, required this.userId, required this.isDark,this.initialHashtag});
+  const SearchScreen({super.key, required this.userId, required this.isDark,this.initialHashtag, required this.localizations});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -157,12 +157,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                           horizontal: 20, vertical: 18),
                                       filled: true,
                                       fillColor: widget.isDark ? Colors.grey.shade800 :Colors.white,
-                                      labelText: 'Search for a course...',
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                      ),
+                                      labelText: widget.localizations!.searchForaCourse,
                                       labelStyle: TextStyle(
-                                        color: widget.isDark ? Colors.grey.shade200:Color(0xFF888888),
                                         fontSize: 16,
                                         fontFamily: 'DM Sans',
                                         fontWeight: FontWeight.w400,
@@ -200,7 +196,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 20),
                                   child: Text(
-                                    'Browser Category',
+                                    widget.localizations!.browserCategory ,
                                     style: TextStyle(
                                       color: widget.isDark ? Colors.white:Colors.black,
                                       fontSize: 18,
@@ -257,7 +253,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 20, vertical: 10),
                                         child: Text(
-                                          'Search results for "$searchTerm"',
+                                          '${widget.localizations!.searchResultFor} "$searchTerm"',
                                           style: TextStyle(
                                             color: widget.isDark ? Colors.white:Colors.black,
                                             fontSize: 18,
@@ -297,7 +293,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 const SizedBox(width: 10),
                                                 SizedBox(
                                                   child: Text(
-                                                    'Recommended Courses',
+                                                    widget.localizations!.recommended,
                                                     style: TextStyle(
                                                       color: widget.isDark ? Colors.white: Colors.black,
                                                       fontSize: 18,
@@ -351,6 +347,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                     rating: courseData.rating,
                                                     level: courseData.level,
                                                     isDark: widget.isDark,
+                                                    localizations: widget.localizations,
                                                   );
                                                 }).toList(),
 
@@ -381,7 +378,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                             description: courseData.description,
                                             rating: courseData.rating,
                                             level: courseData.level,
-                                            isDark: false,
+                                            isDark: widget.isDark,
+                                            localizations: widget.localizations,
                                           );
                                         }).toList(),
                                       )
@@ -395,7 +393,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                             EdgeInsets.only(bottom: 20, top: 20),
                                             alignment: Alignment.center,
                                             child: Text(
-                                              "No search Results found",
+                                              widget.localizations!.noSearchResultsFound,
                                               style: TextStyle(
                                                 color: Colors.red,
                                                 fontWeight: FontWeight.w500,
@@ -428,7 +426,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 const SizedBox(width: 7),
                                                 SizedBox(
                                                   child: Text(
-                                                    'Recommended Courses',
+                                                    widget.localizations!.recommended,
                                                     style: TextStyle(
                                                       color: widget.isDark ? Colors.white:Colors.black,
                                                       fontSize: 18,
@@ -475,7 +473,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 description: courseData.description,
                                                 rating: courseData.rating,
                                                 level: courseData.level,
-                                                isDark: false,
+                                                isDark: widget.isDark,
+                                                localizations: widget.localizations,
                                               );
                                             }).toList(),
                                           ),

@@ -20,7 +20,7 @@ class AppLocalizations {
   Future<bool> load() async {
     // Yerelleştirilmiş dosyayı yükleyin
     String jsonString = await DefaultAssetBundle.of(globalContext)
-        .loadString('lib/l10n/intl_${locale.languageCode}.arb');
+        .loadString('lib/l10n/app_${locale.languageCode}.arb');
     Map<String, dynamic> jsonMap =
         Map<String, dynamic>.from(json.decode(jsonString));
 

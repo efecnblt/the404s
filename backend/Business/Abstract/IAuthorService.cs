@@ -17,6 +17,7 @@ namespace Business.Abstract
         IDataResult<AuthorDetailsDto> GetAuthorDetails(int authorId);
         List<TopAuthorDto> GetTopRatedAuthors();
         List<TopAuthorDto> GetAuthorsByMostStudents();
+        IDataResult<AuthorProfileDto> GetAuthorProfile(int authorId);
 
     }
 

@@ -117,6 +117,7 @@ namespace WebAPI.Controllers
         }
 
 
+
         [HttpDelete("{courseId}")]
         public IActionResult Delete(int courseId)
         {
@@ -135,6 +136,17 @@ namespace WebAPI.Controllers
         {
             var result = _courseService.GetTopRatedCourses();
             return Ok(result);
+        }
+
+        [HttpPut("updateDiscount")]
+        public IActionResult UpdateDiscount(int courseId, decimal discount)
+        {
+            var result = _courseService.UpdateDiscount(courseId, discount);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Message);
         }
 
 

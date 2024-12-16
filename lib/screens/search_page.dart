@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../models/course.dart';
 import 'build_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SearchPage extends StatefulWidget {
   final String? searchHashtag; // Aranacak hashtag
@@ -11,6 +12,7 @@ class SearchPage extends StatefulWidget {
   final Course course;
   final String authorId;
   final String sectionId;
+  final AppLocalizations? localizations;
 
   const SearchPage(
       {super.key,
@@ -18,7 +20,8 @@ class SearchPage extends StatefulWidget {
       required this.userId,
       required this.course,
       required this.authorId,
-      required this.sectionId});
+      required this.sectionId,
+      required this.localizations,});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -137,6 +140,7 @@ class _SearchPageState extends State<SearchPage> {
                             rating: widget.course.rating,
                             level: widget.course.level,
                             isDark: true,
+                            localizations: widget.localizations,
                           );
                         },
                       ),

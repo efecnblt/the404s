@@ -1,4 +1,5 @@
 ﻿using Core.DataAccess;
+using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.DTOs;
 using System;
@@ -14,5 +15,6 @@ namespace DataAccess.Abstract
         List<TopAuthorDto> GetAuthorsByMostStudents();
         Author GetById(int id);
         List<TopAuthorDto> GetTopRatedAuthors();
+        AuthorProfileDto GetAuthorProfile(int authorId);
     }
 }

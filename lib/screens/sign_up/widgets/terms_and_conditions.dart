@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../../constants/styles.dart';
 import '../../../constants/colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TermsAndConditions extends StatelessWidget {
   final bool isChecked;
@@ -34,21 +35,21 @@ class TermsAndConditions extends StatelessWidget {
         Expanded(
           child: RichText(
             text: TextSpan(
-              text: 'I agree with the ',
+              text: AppLocalizations.of(context)?.agree ?? "I agree with the",
               style: AppTextStyles.labelTextStyle(screenWidth * 0.045)
                   .copyWith(color: AppColors.textColor),
               children: <TextSpan>[
                 TextSpan(
-                  text: 'Terms of Service',
+                  text: AppLocalizations.of(context)?.terms ?? "Terms of Service",
                   style: AppTextStyles.labelTextStyle(screenWidth * 0.045)
                       .copyWith(
                     decoration: TextDecoration.underline,
                   ),
                   recognizer: TapGestureRecognizer()..onTap = onTermsTap,
                 ),
-                const TextSpan(text: ' and '),
+                 TextSpan(text: AppLocalizations.of(context)?.and ?? "and"),
                 TextSpan(
-                  text: 'Privacy Policy',
+                  text: AppLocalizations.of(context)?.privacyPolicy ?? "Privacy Policy",
                   style: AppTextStyles.labelTextStyle(screenWidth * 0.045)
                       .copyWith(
                     decoration: TextDecoration.underline,

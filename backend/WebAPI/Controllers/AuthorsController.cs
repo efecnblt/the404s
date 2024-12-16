@@ -39,6 +39,17 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("getauthorallprofile")]
+        public IActionResult GetAuthorProfile(int authorId)
+        {
+            var result = _authorService.GetAuthorProfile(authorId);
+            if (!result.Success)
+            {
+                return NotFound(result.Message); // Eğer yazar bulunamazsa 404 döner
+            }
+            return Ok(result.Data); // Başarılıysa 200 OK ve yazar profili DTO'su döner
+        }
+
 
         [HttpGet("top-rated-authors")]
         public IActionResult GetTopRatedAuthors()

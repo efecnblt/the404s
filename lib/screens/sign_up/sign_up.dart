@@ -10,6 +10,7 @@ import 'widgets/text_field_widget.dart';
 import 'widgets/terms_and_conditions.dart';
 import 'widgets/create_account_button.dart';
 import 'widgets/login_prompt.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const String id = "sign_up_screen";
@@ -55,6 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     double defaultMargin = 42.0;
 
     return Scaffold(
+      
       backgroundColor: AppColors.backgroundColor,
       body: SingleChildScrollView(
         child: Padding(
@@ -67,7 +69,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(height: screenHeight * 0.05),
                 // "Sign up to" Metni
                 Text(
-                  "Sign up to",
+                  AppLocalizations.of(context)!.signup,
                   style: AppTextStyles.headingTextStyle(screenWidth * 0.12),
                 ),
                 AnimatedTitle(fontSize: screenWidth * 0.12),
@@ -91,7 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       padding:
                           EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
                       child: Text(
-                        "Or continue with Email",
+                        AppLocalizations.of(context)!.contiuneEmail,
                         style: AppTextStyles.linkTextStyle(screenWidth * 0.05),
                       ),
                     ),
@@ -107,12 +109,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // İsim TextField
                 TextFieldWidget(
                   controller: nameController,
-                  labelText: "Enter your name",
+                  labelText: AppLocalizations.of(context)!.enterName,
                   screenWidth: screenWidth,
                   screenHeight: screenHeight * 0.3,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Name is required';
+                      return AppLocalizations.of(context)!.nameRequired;
                     }
                     return null;
                   },
@@ -121,12 +123,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // Kullanıcı adı TextField
                 TextFieldWidget(
                   controller: usernameController,
-                  labelText: "Enter username",
+                  labelText: AppLocalizations.of(context)!.enterUsername,
                   screenWidth: screenWidth,
                   screenHeight: screenHeight * 0.3,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Username is required';
+                      return AppLocalizations.of(context)!.usernameRequired;
                     }
                     return null;
                   },
@@ -135,16 +137,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // Email TextField
                 TextFieldWidget(
                   controller: emailController,
-                  labelText: "Enter Email",
+                  labelText: AppLocalizations.of(context)!.enterEmail,
                   keyboardType: TextInputType.emailAddress,
                   screenWidth: screenWidth,
                   screenHeight: screenHeight * 0.3,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Email is required';
+                      return AppLocalizations.of(context)!.emailRequired;
                     } else if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
                         .hasMatch(value)) {
-                      return 'Enter a valid email';
+                      return AppLocalizations.of(context)!.enterValidEmail;
                     }
                     return null;
                   },
@@ -153,15 +155,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // Şifre TextField
                 TextFieldWidget(
                   controller: passwordController,
-                  labelText: "Enter password",
+                  labelText: AppLocalizations.of(context)!.enterPassword,
                   obscureText: true,
                   screenWidth: screenWidth,
                   screenHeight: screenHeight * 0.3,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Password is required';
+                      return AppLocalizations.of(context)!.passwordRequired;
                     } else if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return AppLocalizations.of(context)!.sixDigitPass;
                     }
                     return null;
                   },
@@ -170,15 +172,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // Şifre doğrulama TextField
                 TextFieldWidget(
                   controller: confirmPasswordController,
-                  labelText: "Confirm password",
+                  labelText: AppLocalizations.of(context)!.confirmPass,
                   obscureText: true,
                   screenWidth: screenWidth,
                   screenHeight: screenHeight * 0.3,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
+                      return AppLocalizations.of(context)!.plsConfirmPass;
                     } else if (value != passwordController.text) {
-                      return 'Passwords do not match';
+                      return AppLocalizations.of(context)!.notMatchingPass;
                     }
                     return null;
                   },
@@ -202,7 +204,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Padding(
                     padding: EdgeInsets.only(left: screenWidth * 0.05),
                     child: Text(
-                      'Required field',
+                      AppLocalizations.of(context)!.fieldRequired,
                       style: AppTextStyles.errorTextStyle(screenWidth * 0.035),
                     ),
                   ),
@@ -243,7 +245,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Close'),
+              child:  Text(AppLocalizations.of(context)!.close),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -273,7 +275,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         bool emailExists = await AuthService.isEmailRegistered(email);
         if (emailExists) {
           Navigator.of(context).pop(); // Yükleniyor göstergesini kapat
-          _showErrorDialog('Email is already registered.');
+          _showErrorDialog(AppLocalizations.of(context)!.emailAlreadyRegistered);
           return;
         }
 
@@ -308,10 +310,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         //);
       } on FirebaseAuthException catch (e) {
         Navigator.of(context).pop(); // Yükleniyor göstergesini kapat
-        _showErrorDialog(e.message ?? 'Registration failed.');
+        _showErrorDialog(e.message ?? AppLocalizations.of(context)!.failedRegistration);
       } catch (e) {
         Navigator.of(context).pop(); // Yükleniyor göstergesini kapat
-        _showErrorDialog('An unexpected error occurred.');
+        _showErrorDialog(AppLocalizations.of(context)!.anErrorOccured);
         print('Registration error: $e'); // Hata ayıklama için
       }
     } else if (!_isChecked) {

@@ -3,6 +3,8 @@ import '../../../constants/styles.dart';
 import '../../../constants/colors.dart';
 import '../../../generated/l10n.dart';
 import '../../../services/auth_service.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginButton extends StatelessWidget {
   final double fontSize;
@@ -34,7 +36,7 @@ class LoginButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            S.of(context).login,
+            AppLocalizations.of(context)!.login,
             style: AppTextStyles.buttonTextStyle(fontSize),
           ),
         ),

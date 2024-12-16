@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../generated/l10n.dart';
 import '../../../services/auth_service.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GoogleSignInButton extends StatelessWidget {
   final List<Color> colors;
@@ -48,7 +50,7 @@ class GoogleSignInButton extends StatelessWidget {
             ),
             SizedBox(width: screenWidth * 0.02),
             Text(
-              S.of(context).loginWithGoogle,
+              AppLocalizations.of(context)?.loginWithGoogle ?? "Log in with Google",
               style: TextStyle(
                 color: Color(0xFFFCFCFF),
                 fontSize: 18,

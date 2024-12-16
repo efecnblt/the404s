@@ -1,10 +1,12 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NotificationSettings extends StatefulWidget {
   final bool isDark;
-  const NotificationSettings({super.key, required this.isDark});
+  final AppLocalizations? localizations;
+  const NotificationSettings({super.key, required this.isDark,required this.localizations});
 
   @override
   State<NotificationSettings> createState() => _NotificationSettingsState();
@@ -34,7 +36,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
               color: widget.isDark ? Colors.white : Colors.black),
         ),
         title: Text(
-          "Notification Settings",
+          widget.localizations!.notSettings,
           style: TextStyle(color: widget.isDark ? Colors.white : Colors.black),
         ),
       ),
@@ -59,7 +61,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Email notifications",
+                    widget.localizations!.mailNotifications,
                     style: TextStyle(
                         color: widget.isDark ? Colors.white : Colors.black,
                         fontSize: 20),
@@ -102,7 +104,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "App notifications",
+                    widget.localizations!.appNotifications,
                     style: TextStyle(
                         color: widget.isDark ? Colors.white : Colors.black,
                         fontSize: 20),
@@ -141,7 +143,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
                 showDialog<String>(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
-                    content: Text('Değişiklikler kaydedildi!'),
+                    content: Text(widget.localizations!.changesSaved),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context),
@@ -152,7 +154,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
                 );
               },
               child: Text(
-                "Kaydet",
+                widget.localizations!.save,
                 style: TextStyle(
                     color: widget.isDark ? Colors.black : Colors.white),
               ),

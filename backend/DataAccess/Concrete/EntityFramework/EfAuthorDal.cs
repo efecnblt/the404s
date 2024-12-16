@@ -70,6 +70,41 @@ namespace DataAccess.Concrete.EntityFramework
             }
         }
 
+
+
+        public AuthorProfileDto GetAuthorProfile(int authorId)
+        {
+            using (var context = new SWContext())
+            {
+                var author = context.Authors.FirstOrDefault(a => a.AuthorID == authorId);
+                if (author == null) return null;
+
+                var courses = context.Courses
+                    .Where(c => c.AuthorId == authorId)
+                    .Select(c => new CourseDto
+                    {
+                        CourseID = c.CourseID,
+                        Name = c.Name,
+                        Description = c.Description,
+                        Rating = c.Rating ?? 0.0,
+                        Price = c.Price,
+                        TotalStudentCount = c.TotalStudentCount ?? 0
+                    }).ToList();
+
+                return new AuthorProfileDto
+                {
+                    AuthorID = author.AuthorID,
+                    Name = author.Name,
+                    Rating = author.Rating ?? 0.0,
+                    StudentCount = author.StudentCount ?? 0,
+                    CourseCount = author.CourseCount ?? 0,
+                    ImageURL = author.ImageURL,
+                    Courses = courses
+                };
+            }
+        }
+
+
     }
 
 

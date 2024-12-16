@@ -1,26 +1,35 @@
+import 'package:cyber_security_app/OnboardingScreen.dart';
+import 'package:cyber_security_app/main.dart';
 import 'package:cyber_security_app/screens/account_security_screen.dart';
 import 'package:cyber_security_app/screens/contact_us_screen.dart';
 import 'package:cyber_security_app/screens/edit_profile_screen.dart';
-import 'package:cyber_security_app/screens/home_screen/home_screen.dart';
+import 'package:cyber_security_app/screens/language_settings_screen.dart';
+import 'package:cyber_security_app/screens/leaderboard_screen.dart';
+import 'package:cyber_security_app/screens/login_or_signup_screen.dart';
+import 'package:cyber_security_app/screens/logout_screen.dart';
 import 'package:cyber_security_app/screens/notification_settings.dart';
-import 'package:cyber_security_app/screens/premium_ad_overlay.dart';
+import 'package:cyber_security_app/screens/notification_settings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/users.dart';
 import '../services/auth_service.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'login_or_signup_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   final String userId;
   final bool isDark;
+  final AppLocalizations? localizations;
 
   const ProfileScreen({
     super.key,
     required this.userId,
     required this.isDark,
+    required this.localizations,
   });
 
   @override
@@ -29,29 +38,33 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<app_user.User> _userFuture;
+  
 
   @override
   void initState() {
     bool themeState = false;
     super.initState();
+    
+    
     // Initialize the future to fetch user data
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Set status bar color to transparent
       statusBarIconBrightness: Brightness.light,
       // Light icons for dark background
+      
     ));
+    
     _userFuture = AuthService.getUserData(widget.userId);
   }
 
   bool themeState = false;
-  String secilenDil = "tr";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: widget.isDark ? Colors.black : Colors.white,
       body: SafeArea(
-        child: FutureBuilder<User>(
+        child: FutureBuilder<app_user.User>(
           future: _userFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -59,14 +72,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             } else if (snapshot.hasError) {
               return Center(
                 child: Text(
-                  'Bir hata oluştu: ${snapshot.error}',
+                  '${widget.localizations!.anErrorOccured}  ${snapshot.error}',
                   style: const TextStyle(color: Colors.white),
                 ),
               );
             } else if (!snapshot.hasData) {
-              return const Center(
+              return  Center(
                 child: Text(
-                  'Kullanıcı verisi bulunamadı.',
+                  widget.localizations!.userDataNotFound,
                   style: TextStyle(color: Colors.white),
                 ),
               );
@@ -74,116 +87,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               final user = snapshot.data!;
               return Column(
                 children: [
-                  // Üst kısım - Profil bilgileri (sabit)
-                  /*ElevatedButton(
-                    onPressed: () {
-                      // Open Modal Sheet without setState
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 15,
-                                    ),
-                                    Icon(Icons.language_outlined),
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    Text("Change Language",
-                                        style: TextStyle(fontSize: 16)),
-                                    SizedBox(
-                                      width: 50,
-                                    ),
-                                    DropdownButton(
-                                      items: [
-                                        DropdownMenuItem(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 24,
-                                                height: 24,
-                                                margin: EdgeInsets.only(
-                                                    right: 10),
-                                              ),
-                                              Text("Türkçe")
-                                            ],
-                                          ),
-                                          value: "tr",
-                                        ),
-                                        DropdownMenuItem(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 24,
-                                                height: 24,
-                                                margin: EdgeInsets.only(
-                                                    right: 10),
-                                              ),
-                                              Text("İngilizce")
-                                            ],
-                                          ),
-                                          value: "eng",
-                                        )
-                                      ],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          secilenDil = value ?? "tr";
-                                        });
-                                      },
-                                      hint: Text(secilenDil),
-                                      value: secilenDil,
-                                    ),
-                                  ],
-                                ),
-                                // Language change logic
-
-                                SwitchListTile(
-                                  value: themeState,
-                                  onChanged: (bool value) {
-                                    setState(() {
-                                      themeState = value;
-                                    });
-                                  },
-                                  title: Text("Switch Theme"),
-                                  secondary: Icon(Icons.sunny),
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.logout),
-                                  title: Text('Log Out'),
-                                  onTap: () async {
-                                    final prefs = await SharedPreferences
-                                        .getInstance();
-                                    await prefs.clear();
-
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              LoginSignupScreen()),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      shape: CircleBorder(),
-                    ),
-                    child: Icon(
-                      Icons.settings,
-                      color: Colors.white,
-                    ),
-                  ),*/
                   Container(
                     child: Column(
                       children: [
@@ -197,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                _showImageOptions(context);
+                                _showImageOptions(context ,widget.localizations! ,widget.isDark);
                               },
                               child: CircleAvatar(
                                 radius: 30,
@@ -481,11 +384,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: ListView(
                         children: [
+                           Container(
+                            margin: EdgeInsets.only(bottom: 5),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                               context,
+                                       MaterialPageRoute(builder: (context) =>  LeaderboardPage(localizations: widget.localizations,isDark: widget.isDark,userId: user.id,)),
+                                            );
+                              },
+                              splashColor: Colors.white.withOpacity(0.1),
+                              highlightColor: Colors.white.withOpacity(0.05),
+                              child: ListTile(
+                                title: Text(
+                                  widget.localizations!.leaderboard,
+                                  
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
+                                    fontSize: 18,
+                                    fontFamily: 'DM Sans',
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
+                                ),
+                                leading: Icon(Icons.leaderboard,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
+                                    Icons.arrow_circle_right_outlined,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                              ),
+                              
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: Text(
-                              'Account Settings',
+                              widget.localizations!.accSettings,
                               style: TextStyle(
                                 color: widget.isDark
                                     ? Colors.white
@@ -507,13 +454,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             child: InkWell(
                               onTap: () {
-                                print('tıklandı');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => EditProfileScreen(
                                             userId: widget.userId,
                                             isDark: widget.isDark,
+                                            localizations: widget.localizations,
                                           )),
                                 );
                               },
@@ -521,7 +468,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "Edit profile",
+                                  widget.localizations!.editProfile,
                                   style: TextStyle(
                                     color: widget.isDark
                                         ? Colors.white
@@ -555,13 +502,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     : Colors.white),
                             child: InkWell(
                               onTap: () {
-                                print('tıklandı');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           NotificationSettings(
                                             isDark: widget.isDark,
+                                            localizations: widget.localizations,
                                           )),
                                 );
                               },
@@ -569,7 +516,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "Notifications Settings",
+                                  widget.localizations!.notiSettings,
                                   style: TextStyle(
                                     color: widget.isDark
                                         ? Colors.white
@@ -603,7 +550,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     : Colors.white),
                             child: InkWell(
                               onTap: () {
-                                print('tıklandı');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -611,6 +557,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           AccountSecurityScreen(
                                             userId: widget.userId,
                                             isDark: widget.isDark,
+                                            localizations: widget.localizations
                                           )),
                                 );
                               },
@@ -618,7 +565,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "Account Security",
+                                  widget.localizations!.accSec,
                                   style: TextStyle(
                                     color: widget.isDark
                                         ? Colors.white
@@ -641,11 +588,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ),
+                           Container(
+                            margin: EdgeInsets.only(bottom: 5),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                               context,
+                                       MaterialPageRoute(builder: (context) =>  LanguageSettings(localizations: widget.localizations,isDark: widget.isDark,)),
+                                            );
+                              },
+                              splashColor: Colors.white.withOpacity(0.1),
+                              highlightColor: Colors.white.withOpacity(0.05),
+                              child: ListTile(
+                                title: Text(
+                                  widget.localizations!.langSettings,
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
+                                    fontSize: 18,
+                                    fontFamily: 'DM Sans',
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
+                                ),
+                                leading: Icon(Icons.language,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
+                                    Icons.arrow_circle_right_outlined,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                              ),
+                              
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: Text(
-                              'Support',
+                              widget.localizations!.support,
                               style: TextStyle(
                                 color: widget.isDark
                                     ? Colors.white
@@ -657,6 +647,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ),
+                          
+                         
+                         
+                         
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
@@ -667,20 +661,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     : Colors.white),
                             child: InkWell(
                               onTap: () {
-                                //go to contact us page
-                                print('tıklandı');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ContactUsPage(isDark: widget.isDark)),
+                                          ContactUsPage(isDark: widget.isDark,localizations: widget.localizations,)),
                                 );
                               },
                               splashColor: Colors.white.withOpacity(0.1),
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "Contact us",
+                                  widget.localizations!.contactUs,
                                   style: TextStyle(
                                     color: widget.isDark
                                         ? Colors.white
@@ -703,7 +695,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ),
-                          Container(
+                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
                                 borderRadius:
@@ -719,7 +711,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               highlightColor: Colors.white.withOpacity(0.05),
                               child: ListTile(
                                 title: Text(
-                                  "About CyberGuard App",
+                                  widget.localizations!.aboutApp,
                                   style: TextStyle(
                                     color: widget.isDark
                                         ? Colors.white
@@ -740,6 +732,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ? Colors.white
                                         : Colors.black),
                               ),
+                              
                             ),
                           ),
                         ],
@@ -756,7 +749,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-void _showImageOptions(BuildContext context) {
+void _showImageOptions(BuildContext context,AppLocalizations localizations, bool isDark) {
   showModalBottomSheet(
     context: context,
     builder: (BuildContext context) {
@@ -766,7 +759,7 @@ void _showImageOptions(BuildContext context) {
           children: [
             ListTile(
               leading: Icon(Icons.camera),
-              title: Text('Camera'),
+              title: Text(localizations!.camera),
               onTap: () {
                 // Implement camera functionality
                 Navigator.pop(context); // Close the bottom sheet
@@ -774,7 +767,7 @@ void _showImageOptions(BuildContext context) {
             ),
             ListTile(
               leading: Icon(Icons.photo),
-              title: Text('Gallery'),
+              title: Text(localizations!.gallery),
               onTap: () {
                 // Implement gallery functionality
                 Navigator.pop(context); // Close the bottom sheet
@@ -782,7 +775,7 @@ void _showImageOptions(BuildContext context) {
             ),
             ListTile(
               leading: Icon(Icons.delete),
-              title: Text('Delete'),
+              title: Text(localizations!.delete),
               onTap: () {
                 // Implement delete functionality
                 Navigator.pop(context); // Close the bottom sheet

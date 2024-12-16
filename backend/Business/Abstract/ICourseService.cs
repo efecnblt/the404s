@@ -22,5 +22,6 @@ namespace Business.Abstract
         IResult TransactionalTest(Course course);
         IResult Delete(int courseId);
         List<TopCourseDto> GetTopRatedCourses();
+        IResult UpdateDiscount(int courseId, decimal discountPercentage);
     }
 }

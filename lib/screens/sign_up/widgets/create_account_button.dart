@@ -28,7 +28,7 @@ class CreateAccountButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            AppLocalizations.of(context)!.createAccount,
+            AppLocalizations.of(context)?.createAccount ?? "Create an account",
             style: AppTextStyles.buttonTextStyle(screenWidth * 0.05),
           ),
         ),

@@ -35,7 +35,7 @@ class GoogleSignUpButton extends StatelessWidget {
             ),
             SizedBox(width: screenWidth * 0.02),
             Text(
-              AppLocalizations.of(context)!.signUpWithGoogle,
+              AppLocalizations.of(context)?.signUpWithGoogle ?? "Sign Up with Google",
               style: AppTextStyles.buttonTextStyle(screenWidth * 0.05),
             ),
           ],

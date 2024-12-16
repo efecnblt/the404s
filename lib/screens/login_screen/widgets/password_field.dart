@@ -45,7 +45,7 @@ class PasswordField extends StatelessWidget {
             obscureText: true,
             keyboardType: TextInputType.visiblePassword,
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)!.enterPassword,
+              hintText: AppLocalizations.of(context)?.enterPassword ?? "Enter your password",
               hintStyle: TextStyle(color: hintTextColor),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenHeight * 0.015,

@@ -35,21 +35,21 @@ class TermsAndConditions extends StatelessWidget {
         Expanded(
           child: RichText(
             text: TextSpan(
-              text: AppLocalizations.of(context)!.agree,
+              text: AppLocalizations.of(context)?.agree ?? "I agree with the",
               style: AppTextStyles.labelTextStyle(screenWidth * 0.045)
                   .copyWith(color: AppColors.textColor),
               children: <TextSpan>[
                 TextSpan(
-                  text: AppLocalizations.of(context)!.terms,
+                  text: AppLocalizations.of(context)?.terms ?? "Terms of Service",
                   style: AppTextStyles.labelTextStyle(screenWidth * 0.045)
                       .copyWith(
                     decoration: TextDecoration.underline,
                   ),
                   recognizer: TapGestureRecognizer()..onTap = onTermsTap,
                 ),
-                 TextSpan(text: AppLocalizations.of(context)!.and),
+                 TextSpan(text: AppLocalizations.of(context)?.and ?? "and"),
                 TextSpan(
-                  text: AppLocalizations.of(context)!.privacyPolicy,
+                  text: AppLocalizations.of(context)?.privacyPolicy ?? "Privacy Policy",
                   style: AppTextStyles.labelTextStyle(screenWidth * 0.045)
                       .copyWith(
                     decoration: TextDecoration.underline,

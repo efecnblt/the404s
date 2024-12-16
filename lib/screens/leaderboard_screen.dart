@@ -1,72 +1,184 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/users.dart';
 import '../services/auth_service.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+class LeaderboardPage extends StatefulWidget {
+    final bool isDark;
+  final AppLocalizations? localizations;
+  final String userId;
+  const LeaderboardPage({super.key,
+    required this.isDark,
+    required this.localizations,
+    required this.userId,});
 
-class FirestoreService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<List<User>> getLeaderboard() async {
-    QuerySnapshot snapshot = await _firestore
-        .collection('users')
-        .orderBy('score', descending: true) // Skor sırasına göre sıralar
-        .get();
-
-    return snapshot.docs.map((doc) {
-      return User.fromFirestore(doc.data() as DocumentSnapshot<Object?>);
-    }).toList();
-  }
+  @override
+  State<LeaderboardPage> createState() => _LeaderboardPageState();
 }
 
-class LeaderboardPage extends StatelessWidget {
-  final FirestoreService firestoreService = FirestoreService();
+class _LeaderboardPageState extends State<LeaderboardPage> {
+  late Future<app_user.User> _userFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userFuture = AuthService.getUserData(widget.userId);
+  }
 
   @override
   Widget build(BuildContext context) {
+
+   
+
+    
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Leaderboard'),
-      ),
-      body: FutureBuilder<List<User>>(
-        future: firestoreService.getLeaderboard(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
-          }
-
-          List<User> users = snapshot.data!;
-
-          return ListView.builder(
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              User user = users[index];
-              return Card(
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(user.imageUrl),
-                  ),
-                  title: Text(user.name),
-                  subtitle: Text('Score: ${user.username}'),
-                  trailing: Text(
-                    '#${index + 1}', // Sıralama numarası
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+      backgroundColor: widget.isDark ? Colors.black : Colors.white,
+      
+      body: SafeArea(
+        child: FutureBuilder<app_user.User>(
+          future: _userFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  '${widget.localizations!.anErrorOccured} ${snapshot.error}',
+                  style: const TextStyle(color: Colors.white),
                 ),
               );
-            },
-          );
-        },
+            } else if (!snapshot.hasData) {
+              return Center(
+                child: Text(
+                  widget.localizations!.userDataNotFound,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              );
+            } else {
+              final user = snapshot.data!;
+              return Scaffold(
+                backgroundColor: widget.isDark ? Colors.black : Colors.white,
+      appBar: AppBar(
+        title:  Text(widget.localizations!.leaderboard),
+        centerTitle: true,
+        backgroundColor: widget.isDark ? Colors.black : Colors.white,
+        elevation: 0,
+        foregroundColor: widget.isDark ? Colors.white : Colors.black,
+      ),
+      body: Column(
+        children: [
+          // Current User Bilgisi
+          _buildCurrentUserSection(user),
+          const Divider(),
+          // Top 10 Users Listesi
+          Expanded(
+            child: ListView.builder(
+              itemCount: top10Users.length,
+              itemBuilder: (context, index) {
+                return _buildTopUserRow(index + 1, top10Users[index]);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+            }
+          },
+        ),
       ),
     );
   }
+  Widget _buildCurrentUserSection( user) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: widget.isDark ? Color(0xFF2F2F2F) : Colors.white,
+        border: Border.all(color: Colors.red, width: 2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      margin: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CircleAvatar(
+                            radius: 40,
+                            backgroundImage:    
+                                 NetworkImage(user.imageUrl) as ImageProvider,),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                user.name,
+                style:  TextStyle(color: widget.isDark? Colors.white: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Text('${widget.localizations!.rank}: {user.rank}',
+                      style: const TextStyle(color: Colors.grey)),
+                  const SizedBox(width: 16),
+                  Text('${widget.localizations!.points}: {user[points]}',
+                      style: const TextStyle(color: Colors.grey)),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTopUserRow(int position,  user) {
+    Divider(
+      color: widget.isDark ? Colors.grey:Colors.black,
+      height: 3,
+    );
+    return ListTile(
+      tileColor: widget.isDark? Color(0xFF2F2F2F): Colors.white,
+      leading: CircleAvatar(
+        radius: 24,
+        backgroundColor: Colors.grey[200],
+        child: position <= 3
+            ? Image.asset(
+                'assets/medal_$position.png', // Ödül simgeleri için (isteğe bağlı)
+                width: 24,
+                height: 24,
+              )
+            : Text(
+                position.toString(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              ),
+      ),
+      title: Text(
+        "user.name",
+        style:  TextStyle(color: widget.isDark? Colors.white: Colors.black,fontWeight: FontWeight.bold),
+      ),
+      trailing: Text(
+        'user.points',
+        style:  TextStyle(
+          color: widget.isDark? Colors.white: Colors.black,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      contentPadding: EdgeInsets.all(7),
+      
+    );
+  }
+   
+
+    // Statik boş top10 kullanıcı listesi
+    final List<Map<String, dynamic>> top10Users = List.generate(
+      10,
+      (index) => {
+        'name': 'User ${index + 1}',
+        'points': '--',
+      },
+    );
+  
 }
-
-

@@ -1,6 +1,8 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:cyber_security_app/screens/login_or_signup_screen.dart';
 import 'package:cyber_security_app/widgets/course_card.dart';
 import 'package:cyber_security_app/screens/favorite_screen/favoritesModel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/course.dart';
@@ -15,11 +17,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../search_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:cyber_security_app/main.dart';
 
 class Dashboard extends StatefulWidget {
   final String name;
   final String userId;
   static const String id = "dashboard_screen";
+  
 
   const Dashboard({super.key, required this.name, required this.userId});
 
@@ -30,7 +34,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   late Future<List<Map<String, dynamic>>> _userCoursesFuture;
   final List<Map<String, dynamic>> _userCourses = [];
-
+  
   int _selectedIndex = 0;
   bool _isDarkTheme = true;
   int value = 0;
@@ -40,6 +44,7 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
     readSettings();
+   
     _userCoursesFuture = AuthService.fetchUserCourses();
     _userFuture = AuthService.getUserData(widget.userId);
   }
@@ -61,7 +66,9 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    var localizations = AppLocalizations.of(context);
+    
+    
     // Ekran boyutlarını al
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
@@ -75,11 +82,12 @@ class _DashboardState extends State<Dashboard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              
               const SizedBox(height: 10), // Üstten boşluk
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                
                 children: [
-                  FutureBuilder<User>(
+                  FutureBuilder<app_user.User>(
                       future: _userFuture,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
@@ -102,6 +110,7 @@ class _DashboardState extends State<Dashboard> {
                             ),
                           );
                         } else {
+                          
                           final user = snapshot.data!;
                           return Builder(
                             builder: (context) {
@@ -191,6 +200,7 @@ class _DashboardState extends State<Dashboard> {
                           );
                         }
                       }),
+                      SizedBox(width:80 ,),
                   SizedBox(
                     width: screenWidth * 0.13,
                     height: screenHeight * 0.03,
@@ -233,6 +243,49 @@ class _DashboardState extends State<Dashboard> {
                             ),
                     ),
                   ),
+                  SizedBox(width: 10,),
+                  ElevatedButton(
+  onPressed: () async {
+    final shouldLogout = await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(localizations!.confirmLogOut),
+        content: Text(localizations!.sureLogOut),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false), // Hayır
+            child: Text(localizations!.no),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true), // Evet
+            child: Text(localizations!.yes),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (shouldLogout == true) {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginSignupScreen()),
+      (route) => false,
+    );
+  }
+  },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.transparent, // Arka planı saydam yapar
+    shadowColor: Colors.transparent, // Gölgeyi saydam yapar
+    shape: const CircleBorder(), // Yuvarlak şekil
+     // Boyut ayarı
+  ),
+  child: Icon(
+    Icons.logout,
+    size: 24, // İkon boyutu
+    color: isDark ? Colors.white : Colors.black, // İkon rengi
+  ),
+),
                 ],
               ),
               Container(
@@ -345,7 +398,7 @@ class _DashboardState extends State<Dashboard> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           content:
-                                              Text('${course.name} ${localizations.removed}')),
+                                              Text('${course.name} ${localizations!.removed}')),
                                     );
                                   },
                                   child: SizedBox(

@@ -1,11 +1,18 @@
+import 'package:cyber_security_app/OnboardingScreen.dart';
+import 'package:cyber_security_app/main.dart';
 import 'package:cyber_security_app/screens/account_security_screen.dart';
 import 'package:cyber_security_app/screens/contact_us_screen.dart';
 import 'package:cyber_security_app/screens/edit_profile_screen.dart';
 import 'package:cyber_security_app/screens/language_settings_screen.dart';
+import 'package:cyber_security_app/screens/leaderboard_screen.dart';
+import 'package:cyber_security_app/screens/login_or_signup_screen.dart';
+import 'package:cyber_security_app/screens/logout_screen.dart';
 import 'package:cyber_security_app/screens/notification_settings.dart';
 import 'package:cyber_security_app/screens/notification_settings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/users.dart';
 import '../services/auth_service.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
@@ -38,6 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     bool themeState = false;
     super.initState();
     
+    
     // Initialize the future to fetch user data
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Set status bar color to transparent
@@ -45,18 +53,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Light icons for dark background
       
     ));
+    
     _userFuture = AuthService.getUserData(widget.userId);
   }
 
   bool themeState = false;
-  String secilenDil = "tr";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: widget.isDark ? Colors.black : Colors.white,
       body: SafeArea(
-        child: FutureBuilder<User>(
+        child: FutureBuilder<app_user.User>(
           future: _userFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -79,116 +87,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               final user = snapshot.data!;
               return Column(
                 children: [
-                  // Üst kısım - Profil bilgileri (sabit)
-                  /*ElevatedButton(
-                    onPressed: () {
-                      // Open Modal Sheet without setState
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 15,
-                                    ),
-                                    Icon(Icons.language_outlined),
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    Text("Change Language",
-                                        style: TextStyle(fontSize: 16)),
-                                    SizedBox(
-                                      width: 50,
-                                    ),
-                                    DropdownButton(
-                                      items: [
-                                        DropdownMenuItem(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 24,
-                                                height: 24,
-                                                margin: EdgeInsets.only(
-                                                    right: 10),
-                                              ),
-                                              Text("Türkçe")
-                                            ],
-                                          ),
-                                          value: "tr",
-                                        ),
-                                        DropdownMenuItem(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 24,
-                                                height: 24,
-                                                margin: EdgeInsets.only(
-                                                    right: 10),
-                                              ),
-                                              Text("İngilizce")
-                                            ],
-                                          ),
-                                          value: "eng",
-                                        )
-                                      ],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          secilenDil = value ?? "tr";
-                                        });
-                                      },
-                                      hint: Text(secilenDil),
-                                      value: secilenDil,
-                                    ),
-                                  ],
-                                ),
-                                // Language change logic
-
-                                SwitchListTile(
-                                  value: themeState,
-                                  onChanged: (bool value) {
-                                    setState(() {
-                                      themeState = value;
-                                    });
-                                  },
-                                  title: Text("Switch Theme"),
-                                  secondary: Icon(Icons.sunny),
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.logout),
-                                  title: Text('Log Out'),
-                                  onTap: () async {
-                                    final prefs = await SharedPreferences
-                                        .getInstance();
-                                    await prefs.clear();
-
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              LoginSignupScreen()),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      shape: CircleBorder(),
-                    ),
-                    child: Icon(
-                      Icons.settings,
-                      color: Colors.white,
-                    ),
-                  ),*/
                   Container(
                     child: Column(
                       children: [
@@ -486,6 +384,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: ListView(
                         children: [
+                           Container(
+                            margin: EdgeInsets.only(bottom: 5),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                               context,
+                                       MaterialPageRoute(builder: (context) =>  LeaderboardPage(localizations: widget.localizations,isDark: widget.isDark,userId: user.id,)),
+                                            );
+                              },
+                              splashColor: Colors.white.withOpacity(0.1),
+                              highlightColor: Colors.white.withOpacity(0.05),
+                              child: ListTile(
+                                title: Text(
+                                  widget.localizations!.leaderboard,
+                                  
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
+                                    fontSize: 18,
+                                    fontFamily: 'DM Sans',
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
+                                ),
+                                leading: Icon(Icons.leaderboard,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
+                                    Icons.arrow_circle_right_outlined,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                              ),
+                              
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
@@ -646,6 +588,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ),
+                           Container(
+                            margin: EdgeInsets.only(bottom: 5),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: widget.isDark
+                                    ? Colors.black
+                                    : Colors.white),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                               context,
+                                       MaterialPageRoute(builder: (context) =>  LanguageSettings(localizations: widget.localizations,isDark: widget.isDark,)),
+                                            );
+                              },
+                              splashColor: Colors.white.withOpacity(0.1),
+                              highlightColor: Colors.white.withOpacity(0.05),
+                              child: ListTile(
+                                title: Text(
+                                  widget.localizations!.langSettings,
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Color(0xFF161719),
+                                    fontSize: 18,
+                                    fontFamily: 'DM Sans',
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
+                                ),
+                                leading: Icon(Icons.language,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                                trailing: Icon(
+                                    Icons.arrow_circle_right_outlined,
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : Colors.black),
+                              ),
+                              
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
@@ -662,6 +647,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ),
+                          
+                         
+                         
+                         
                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
@@ -706,7 +695,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ),
-                          Container(
+                           Container(
                             margin: EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
                                 borderRadius:
@@ -734,49 +723,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 leading: Icon(Icons.info_outline_rounded,
-                                    color: widget.isDark
-                                        ? Colors.white
-                                        : Colors.black),
-                                trailing: Icon(
-                                    Icons.arrow_circle_right_outlined,
-                                    color: widget.isDark
-                                        ? Colors.white
-                                        : Colors.black),
-                              ),
-                              
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                                color: widget.isDark
-                                    ? Colors.black
-                                    : Colors.white),
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                               context,
-                                       MaterialPageRoute(builder: (context) =>  LanguageSettings(localizations: widget.localizations,isDark: widget.isDark)),
-                                            );
-                              },
-                              splashColor: Colors.white.withOpacity(0.1),
-                              highlightColor: Colors.white.withOpacity(0.05),
-                              child: ListTile(
-                                title: Text(
-                                  widget.localizations!.langSettings,
-                                  style: TextStyle(
-                                    color: widget.isDark
-                                        ? Colors.white
-                                        : Color(0xFF161719),
-                                    fontSize: 18,
-                                    fontFamily: 'DM Sans',
-                                    fontWeight: FontWeight.w400,
-                                    height: 0,
-                                  ),
-                                ),
-                                leading: Icon(Icons.language,
                                     color: widget.isDark
                                         ? Colors.white
                                         : Colors.black),

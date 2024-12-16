@@ -18,7 +18,7 @@ class LoginPrompt extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            AppLocalizations.of(context)!.alreadyHaveAnAcc,
+            AppLocalizations.of(context)?.alreadyHaveAnAcc ?? "Already have an account?",
             style: AppTextStyles.labelTextStyle(screenWidth * 0.05)
                 .copyWith(color: Colors.white),
           ),
@@ -31,7 +31,7 @@ class LoginPrompt extends StatelessWidget {
                   ));
             },
             child: Text(
-              AppLocalizations.of(context)!.login,
+              AppLocalizations.of(context)?.login ?? "Login",
               style: AppTextStyles.linkTextStyle(screenWidth * 0.05),
             ),
           ),

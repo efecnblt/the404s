@@ -45,7 +45,7 @@ class EmailField extends StatelessWidget {
             style: TextStyle(color: textColor),
             controller: controller,
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)!.enterEmail,
+              hintText: AppLocalizations.of(context)?.enterEmail ?? "Enter your email",
               hintStyle: TextStyle(color: hintTextColor),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenHeight * 0.015,

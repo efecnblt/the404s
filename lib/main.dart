@@ -30,6 +30,10 @@ class MyApp extends StatefulWidget {
 
    static _MyAppState? of(BuildContext context) =>
       context.findAncestorStateOfType<_MyAppState>();
+
+  static void setLocale(Locale locale) {
+    setLocale(locale);
+  }
 }
 
 class _MyAppState extends State<MyApp> {
@@ -40,6 +44,7 @@ class _MyAppState extends State<MyApp> {
       _locale = locale;
     });
   }
+   Locale get currentLocale => _locale;
 
     @override
   void initState() {
@@ -60,7 +65,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     //FirebaseAuth.instance.setLanguageCode("tr");
-      globalLocalizations = AppLocalizations.of(context); // İngilizce için
+      globalLocalizations = AppLocalizations.of(context);
     return MaterialApp(
        locale: _locale,
       localizationsDelegates:  [
@@ -78,5 +83,6 @@ class _MyAppState extends State<MyApp> {
       home: OnboardingScreen(),
       
     );
+    
   }
 }

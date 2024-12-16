@@ -50,7 +50,7 @@ class GoogleSignInButton extends StatelessWidget {
             ),
             SizedBox(width: screenWidth * 0.02),
             Text(
-              AppLocalizations.of(context)!.loginWithGoogle,
+              AppLocalizations.of(context)?.loginWithGoogle ?? "Log in with Google",
               style: TextStyle(
                 color: Color(0xFFFCFCFF),
                 fontSize: 18,

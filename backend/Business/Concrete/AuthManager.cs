@@ -40,63 +40,73 @@ namespace Business.Concrete
         [TransactionScopeAspect]
         public IDataResult<User> Register(UserForRegisterDto userForRegisterDto, string password)
         {
-            // Şifre hashleme işlemi
-            byte[] passwordHash, passwordSalt;
-            HashingHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
-
-            // Kullanıcıyı oluştur
-            var user = new User
+            using (TransactionScope scope = new TransactionScope())
             {
-                Email = userForRegisterDto.Email,
-                FirstName = userForRegisterDto.FirstName,
-                LastName = userForRegisterDto.LastName,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Status = true
-            };
-
-            // Kullanıcıyı veritabanına kaydet
-            _userService.Add(user);
-
-            // Kullanıcının rolüne karşılık gelen OperationClaim kaydını al
-            var operationClaim = _operationClaimService.GetByName(userForRegisterDto.Role);
-
-            if (operationClaim == null)
-            {
-                return new ErrorDataResult<User>(Messages.WrongRole);
-            }
-
-            // UserOperationClaim tablosuna kayıt ekle
-            _userOperationClaimService.Add(new UserOperationClaim
-            {
-                UserId = user.Id, // Yeni oluşturulan kullanıcının ID'si
-                OperationClaimId = operationClaim.Id // Role karşılık gelen OperationClaim ID'si
-            });
-
-            // Kullanıcıyı rolüne göre Authors veya Students tablosuna kaydet
-            if (userForRegisterDto.Role == "Author")
-            {
-                _authorService.Add(new Author
+                try
                 {
-                    Name = $"{user.FirstName} {user.LastName}",
-                    Rating = 0, // Varsayılan başlangıç puanı
-                    StudentCount = 0,
-                    CourseCount = 0,
-                   
-                });
-            }
-            else if (userForRegisterDto.Role == "Student")
-            {
-                _studentService.Add(new Student
-                {
-                    UserId = user.Id,
-                    CourseId = null, // İlk başta kurs yok
-                    EnrollmentDate = DateTime.Now,
-                    Progress = 0 // Varsayılan ilerleme
-                });
-            }
+                    byte[] passwordHash, passwordSalt;
+                    HashingHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            return new SuccessDataResult<User>(user, Messages.UserRegistered);
+                    var user = new User
+                    {
+                        Email = userForRegisterDto.Email,
+                        FirstName = userForRegisterDto.FirstName,
+                        LastName = userForRegisterDto.LastName,
+                        PasswordHash = passwordHash,
+                        PasswordSalt = passwordSalt,
+                        Status = true
+                    };
+
+                    _userService.Add(user); // User tablosuna ekle
+
+                    var operationClaim = _operationClaimService.GetByName(userForRegisterDto.Role);
+                    if (operationClaim == null)
+                        return new ErrorDataResult<User>("Invalid role");
+
+                    _userOperationClaimService.Add(new UserOperationClaim
+                    {
+                        UserId = user.Id,
+                        OperationClaimId = operationClaim.Id
+                    });
+
+                    Console.WriteLine($"User added. UserId: {user.Id}");
+
+                    System.Diagnostics.Debug.WriteLine("UserID to be added to Students table: " + user.Id);
+
+                    // Role'e göre ekleme işlemi
+                    if (userForRegisterDto.Role == "Student")
+                    {
+
+                        System.Diagnostics.Debug.WriteLine("UserID to be added to Students table: " + user.Id);
+
+
+                        _studentService.Add(new Student
+                        {
+                            UserId = user.Id,
+                            EnrollmentDate = DateTime.Now,
+                            
+                        });
+                    }
+                    else if (userForRegisterDto.Role == "Author")
+                    {
+                        _authorService.Add(new Author
+                        {
+                            Name = $"{user.FirstName} {user.LastName}",
+                            Rating = 0,
+                            StudentCount = 0,
+                            CourseCount = 0
+                        });
+                    }
+
+                    scope.Complete(); // Tüm işlemler başarılıysa commit
+                    return new SuccessDataResult<User>(user, "User registered successfully");
+                }
+                catch (Exception ex)
+                {
+                    scope.Dispose(); // Hata durumunda rollback
+                    return new ErrorDataResult<User>("Registration failed: " + ex.Message);
+                }
+            }
         }
 
 

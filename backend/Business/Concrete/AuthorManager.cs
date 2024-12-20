@@ -83,6 +83,20 @@ namespace Business.Concrete
 
         }
 
+        public void Update(Author author)
+        {
+            var existingAuthor = _authorDal.Get(a => a.AuthorID == author.AuthorID);
+            if (existingAuthor != null)
+            {
+                existingAuthor.Name = author.Name;
+                existingAuthor.Rating = author.Rating;
+                existingAuthor.StudentCount = author.StudentCount;
+                existingAuthor.CourseCount = author.CourseCount;
+                existingAuthor.ImageURL = author.ImageURL;
+
+                _authorDal.Update(existingAuthor);
+            }
+        }
     }
 
 }

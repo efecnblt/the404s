@@ -26,11 +26,16 @@ namespace Business.Concrete
     {
         ICourseDal _courseDal;
         ICategoryService _categoryService;
+        IStudentCourseService _studentCourseService;
+         IAuthorService _authorService;
 
-        public CourseManager(ICourseDal coursetDal, ICategoryService categoryService)
+        public CourseManager(ICourseDal coursetDal, ICategoryService categoryService,
+                            IAuthorService authorService,IStudentCourseService studentCourseService)
         {
             _courseDal = coursetDal;
             _categoryService = categoryService;
+            _authorService = authorService;
+            _studentCourseService = studentCourseService;
         }
 
         // [SecuredOperation("course.add,admin")]
@@ -154,5 +159,44 @@ namespace Business.Concrete
             return new SuccessResult("Discount updated successfully.");
         }
 
+
+        public IResult EnrollCourse(int studentId, int courseId)
+        {
+            try
+            {
+                // 1. StudentCourses tablosuna kayıt ekle
+                _studentCourseService.Add(new StudentCourse
+                {
+                    StudentId = studentId,
+                    CourseID = courseId,
+                    EnrollmentDate = DateTime.Now,
+                    Progress = 0
+                });
+
+                // 2. Courses tablosundaki TotalStudentCount artır
+                var course = _courseDal.Get(c => c.CourseID == courseId);
+                if (course == null)
+                {
+                    return new ErrorResult("Course not found.");
+                }
+                course.TotalStudentCount++;
+                _courseDal.Update(course);
+
+                // 3. Authors tablosundaki StudentCount artır
+                var author = _authorService.GetById(course.AuthorId);
+                if (author == null)
+                {
+                    return new ErrorResult("Author not found.");
+                }
+                author.StudentCount++;
+                _authorService.Update(author);
+
+                return new SuccessResult("Student successfully enrolled in the course.");
+            }
+            catch (Exception ex)
+            {
+                return new ErrorResult($"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

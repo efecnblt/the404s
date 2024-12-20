@@ -1,5 +1,4 @@
 ﻿using Core.DataAccess;
-using Core.Utilities.Results;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -9,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Abstract
 {
-    public interface ILearningOutcomeDal : IEntityRepository<LearningOutcome>
+    public interface IStudentCourseDal : IEntityRepository<StudentCourse>
     {
-        
+        List<Student> GetStudentsByCourseId(int courseId);
+
     }
 }

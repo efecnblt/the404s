@@ -11,19 +11,19 @@ using DataAccess.Concrete.EntityFramework;
 
 static void ProductTest()
 {
-    CourseManager productManager = new CourseManager(new EfCourseDal(), new CategoryManager(new EfCategoryDal()));
+    //CourseManager productManager = new CourseManager(new EfCourseDal(), new CategoryManager(new EfCategoryDal()));
 
-    var result = productManager.GetCourseDetails();
+    //var result = productManager.GetCourseDetails();
 
-    if (result.Success == true)
-    {
-        foreach (var product in result.Data)
-        {
-            Console.WriteLine();
-        }
-    }
-    else
-    { Console.WriteLine(result.Message); }
+    //if (result.Success == true)
+    //{
+    //    foreach (var product in result.Data)
+    //    {
+    //        Console.WriteLine();
+    //    }
+    //}
+    //else
+    //{ Console.WriteLine(result.Message); }
 
 
 }

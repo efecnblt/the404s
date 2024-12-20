@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,5 +66,12 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
 
+
+        [HttpPut("update")]
+        public IActionResult Update([FromBody] Author author)
+        {
+            _authorService.Update(author);
+            return Ok("Author updated successfully.");
+        }
     }
 }

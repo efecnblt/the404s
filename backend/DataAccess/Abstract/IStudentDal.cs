@@ -12,6 +12,6 @@ namespace DataAccess.Abstract
     public interface IStudentDal : IEntityRepository<Student>
     {
         public Student GetById(int id);
-        public List<Student> GetStudentsByCourseId(int courseId);
+        //public List<Student> GetStudentsByCourseId(int courseId);
     }
 }

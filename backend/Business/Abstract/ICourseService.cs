@@ -23,5 +23,6 @@ namespace Business.Abstract
         IResult Delete(int courseId);
         List<TopCourseDto> GetTopRatedCourses();
         IResult UpdateDiscount(int courseId, decimal discountPercentage);
+        IResult EnrollCourse(int studentId, int courseId);
     }
 }

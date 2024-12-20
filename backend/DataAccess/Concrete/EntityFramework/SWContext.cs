@@ -29,7 +29,8 @@ namespace DataAccess.Concrete.EntityFramework
         public DbSet<Section> Sections { get; set; }
         public DbSet<Video> Videos { get; set; }
         public DbSet<Level> Levels { get; set; }
-
+        public DbSet<LearningOutcome> LearningOutcomes { get; set; }
+        public DbSet<StudentCourse> StudentCourses { get; set; }
 
     }
 }

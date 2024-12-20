@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Business.DependencyResolvers.Autofac
 {
-    public class AutofacBusinessModule :Module
+    public class AutofacBusinessModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
@@ -31,10 +31,16 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<EfOperationClaimDal>().As<IOperationClaimDal>().SingleInstance();
 
             builder.RegisterType<UserOperationClaimManager>().As<IUserOperationClaimService>().SingleInstance();
-            builder.RegisterType<EfUserOperationClaimDal>().As<IUserOperationClaimDal>().SingleInstance(); 
-            
+            builder.RegisterType<EfUserOperationClaimDal>().As<IUserOperationClaimDal>().SingleInstance();
+
+            builder.RegisterType<LearningOutcomeManager>().As<ILearningOutcomeService>().SingleInstance();
+            builder.RegisterType<EfLearningOutcomeDal>().As<ILearningOutcomeDal>().SingleInstance();
+
             builder.RegisterType<AuthorManager>().As<IAuthorService>().SingleInstance();
             builder.RegisterType<EfAuthorDal>().As<IAuthorDal>().SingleInstance();
+
+            builder.RegisterType<StudentCourseManager>().As<IStudentCourseService>().SingleInstance();
+            builder.RegisterType<EfStudentCourseDal>().As<IStudentCourseDal>().SingleInstance();
 
             builder.RegisterType<LevelManager>().As<ILevelService>().SingleInstance();
             builder.RegisterType<EfLevelDal>().As<ILevelDal>().SingleInstance();

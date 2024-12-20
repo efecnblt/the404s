@@ -20,33 +20,22 @@ namespace WebAPI.Controllers
         public IActionResult Add([FromBody] LearningOutcome outcome)
         {
             var result = _learningOutcomeService.Add(outcome);
-            if (!result.Success) return BadRequest(result.Message);
-            return Ok(result.Message);
-        }
-
-        [HttpPost("addMultiple")]
-        public IActionResult AddMultiple([FromBody] List<LearningOutcome> outcomes)
-        {
-            foreach (var outcome in outcomes)
+            if (!result.Success)
             {
-                var result = _learningOutcomeService.Add(outcome);
-                if (!result.Success)
-                {
-                    return BadRequest(result.Message);
-                }
+                return BadRequest(result.Message);
             }
-            return Ok("Learning outcomes added successfully.");
+            return Ok(result.Message);
         }
 
         [HttpGet("getByCourseId")]
         public IActionResult GetByCourseId(int courseId)
         {
             var result = _learningOutcomeService.GetByCourseId(courseId);
-            if (!result.Success) return BadRequest(result.Message);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
             return Ok(result.Data);
         }
-
-
-
     }
 }

@@ -150,5 +150,13 @@ namespace WebAPI.Controllers
         }
 
 
+        [HttpPost("enroll")]
+        public IActionResult EnrollCourse(int studentId, int courseId)
+        {
+            _courseService.EnrollCourse(studentId, courseId);
+            return Ok("Student successfully enrolled in the course!");
+        }
+
+
     }
 }

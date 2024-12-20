@@ -12,19 +12,19 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfStudentDal : EfEntityRepositoryBase<Student, SWContext>, IStudentDal
     {
-        public List<Student> GetStudentsByCourseId(int courseId)
-        {
-            using (var context = new SWContext())
-            {
-                return context.Students.Where(s => s.CourseId == courseId).ToList();
-            }
-        }
+        //public List<Student> GetStudentsByCourseId(int courseId)
+        //{
+        //    using (var context = new SWContext())
+        //    {
+        //        return context.Students.Where(s => s.CourseId == courseId).ToList();
+        //    }
+        //}
 
         public Student GetById(int id)
         {
             using (var context = new SWContext())
             {
-                return context.Students.SingleOrDefault(s => s.Id == id); // Id kullanımı
+                return context.Students.SingleOrDefault(s => s.StudentId == id); // Id kullanımı
             }
         }
     }

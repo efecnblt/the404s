@@ -39,6 +39,9 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<AuthorManager>().As<IAuthorService>().SingleInstance();
             builder.RegisterType<EfAuthorDal>().As<IAuthorDal>().SingleInstance();
 
+            builder.RegisterType<DepartmentManager>().As<IDepartmentService>().SingleInstance();
+            builder.RegisterType<EfDepartmentDal>().As<IDepartmentDal>().SingleInstance();
+
             builder.RegisterType<StudentCourseManager>().As<IStudentCourseService>().SingleInstance();
             builder.RegisterType<EfStudentCourseDal>().As<IStudentCourseDal>().SingleInstance();
 

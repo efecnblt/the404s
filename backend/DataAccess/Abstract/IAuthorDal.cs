@@ -16,5 +16,6 @@ namespace DataAccess.Abstract
         Author GetById(int id);
         List<TopAuthorDto> GetTopRatedAuthors();
         AuthorProfileDto GetAuthorProfile(int authorId);
+        List<Author> GetAuthorsByDepartmentId(int departmentId);
     }
 }

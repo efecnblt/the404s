@@ -9,14 +9,17 @@ namespace Entities.DTOs
 {
     public class AuthorProfileDto : IDto
     {
-        public int AuthorID { get; set; }
-        public string Name { get; set; }
-        public double Rating { get; set; }
-        public int StudentCount { get; set; }
-        public int CourseCount { get; set; }
-        public string ImageURL { get; set; }
+        public int AuthorID { get; set; } // Tablo ile uyumlu
+        public string Name { get; set; } // Tablo ile uyumlu
+        public string? Biography { get; set; } // Biography nullable olduğu için '?' var
+        public int? DepartmentID { get; set; } // DepartmentID nullable olduğu için '?' var
+        public double Rating { get; set; } // Tablo ile uyumlu
+        public int StudentCount { get; set; } // Tablo ile uyumlu
+        public int CourseCount { get; set; } // Tablo ile uyumlu
+        public string? ImageURL { get; set; } // ImageURL nullable olduğu için '?' var
         public List<CourseDto> Courses { get; set; } // Yazarın kursları
     }
+
 
     public class CourseDto : IDto
     {

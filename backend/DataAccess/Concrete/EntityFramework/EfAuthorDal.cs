@@ -89,21 +89,31 @@ namespace DataAccess.Concrete.EntityFramework
                         Rating = c.Rating ?? 0.0,
                         Price = c.Price,
                         TotalStudentCount = c.TotalStudentCount ?? 0
+                        
                     }).ToList();
 
                 return new AuthorProfileDto
                 {
                     AuthorID = author.AuthorID,
                     Name = author.Name,
+                    Biography = author.Biography ?? "Biography not available.",
+                    DepartmentID = author.DepartmentID ?? 0,
                     Rating = author.Rating ?? 0.0,
                     StudentCount = author.StudentCount ?? 0,
-                    CourseCount = author.CourseCount ?? 0,
+                    CourseCount = author.CourseCount ?? 0,                                     
                     ImageURL = author.ImageURL,
                     Courses = courses
                 };
             }
         }
 
+        public List<Author> GetAuthorsByDepartmentId(int departmentId)
+        {
+            using (var context = new SWContext())
+            {
+                return context.Authors.Where(a => a.DepartmentID == departmentId).ToList();
+            }
+        }
 
     }
 

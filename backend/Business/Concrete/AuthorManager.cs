@@ -14,10 +14,12 @@ namespace Business.Concrete
     public class AuthorManager : IAuthorService
     {
         IAuthorDal _authorDal;
+        private readonly IDepartmentService _departmentService;
 
-        public AuthorManager(IAuthorDal authorDal)
+        public AuthorManager(IAuthorDal authorDal, IDepartmentService departmentService)
         {
             _authorDal = authorDal;
+            _departmentService = departmentService;
         }
 
         public void Add(Author author)
@@ -96,6 +98,21 @@ namespace Business.Concrete
 
                 _authorDal.Update(existingAuthor);
             }
+        }
+
+        public void UpdateAuthorDepartment(int authorId, int departmentId)
+        {
+            var author = _authorDal.Get(a => a.AuthorID == authorId);
+            if (author != null)
+            {
+                author.DepartmentID = departmentId;
+                _authorDal.Update(author);
+            }
+        }
+
+        public List<Author> GetAuthorsByDepartmentId(int departmentId)
+        {
+            return _authorDal.GetAuthorsByDepartmentId(departmentId);
         }
     }
 

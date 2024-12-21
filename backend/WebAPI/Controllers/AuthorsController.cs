@@ -73,5 +73,16 @@ namespace WebAPI.Controllers
             _authorService.Update(author);
             return Ok("Author updated successfully.");
         }
+
+        [HttpGet("getauthorsbydepartment")]
+        public IActionResult GetAuthorsByDepartmentId(int departmentId)
+        {
+            var result = _authorService.GetAuthorsByDepartmentId(departmentId);
+            if (result != null && result.Any())
+            {
+                return Ok(result);
+            }
+            return NotFound("No authors found for the given department.");
+        }
     }
 }

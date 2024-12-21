@@ -7,14 +7,19 @@ using System.Threading.Tasks;
 
 namespace Entities.Concrete
 {
-    public class Author:IEntity
+    public class Author : IEntity
     {
-        public int AuthorID { get; set; } // Primary Key
-        public string Name { get; set; } // Adı ve Soyadı
-        public double? Rating { get; set; } // Ortalama Puan
-        public int? StudentCount { get; set; } // Toplam Öğrenci Sayısı
-        public int? CourseCount { get; set; } // Toplam Kurs Sayısı
-        public string? ImageURL { get; set; } // Profil Resmi URL'si
-
+        public int AuthorID { get; set; }
+        public string Name { get; set; }
+        public string? Biography { get; set; }
+        public int? DepartmentID { get; set; } // Yeni Eklenen
+        public double? Rating { get; set; }
+        public int? StudentCount { get; set; }
+        public int? CourseCount { get; set; }
+        public string? ImageURL { get; set; }
+        
+        
+        //public Department Department { get; set; } // Navigation Property
     }
+
 }

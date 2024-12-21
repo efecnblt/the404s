@@ -32,5 +32,7 @@ namespace DataAccess.Concrete.EntityFramework
         public DbSet<LearningOutcome> LearningOutcomes { get; set; }
         public DbSet<StudentCourse> StudentCourses { get; set; }
 
+        public DbSet<Department> Departments { get; set; }
+
     }
 }

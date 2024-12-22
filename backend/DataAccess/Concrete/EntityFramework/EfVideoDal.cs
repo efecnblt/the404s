@@ -18,5 +18,20 @@ namespace DataAccess.Concrete.EntityFramework
                 return context.Videos.Where(v => v.SectionID == sectionId).OrderBy(v => v.Order).ToList();
             }
         }
+
+        public List<Video> GetVideosByCourseId(int courseId)
+        {
+            using (var context = new SWContext())
+            {
+                var videos = (from video in context.Videos
+                              join section in context.Sections
+                              on video.SectionID equals section.SectionID
+                              where section.CourseID == courseId
+                              select video).ToList();
+
+                return videos;
+            }
+        }
+
     }
 }

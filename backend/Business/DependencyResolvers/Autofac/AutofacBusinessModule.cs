@@ -42,6 +42,9 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<DepartmentManager>().As<IDepartmentService>().SingleInstance();
             builder.RegisterType<EfDepartmentDal>().As<IDepartmentDal>().SingleInstance();
 
+            builder.RegisterType<QuizManager>().As<IQuizService>().SingleInstance();
+            builder.RegisterType<EfQuizDal>().As<IQuizDal>().SingleInstance();
+
             builder.RegisterType<StudentCourseManager>().As<IStudentCourseService>().SingleInstance();
             builder.RegisterType<EfStudentCourseDal>().As<IStudentCourseDal>().SingleInstance();
 
@@ -57,6 +60,11 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<VideoManager>().As<IVideoService>().SingleInstance();
             builder.RegisterType<EfVideoDal>().As<IVideoDal>().SingleInstance();
 
+            builder.RegisterType<QuestionManager>().As<IQuestionService>().SingleInstance();
+            builder.RegisterType<ChoiceManager>().As<IChoiceService>().SingleInstance();
+
+            builder.RegisterType<EfQuestionDal>().As<IQuestionDal>().SingleInstance();
+            builder.RegisterType<EfChoiceDal>().As<IChoiceDal>().SingleInstance();
 
             builder.RegisterType<UserManager>().As<IUserService>();
             builder.RegisterType<EfUserDal>().As<IUserDal>();

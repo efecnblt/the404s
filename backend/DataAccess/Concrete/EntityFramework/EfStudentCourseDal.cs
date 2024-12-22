@@ -21,5 +21,20 @@ namespace DataAccess.Concrete.EntityFramework
                         select s).ToList();
             }
         }
+
+        public void UpdateCompletedVideos(int studentId, int courseId, int completedVideos)
+        {
+            using (var context = new SWContext())
+            {
+                var studentCourse = context.StudentCourses
+                    .FirstOrDefault(sc => sc.StudentId == studentId && sc.CourseID == courseId);
+                if (studentCourse != null)
+                {
+                    studentCourse.CompletedVideos = completedVideos;
+                    context.SaveChanges();
+                }
+            }
+        }
+
     }
 }

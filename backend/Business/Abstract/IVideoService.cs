@@ -13,5 +13,6 @@ namespace Business.Abstract
         void Add(Video video);
         void Update(Video video);
         void Delete(int videoId);
+         List<Video> GetVideosByCourseId(int courseId);
     }
 }

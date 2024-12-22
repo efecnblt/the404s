@@ -13,5 +13,7 @@ namespace Entities.Concrete
         public int CourseID { get; set; }
         public int? Order { get; set; }
         public string Title { get; set; }
+
+        //public List<Quiz> Quizzes { get; set; }
     }
 }

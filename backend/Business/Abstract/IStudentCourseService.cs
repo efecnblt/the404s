@@ -10,6 +10,7 @@ namespace Business.Abstract
 
     public interface IStudentCourseService
     {
+
         void Add(StudentCourse studentCourse);
         List<StudentCourse> GetAll();
         List<StudentCourse> GetByStudentId(int studentId);

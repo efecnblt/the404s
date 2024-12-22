@@ -13,6 +13,8 @@ namespace Entities.Concrete
         public int StudentId { get; set; }
         public int CourseID { get; set; }
         public DateTime EnrollmentDate { get; set; }
-        public int Progress { get; set; }
+        public int CompletedVideos { get; set; }
+        public float Progress { get; set; }
+
     }
 }

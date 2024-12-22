@@ -42,5 +42,12 @@ namespace Business.Concrete
                 _videoDal.Delete(video);
             }
         }
+
+        public List<Video> GetVideosByCourseId(int courseId)
+        {
+            return _videoDal.GetVideosByCourseId(courseId);
+        }
+
+
     }
 }

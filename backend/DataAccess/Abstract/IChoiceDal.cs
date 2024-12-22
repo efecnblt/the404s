@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Abstract
 {
-    public interface IVideoDal : IEntityRepository<Video>
+    public interface IChoiceDal : IEntityRepository<Choice>
     {
-        List<Video> GetVideosByCourseId(int courseId);
-        List<Video> GetVideosBySectionId(int sectionId); // Özel bir metot
     }
 }

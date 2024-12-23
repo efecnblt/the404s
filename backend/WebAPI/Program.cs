@@ -12,6 +12,9 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using DataAccess.Concrete.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,22 @@ builder.Services.AddControllers();
 //builder.Services.AddSingleton<IProductService, ProductManager>();
 //builder.Services.AddSingleton<IProductDal, EfProductDal>();
 
+// 1) CORS Servisini Ekle
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policyBuilder =>
+    {
+        // Geliştirme aşamasında geçici olarak herkese izin
+        policyBuilder
+            .AllowAnyOrigin()    // production'da *geniş* izin vermek yerine belirli bir domain kullanmanız önerilir
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
+// AppDbContext'i ekle
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>();
@@ -60,6 +79,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowAllOrigins");
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -67,4 +88,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.Run("http://165.232.76.61:5000");

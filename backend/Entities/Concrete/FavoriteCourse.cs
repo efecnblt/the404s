@@ -14,6 +14,8 @@ namespace Entities.Concrete
         public int FavoriteID { get; set; }
         public int StudentID { get; set; }
         public int CourseID { get; set; }
+
+        //public Course Course { get; set; }
     }
 
 }

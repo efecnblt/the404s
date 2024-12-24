@@ -4,6 +4,7 @@ using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,15 +24,21 @@ namespace Business.Concrete
             _favoriteCourseDal.Add(favoriteCourse);
         }
 
-        public void Remove(FavoriteCourse favoriteCourse)
+        public void Delete(FavoriteCourse favoriteCourse)
         {
             _favoriteCourseDal.Delete(favoriteCourse);
         }
 
-        public List<FavoriteCourse> GetByStudentId(int studentId)
+        public List<FavoriteCourse> GetAll(Expression<Func<FavoriteCourse, bool>> filter = null)
         {
-            return _favoriteCourseDal.GetAll(fc => fc.StudentID == studentId);
+            return _favoriteCourseDal.GetAll(filter);
+        }
+
+        public FavoriteCourse Get(Expression<Func<FavoriteCourse, bool>> filter)
+        {
+            return _favoriteCourseDal.Get(filter);
         }
     }
+
 
 }

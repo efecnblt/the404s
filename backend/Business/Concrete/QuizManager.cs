@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,14 @@ namespace Business.Concrete
         private readonly IQuizDal _quizDal;
         private readonly IQuestionService _questionService;
         private readonly IChoiceService _choiceService;
+       
 
         public QuizManager(IQuizDal quizDal,IQuestionService questionservice,IChoiceService choiceservice)
         {
             _quizDal = quizDal;
             _questionService = questionservice;
             _choiceService = choiceservice;
+            
         }
 
         public void Add(Quiz quiz)
@@ -64,6 +67,42 @@ namespace Business.Concrete
                 }
             }
         }
+
+
+        public int CalculateQuizScore(int studentId, int quizId)
+        {
+            using (var context = new SWContext())
+            {
+                // Öğrencinin bu quizdeki cevaplarını al
+                var studentAnswers = context.StudentAnswers
+                    .Where(sa => sa.Question.QuizID == quizId && sa.StudentID == studentId)
+                    .ToList();
+
+                int totalScore = 0;
+
+                foreach (var answer in studentAnswers)
+                {
+                    // Doğru cevabı al
+                    var correctChoice = context.Choices
+                        .FirstOrDefault(c => c.QuestionID == answer.QuestionID && c.IsCorrect);
+
+                    // Eğer öğrencinin cevabı doğruysa puan ekle
+                    if (correctChoice != null && correctChoice.ChoiceID == answer.ChoiceID)
+                    {
+                        // Sorunun puanını al
+                        var question = context.Questions.FirstOrDefault(q => q.QuestionID == answer.QuestionID);
+                        if (question != null)
+                        {
+                            totalScore += question.Points;
+                        }
+                    }
+                }
+
+                return totalScore; // Toplam puanı döndür
+            }
+        }
+
+
 
     }
 

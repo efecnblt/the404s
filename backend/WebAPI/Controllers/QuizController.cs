@@ -62,6 +62,17 @@ namespace WebAPI.Controllers
             var quizzes = _quizService.GetQuizzesBySectionId(sectionId);
             return Ok(quizzes);
         }
+
+        [HttpGet("CalculateQuizScore")]
+        public IActionResult CalculateQuizScore(int studentId, int quizId)
+        {
+            var score = _quizService.CalculateQuizScore(studentId, quizId);
+            return Ok(new { StudentId = studentId, QuizId = quizId, Score = score });
+        }
+
+
+
+
     }
 
 

@@ -12,5 +12,6 @@ namespace Business.Abstract
         void Add(Choice choice);
         void Update(Choice choice);
         void Delete(int choiceId);
+        Choice GetById(int choiceId);
     }
 }

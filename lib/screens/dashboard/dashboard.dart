@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/course.dart';
+import '../../models/user_model.dart';
 import '../../models/users.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/bottom_navigation_bar.dart';
@@ -20,12 +21,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cyber_security_app/main.dart';
 
 class Dashboard extends StatefulWidget {
-  final String name;
-  final String userId;
+  final UserModel user;
   static const String id = "dashboard_screen";
-  
 
-  const Dashboard({super.key, required this.name, required this.userId});
+  const Dashboard({super.key, required this.user});
 
   @override
   _DashboardState createState() => _DashboardState();
@@ -46,7 +45,7 @@ class _DashboardState extends State<Dashboard> {
     readSettings();
    
     _userCoursesFuture = AuthService.fetchUserCourses();
-    _userFuture = AuthService.getUserData(widget.userId);
+    _userFuture = AuthService.getUserData(widget.user.userId);
   }
 
   void _onItemTapped(int index) {
@@ -67,7 +66,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     var localizations = AppLocalizations.of(context);
-    
+    print("Current User:  ${widget.user.userId}");
     
     // Ekran boyutlarını al
     double screenWidth = MediaQuery.of(context).size.width;
@@ -111,7 +110,7 @@ class _DashboardState extends State<Dashboard> {
                           );
                         } else {
                           
-                          final user = snapshot.data!;
+
                           return Builder(
                             builder: (context) {
                               return Row(
@@ -147,7 +146,7 @@ class _DashboardState extends State<Dashboard> {
                                           child: CircleAvatar(
                                             radius: 45,
                                             backgroundImage:
-                                                NetworkImage(user.imageUrl),
+                                                NetworkImage(widget.user.imageUrl),
                                           ),
                                         ),
                                       ),
@@ -173,7 +172,7 @@ class _DashboardState extends State<Dashboard> {
                                       Row(
                                         children: [
                                           Text(
-                                            user.name,
+                                            widget.user.name,
                                             style: TextStyle(
                                               color: isDark
                                                   ? DarkTheme.textColor
@@ -546,7 +545,7 @@ class _DashboardState extends State<Dashboard> {
                                     localizations!.noSectionFound; // Handle missing sections
                               }
                               return BuildCard(
-                                userId: widget.userId,
+                                userId: widget.user.userId,
                                 authorId: authorId,
                                 sectionId: sectionId ??
                                     'No Section', // Handle null cases
@@ -574,22 +573,22 @@ class _DashboardState extends State<Dashboard> {
       ),
 
       SearchScreen(
-        userId: widget.userId,
+        userId: widget.user.userId,
         isDark: isDark,
         localizations: localizations,
       ),
       FavoritesPage(
-        userId: widget.userId,
+        userId: widget.user.userId,
         isDark: isDark,
         localizations: localizations,
       ),
       FavoritesPage(
-        userId: widget.userId,
+        userId: widget.user.userId,
         isDark: isDark,
         localizations: localizations,
       ),
       ProfileScreen(
-        userId: widget.userId,
+        userId: widget.user.userId,
         isDark: isDark,
         localizations: localizations,
       ),

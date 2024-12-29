@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/authors.dart';
-
+import '../models/user_model.dart';
 import '../models/course.dart';
 import 'package:cyber_security_app/models/users.dart' as app_user;
 import '../models/course_progress_model.dart';
@@ -27,9 +27,6 @@ class AuthService {
 
       User? user = userCredential.user;
 
-
-      
-
       if (user == null) {
         throw FirebaseAuthException(
           code: 'user-null',
@@ -38,29 +35,46 @@ class AuthService {
       }
 
       // Fetch the user's document from Firestore
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
+      DocumentSnapshot<Map<String, dynamic>> userDoc =
+      await _firestore.collection('users').doc(user.uid).get();
 
       if (!userDoc.exists) {
-        throw FirebaseAuthException(
-          code: 'user-doc-not-found',
-          message: 'User document not found in Firestore.',
-        );
+        // Create user document if it does not exist
+        await _firestore.collection('users').doc(user.uid).set({
+          'name': user.displayName ?? 'New User',
+          'email': user.email,
+          'createdAt': FieldValue.serverTimestamp(),
+          'bio': '',
+          'image_url': '',
+          'surname': '',
+          'username': '',
+          'occupation': '',
+        });
+
+        // Fetch the updated document
+        userDoc = await _firestore.collection('users').doc(user.uid).get();
       }
 
-      // Optionally, parse the user data if needed
-      // UserModel userModel = User.fromFirestore(userDoc);
+      // Extract user data into a UserModel
+      Map<String, dynamic> userData = userDoc.data()!;
 
-      String displayName = user.displayName ?? 'User';
+      UserModel userModel = UserModel(
+        name: userData['name'] ?? 'User',
+        surname: userData['surname'] ?? '',
+        username: userData['username'] ?? '',
+        bio: userData['bio'] ?? '',
+        email: userData['email'] ?? user.email ?? '',
+        imageUrl: userData['image_url'] ?? '',
+        occupation: userData['occupation'] ?? '',
+        createdAt: userData['createdAt']?.toDate(),
+        userId: user.uid,
+      );
 
-      // Navigate to Dashboard with name and userId
+      // Navigate to Dashboard with UserModel
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => Dashboard(
-            name: displayName,
-            userId: user.uid,
-          ),
+          builder: (context) => Dashboard(user: userModel),
         ),
       );
     } on FirebaseAuthException catch (e) {
@@ -112,7 +126,7 @@ class AuthService {
     try {
       // Trigger the Google Sign-In flow
       final GoogleSignInAccount? googleSignInAccount =
-          await GoogleSignIn().signIn();
+      await GoogleSignIn().signIn();
       if (googleSignInAccount == null) {
         // The user canceled the sign-in
         return;
@@ -120,7 +134,7 @@ class AuthService {
 
       // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth =
-          await googleSignInAccount.authentication;
+      await googleSignInAccount.authentication;
 
       // Create a new credential
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -130,7 +144,7 @@ class AuthService {
 
       // Sign in to Firebase with the Google [UserCredential]
       final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      await _auth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user == null) {
@@ -141,35 +155,50 @@ class AuthService {
       }
 
       // Fetch the user's document from Firestore
-      final DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
+      DocumentSnapshot<Map<String, dynamic>> userDoc =
+      await _firestore.collection('users').doc(user.uid).get();
 
       if (!userDoc.exists) {
-        throw FirebaseAuthException(
-          code: 'user-doc-not-found',
-          message: 'User document not found in Firestore.',
-        );
+        // Create user document if it does not exist
+        await _firestore.collection('users').doc(user.uid).set({
+          'name': user.displayName ?? 'New User',
+          'email': user.email,
+          'createdAt': FieldValue.serverTimestamp(),
+          'bio': '',
+          'image_url': user.photoURL ?? '',
+          'surname': '',
+          'username': '',
+          'occupation': '',
+        });
+
+        // Fetch the updated document
+        userDoc = await _firestore.collection('users').doc(user.uid).get();
       }
 
-      // Optionally, parse the user data if needed
-      // UserModel userModel = User.fromFirestore(userDoc);
+      // Extract user data into a UserModel
+      Map<String, dynamic> userData = userDoc.data()!;
 
-      String? displayName = user.displayName;
+      UserModel userModel = UserModel(
+        name: userData['name'] ?? 'User',
+        surname: userData['surname'] ?? '',
+        username: userData['username'] ?? '',
+        bio: userData['bio'] ?? '',
+        email: userData['email'] ?? user.email ?? '',
+        imageUrl: userData['image_url'] ?? '',
+        occupation: userData['occupation'] ?? '',
+        createdAt: userData['createdAt']?.toDate(),
+        userId: user.uid,
+      );
 
-      // Navigate to Dashboard with name and userId
+      // Navigate to Dashboard with UserModel
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => Dashboard(
-            name: displayName!,
-            userId: user.uid,
-          ),
+          builder: (context) => Dashboard(user: userModel),
         ),
       );
-        } on FirebaseAuthException {
+    } on FirebaseAuthException catch (e) {
       String errorMessage = 'An error occurred during Google sign-in.';
-
-      // You can handle specific FirebaseAuthException codes here if needed
 
       // Show error dialog
       showDialog(
@@ -191,8 +220,7 @@ class AuthService {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
-          content:
-              const Text('An unexpected error occurred. Please try again.'),
+          content: const Text('An unexpected error occurred. Please try again.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -203,6 +231,7 @@ class AuthService {
       );
     }
   }
+
 
   // Yeni kullanıcı oluşturma
   static Future<UserCredential> registerWithEmailAndPassword({

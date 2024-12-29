@@ -172,7 +172,7 @@ class _DashboardState extends State<Dashboard> {
                                       Row(
                                         children: [
                                           Text(
-                                            widget.user.name,
+                                            '${widget.user.username} ',
                                             style: TextStyle(
                                               color: isDark
                                                   ? DarkTheme.textColor

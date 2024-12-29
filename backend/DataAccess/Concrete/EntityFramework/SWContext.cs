@@ -35,6 +35,9 @@ namespace DataAccess.Concrete.EntityFramework
         public DbSet<Department> Departments { get; set; }
         public DbSet<Choice> Choices { get; set; }
         public DbSet<Question> Questions { get; set; }
+        public DbSet<FavoriteCourse> FavoriteCourses { get; set; }
+        public DbSet<StudentAnswer> StudentAnswers { get; set; }
+        public DbSet<StudentQuizResult> StudentQuizResults { get; set; }
 
 
 

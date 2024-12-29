@@ -36,5 +36,10 @@ namespace Business.Concrete
                 _choiceDal.Delete(choice);
             }
         }
+
+        public Choice GetById(int choiceId)
+        {
+            return _choiceDal.Get(c => c.ChoiceID == choiceId);
+        }
     }
 }

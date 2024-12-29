@@ -4,6 +4,7 @@ using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,6 +36,21 @@ namespace Business.Concrete
             {
                 _questionDal.Delete(question);
             }
+        }
+
+        public Question GetById(int questionId)
+        {
+            return _questionDal.Get(q => q.QuestionID == questionId);
+        }
+
+        public List<Question> GetAll(Expression<Func<Question, bool>> filter = null)
+        {
+            return _questionDal.GetAll(filter);
+        }
+
+        public Question Get(int questionId)
+        {
+            return _questionDal.Get(q => q.QuestionID == questionId);
         }
     }
 }

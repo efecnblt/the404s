@@ -15,7 +15,8 @@ namespace Business.Abstract
         List<Quiz> GetQuizzesBySectionId(int sectionId);
 
         void AddQuizWithQuestions(Quiz quiz, List<Question> questions);
-        
+        public int CalculateQuizScore(int studentId, int quizId);
+
     }
 
 }

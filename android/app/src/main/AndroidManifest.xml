@@ -2,9 +2,9 @@
 
     <application
 
-        android:label="cyber_security_app"
+        android:label="404 Academy"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/new_logo">
         android:enableOnBackInvokedCallback="true"
         <activity
             android:name=".MainActivity"

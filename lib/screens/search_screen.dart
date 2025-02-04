@@ -1,498 +1,268 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_security_app/screens/build_card.dart';
+import 'package:cyber_security_app/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../models/authors.dart';
 import '../models/course.dart';
-import 'build_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SearchScreen extends StatefulWidget {
-  final String? initialHashtag;
-  final String userId;
+  final int userId;
   final bool isDark;
   final AppLocalizations? localizations;
 
-  const SearchScreen({super.key, required this.userId, required this.isDark,this.initialHashtag, required this.localizations});
+  const SearchScreen({
+    Key? key,
+    required this.userId,
+    required this.isDark,
+    this.localizations,
+  }) : super(key: key);
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  _SearchScreenState createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  bool isLoading = true;
-  List<Course> matchingCourses = [];
+  final TextEditingController searchController = TextEditingController();
   String searchTerm = '';
-  TextEditingController searchController = TextEditingController();
-  List<Map<String, dynamic>> recommendedCourses = [];
+  List<String> popularHashtags = ['flutter', 'security', 'hack', 'mobile'];
+  List<Course> allCourses = [];
+  List<Course> recommendedCourses = [];
+  List<Course> matchingCourses = [];
+  late Future<void> _allCoursesFuture;
 
   @override
   void initState() {
     super.initState();
-    if (widget.initialHashtag != null) {
-      searchCourses(widget.initialHashtag!);
-      searchTerm = widget.initialHashtag!;
-      searchController.text = widget.initialHashtag!;
-    }
-    fetchRecommendedCourses();
+    _allCoursesFuture = _fetchAllCourses();
   }
 
-  Future<void> searchCourses(String searchTerm) async {
-    setState(() {
-      isLoading = true;
-    });
-    QuerySnapshot authorsSnapshot =
-    await FirebaseFirestore.instance.collection('authors').get();
+  Future<void> _fetchAllCourses() async {
+    try {
+      final coursesData = await ApiService.getAllCourses();
+      print('Debug: Raw all courses data fetched: $coursesData');
 
-    List<Course> results = [];
+      setState(() {
+        allCourses = coursesData
+            .map((data) {
+              if (data != null) {
+                return Course.fromMap(data);
+              } else {
+                print('Null course data found and skipped.');
+                return null;
+              }
+            })
+            .whereType<Course>()
+            .toList();
+      });
 
-    for (var authorDoc in authorsSnapshot.docs) {
-      Author author =
-      Author.fromFirestore(authorDoc); // Author nesnesini oluşturuyoruz
-
-      var coursesSnapshot =
-      await authorDoc.reference.collection('courses').get();
-
-      for (var courseDoc in coursesSnapshot.docs) {
-        List<dynamic> hashtags = courseDoc['hashtags'] ?? [];
-        String courseName = courseDoc['name'] ?? '';
-
-        if (hashtags.contains(searchTerm) ||
-            courseName.toLowerCase().contains(searchTerm.toLowerCase())) {
-          Course course = Course.fromFirestore(courseDoc);
-
-          course.loadSections(author.id); // Bölümleri yükleyebiliriz
-          author.courses
-              .add(course); // Kursları yazarın kurs listesine ekleyelim
-          results.add(course);
-        }
-      }
+      print('Debug: All courses successfully parsed: $allCourses');
+    } catch (e) {
+      print('Error fetching all courses: $e');
     }
-
-    setState(() {
-      matchingCourses = results;
-      isLoading = false;
-    });
   }
 
-  Future<void> fetchRecommendedCourses() async {
+  void searchCourses(String keyword) {
     setState(() {
-      isLoading = true;
-    });
-    QuerySnapshot authorsSnapshot =
-    await FirebaseFirestore.instance.collection('authors').get();
-
-    List<Map<String, dynamic>> results = [];
-
-    for (var authorDoc in authorsSnapshot.docs) {
-      Author author =
-      Author.fromFirestore(authorDoc); // Author nesnesini oluşturuyoruz
-
-      var coursesSnapshot =
-      await authorDoc.reference.collection('courses').limit(5).get();
-
-      for (var courseDoc in coursesSnapshot.docs) {
-        Course course = Course.fromFirestore(courseDoc);
-        await course.loadSections(author.id); // Bölümleri yükleyelim
-        results.add({
-          'course': course,
-          'author': author,
-        });
+      if (keyword.isEmpty) {
+        matchingCourses = [];
+        return;
       }
-    }
-
-    setState(() {
-      recommendedCourses = results;
-      isLoading= false;
+      matchingCourses = allCourses.where((course) {
+        final courseName = course.name?.toLowerCase() ?? '';
+        final hashtags = course.hashtags?.toLowerCase() ?? '';
+        return courseName.contains(keyword.toLowerCase()) ||
+            hashtags.contains(keyword.toLowerCase());
+      }).toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    List<String> categories = [
-      'Game development',
-      'Finance',
-      'Python',
-      'Programming',
-      'Reactjs',
-      'Flutter',
-    ];
-
-    return Scaffold(
-        backgroundColor:  widget.isDark? Colors.black:Color(0xFFEEEEEE),
-        extendBodyBehindAppBar:
-        true, // AppBar'ın arkasında kalan kısmın uzamasını sağlar.
-
-        body: CustomScrollView(
-          slivers: [
-            //sliver app barı sildim *mert
-            SliverList(
-                delegate: SliverChildListDelegate([
-                  SingleChildScrollView(
+    return FutureBuilder<void>(
+        future: _allCoursesFuture,
+        builder: (context, snapshot) {
+          return Scaffold(
+            backgroundColor:
+                widget.isDark ? Colors.black : const Color(0xFFEEEEEE),
+            body: CustomScrollView(
+              slivers: [
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    SingleChildScrollView(
                       child: Column(
                         children: [
                           Container(
-
-                            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                            //decoration sildim edgeleri kaldırdım *mert
-                            child:Column(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 20),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-
-                                  padding: EdgeInsets.all(1),
-                                  child: TextField(
-
-                                    style: TextStyle(
-                                      color: widget.isDark ? Colors.white:Color(0xFF252525),
+                                TextField(
+                                  style: TextStyle(
+                                    color: widget.isDark
+                                        ? Colors.white
+                                        : const Color(0xFF252525),
+                                  ),
+                                  controller: searchController,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      searchTerm = value;
+                                    });
+                                    searchCourses(searchTerm);
+                                  },
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 18),
+                                    filled: true,
+                                    fillColor: widget.isDark
+                                        ? Colors.grey.shade800
+                                        : Colors.white,
+                                    labelText:
+                                        widget.localizations!.searchForaCourse,
+                                    labelStyle: TextStyle(
+                                      color: widget.isDark
+                                          ? Colors.grey.shade200
+                                          : const Color(0xFF888888),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
                                     ),
-                                    controller: searchController,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        searchTerm = value;
-                                      });
-                                      searchCourses(searchTerm);
-                                    },
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 18),
-                                      filled: true,
-                                      fillColor: widget.isDark ? Colors.grey.shade800 :Colors.white,
-                                      labelText: widget.localizations!.searchForaCourse,
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                      ),
-                                      labelStyle: TextStyle(
-                                        color: widget.isDark ? Colors.grey.shade200:Color(0xFF888888),
-                                        fontSize: 16,
-                                        fontFamily: 'DM Sans',
-                                        fontWeight: FontWeight.w400,
-                                        height: 0,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(30.0),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(30.0),
-                                        borderSide: BorderSide(
-                                          color: widget.isDark ? Colors.black:Colors.white,
-                                          width: 0.0,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(30.0),
-                                        borderSide: BorderSide(
-                                          color: widget.isDark ? Colors.black :Color(0xFFE1E1E1),
-                                          width: 0.0,
-                                        ),
-                                      ),
-                                      suffixIcon: Padding(
-                                        padding: EdgeInsets.only(right: 15),
-                                        child: Icon(
-                                          FontAwesomeIcons.magnifyingGlass,
-                                          color: widget.isDark ? Colors.white:Colors.black,
-                                          size: 24,
-                                        ),
-                                      ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(30.0),
                                     ),
+                                    suffixIcon: const Icon(
+                                        FontAwesomeIcons.magnifyingGlass),
                                   ),
                                 ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 20),
-                                  child: Text(
-                                    widget.localizations!.browserCategory ,
+                                const SizedBox(height: 20),
+                                if (searchTerm.isEmpty) ...[
+                                  Text(
+                                    widget.localizations!.popularHashtags,
                                     style: TextStyle(
-                                      color: widget.isDark ? Colors.white:Colors.black,
+                                      color: widget.isDark
+                                          ? Colors.white
+                                          : Colors.black,
                                       fontSize: 18,
-                                      fontFamily: 'Prompt',
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                ),
-                                Wrap(
-                                  spacing: 15.0,
-                                  runSpacing: 10.0,
-                                  children: categories.map((category) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          searchTerm = category;
-                                          searchController.text = category;
-                                        });
-                                        searchCourses(category);
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20.0, vertical: 12.0),
-                                        decoration: ShapeDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment(0.00, -1.00),
-                                            end: Alignment(0, 1),
-                                            colors: widget.isDark ?  [Colors.green.shade900, Colors.green.shade800]:[Color(0xFF21C8F6), Color(0xFF637BFF)],
+                                  const SizedBox(height: 10),
+                                  Wrap(
+                                    spacing: 15.0,
+                                    runSpacing: 10.0,
+                                    children: popularHashtags.map((hashtag) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            searchTerm = hashtag;
+                                            searchController.text = hashtag;
+                                          });
+                                          searchCourses(hashtag);
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20.0, vertical: 12.0),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: widget.isDark
+                                                  ? [
+                                                      Colors.green.shade900,
+                                                      Colors.green.shade800
+                                                    ]
+                                                  : [
+                                                      const Color(0xFF21C8F6),
+                                                      const Color(0xFF637BFF)
+                                                    ],
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(30),
                                           ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                          ),
-
-                                        ),
-                                        child: Text(
-                                          category,
-                                          style: TextStyle(
-                                            color:Colors.white,
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                                Column(
-
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-
-                                     if (searchTerm.isNotEmpty)
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 10),
-                                        child: Text(
-                                          '${widget.localizations!.searchResultFor} "$searchTerm"',
-                                          style: TextStyle(
-                                            color: widget.isDark ? Colors.white:Colors.black,
-                                            fontSize: 18,
-                                            fontFamily: 'Prompt',
-                                            fontWeight: FontWeight.w500,
-
-                                          ),
-
-                                        ),
-                                      ),
-                                    if(searchTerm=='') //search terme bir şey yazılmamışken not found hatasını almamak için *mert
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.center,
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  width: 30,
-                                                  decoration: ShapeDecoration(
-                                                    shape: RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                        width: 0.7,
-                                                        strokeAlign: BorderSide
-                                                            .strokeAlignCenter,
-                                                        color: Color(0xFF888888),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                SizedBox(
-                                                  child: Text(
-                                                    widget.localizations!.recommended,
-                                                    style: TextStyle(
-                                                      color: widget.isDark ? Colors.white: Colors.black,
-                                                      fontSize: 18,
-                                                      fontFamily: 'Prompt',
-                                                      fontWeight: FontWeight.w400,
-                                                      height: 0,
-                                                    ),
-                                                  ),
-
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Container(
-                                                  width: 30,
-                                                  decoration: ShapeDecoration(
-                                                    shape: RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                        width: 0.7,
-                                                        strokeAlign: BorderSide
-                                                            .strokeAlignCenter,
-                                                        color: Color(0xFF888888),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
+                                          child: Text(
+                                            hashtag,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.w500,
                                             ),
                                           ),
-                                          SizedBox(height: 10),
-                                          Column(
-                                            children: [if (isLoading)
-                                            const Center(
-                                            child: CircularProgressIndicator(),),
-                                            Column(
-                                              children:
-                                                recommendedCourses.map((data) {
-                                                  Course courseData = data['course'];
-                                                  Author authorData = data['author'];
-                                                  print(authorData.name);
-                                                  return BuildCard(
-                                                    userId: widget.userId,
-                                                    authorId: authorData.id,
-                                                    sectionId:
-                                                    courseData.sections.isNotEmpty
-                                                        ? courseData.sections[0].id
-                                                        : 'No Section',
-                                                    course: courseData,
-                                                    authorName: authorData.name,
-                                                    icon: FontAwesomeIcons.graduationCap,
-                                                    courseName: courseData.name,
-                                                    description: courseData.description,
-                                                    rating: courseData.rating,
-                                                    level: courseData.level,
-                                                    isDark: widget.isDark,
-                                                    localizations: widget.localizations,
-                                                  );
-                                                }).toList(),
-
-
-
-                                            )
-                                            ],
-
-
-                                          ),
-                                        ],
-                                      )
-
-
-                                    else if (matchingCourses.isNotEmpty)
-                                      Column(
-                                        children: matchingCourses.map((courseData) {
-                                          return BuildCard(
-                                            userId: widget.userId,
-                                            authorId: courseData.id,
-                                            sectionId: courseData.sections.isNotEmpty
-                                                ? courseData.sections[0].id
-                                                : 'No Section',
-                                            course: courseData,
-                                            authorName: courseData.name,
-                                            icon: FontAwesomeIcons.graduationCap,
-                                            courseName: courseData.name,
-                                            description: courseData.description,
-                                            rating: courseData.rating,
-                                            level: courseData.level,
-                                            isDark: widget.isDark,
-                                            localizations: widget.localizations,
-                                          );
-                                        }).toList(),
-                                      )
-
-                                    else
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            margin:
-                                            EdgeInsets.only(bottom: 20, top: 20),
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              widget.localizations!.noSearchResultsFound,
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            alignment: Alignment.center,
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  width: 30,
-                                                  decoration: ShapeDecoration(
-                                                    shape: RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                        width: 0.7,
-                                                        strokeAlign: BorderSide
-                                                            .strokeAlignCenter,
-                                                        color: Color(0xFF888888),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 7),
-                                                SizedBox(
-                                                  child: Text(
-                                                    widget.localizations!.recommended,
-                                                    style: TextStyle(
-                                                      color: widget.isDark ? Colors.white:Colors.black,
-                                                      fontSize: 18,
-                                                      fontFamily: 'Prompt',
-                                                      fontWeight: FontWeight.w400,
-                                                      height: 0,
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Container(
-                                                  width: 30,
-                                                  decoration: ShapeDecoration(
-                                                    shape: RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                        width: 0.7,
-                                                        strokeAlign: BorderSide
-                                                            .strokeAlignCenter,
-                                                        color: Color(0xFF888888),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 10),
-                                          Column(
-                                            children: recommendedCourses.map((data) {
-                                              Course courseData = data['course'];
-                                              Author authorData = data['author'];
-                                              print(authorData.name);
-                                              return BuildCard(
-                                                userId: widget.userId,
-                                                authorId: authorData.id,
-                                                sectionId:
-                                                courseData.sections.isNotEmpty
-                                                    ? courseData.sections[0].id
-                                                    : 'No Section',
-                                                course: courseData,
-                                                authorName: authorData.name,
-                                                icon: FontAwesomeIcons.graduationCap,
-                                                courseName: courseData.name,
-                                                description: courseData.description,
-                                                rating: courseData.rating,
-                                                level: courseData.level,
-                                                isDark: widget.isDark,
-                                                localizations: widget.localizations,
-                                              );
-                                            }).toList(),
-                                          ),
-                                        ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    widget.localizations!.recommended,
+                                    style: TextStyle(
+                                      color: widget.isDark
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Column(
+                                    children: allCourses.map((course) {
+                                      return BuildCard(
+                                        price: course.price!,
+                                        courseImage: course.image!,
+                                        userId: widget.userId,
+                                        authorId: course.authorId!,
+                                        course: course,
+                                        authorName: '',
+                                        icon: FontAwesomeIcons.graduationCap,
+                                        courseName: course.name!,
+                                        description: course.description!,
+                                        rating: course.rating!,
+                                        level: course.levelId!,
+                                        isDark: widget.isDark,
+                                        localizations: widget.localizations,
+                                      );
+                                    }).toList(),
+                                  ),
+                                ] else if (matchingCourses.isNotEmpty) ...[
+                                  Column(
+                                    children: matchingCourses.map((course) {
+                                      return BuildCard(
+                                        price: course.price!,
+                                        courseImage: course.image!,
+                                        userId: widget.userId,
+                                        authorId: course.authorId!,
+                                        course: course,
+                                        authorName: '',
+                                        icon: FontAwesomeIcons.graduationCap,
+                                        courseName: course.name!,
+                                        description: course.description!,
+                                        rating: course.rating!,
+                                        level: course.levelId!,
+                                        isDark: widget.isDark,
+                                        localizations: widget.localizations,
+                                      );
+                                    }).toList(),
+                                  ),
+                                ] else ...[
+                                  Center(
+                                    child: Text(
+                                      'widget.localizations!.noResultsFound',
+                                      style: TextStyle(
+                                        color: widget.isDark
+                                            ? Colors.white
+                                            : Colors.black,
+                                        fontSize: 16,
                                       ),
-                                  ],
-                                ),
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                           ),
                         ],
-                      )),
-                ]))
-          ],
-        ));
+                      ),
+                    ),
+                  ]),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }

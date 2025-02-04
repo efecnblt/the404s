@@ -30,8 +30,8 @@ environment:
 dependencies:
   
   flutter_localizations:
-      sdk: flutter
-  youtube_player_flutter: ^9.1.1
+    sdk: flutter
+  connectivity_plus: ^4.0.0
   webview_flutter: ^4.9.0
   firebase_auth: ^5.3.1
   firebase_core: ^3.6.0

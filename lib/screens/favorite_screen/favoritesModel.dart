@@ -1,45 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cyber_security_app/models/course.dart';
+import 'package:cyber_security_app/services/api_services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../build_card.dart';
-import '../course_detail/course_detail_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FavoritesPage extends StatefulWidget {
-  final String userId;
+  final int userId;
   final bool isDark;
   final AppLocalizations? localizations;
 
-  const FavoritesPage({Key? key, required this.userId,required this.isDark,required this.localizations}) : super(key: key);
+  const FavoritesPage({
+    Key? key,
+    required this.userId,
+    required this.isDark,
+    required this.localizations,
+  }) : super(key: key);
 
   @override
   _FavoritesPageState createState() => _FavoritesPageState();
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  late Future<List<Map<String, dynamic>>> _favoritesFuture;
+  late Future<List<Course>> _favoritesFuture;
 
   @override
   void initState() {
     super.initState();
-    _favoritesFuture = fetchFavorites(widget.userId);
+    _favoritesFuture = _fetchFavoriteCourses();
   }
 
-  Future<List<Map<String, dynamic>>> fetchFavorites(String userId) async {
+  /// Fetch favorite courses by first getting studentId and then fetching courses
+  Future<List<Course>> _fetchFavoriteCourses() async {
     try {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      if (userDoc.exists) {
-        List<dynamic> favorites = userDoc.data()?['favorites'] ?? [];
-        return favorites.map((favorite) => Map<String, dynamic>.from(favorite)).toList();
+      final studentId = await ApiService.getStudentIdByUserId(widget.userId);
+      if (studentId == null) {
+        print('No studentId found for userId: ${widget.userId}');
+        return [];
       }
-      return [];
+
+      final favoriteCourses = await ApiService.getFavoriteCourses(studentId);
+      final List<Course> courseDetails = [];
+
+      for (var favorite in favoriteCourses) {
+        final courseData = await ApiService.getCourseById(favorite['courseID']);
+        courseDetails.add(Course.fromMap(courseData));
+      }
+
+      return courseDetails;
     } catch (e) {
-      print("Favori verileri alınırken hata oluştu: $e");
+      print('Error fetching favorite courses: $e');
       return [];
     }
   }
@@ -48,98 +58,50 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: Text(
-            widget.localizations!.myFavCourses,
-            style: TextStyle(
-              color: widget.isDark?  Colors.white : Colors.black,
-              fontSize: 18,
-              fontFamily: 'Prompt',
-              fontWeight: FontWeight.w400,
-            ),
+        title: Text(
+          widget.localizations!.myFavCourses,
+          style: TextStyle(
+            color: widget.isDark ? Colors.white : Colors.black,
           ),
         ),
+        backgroundColor: widget.isDark ? Colors.black : Colors.white,
       ),
-      extendBodyBehindAppBar: true,
-      backgroundColor: widget.isDark? Colors.black :Colors.white,
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: FutureBuilder<List<Map<String, dynamic>>>(
+      body: FutureBuilder<List<Course>>(
+        future: _favoritesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text(widget.localizations!.anErrorOccured));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text(widget.localizations!.noFavourite));
+          }
 
-          future: _favoritesFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text(widget.localizations!.anErrorOccured));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text(widget.localizations!.noFavourite));
-            }
-
-            final favorites = snapshot.data!;
-            return ListView.builder(
-              itemCount: favorites.length,
-              itemBuilder: (context, index) {
-                final favorite = favorites[index];
-                return FutureBuilder<DocumentSnapshot>(
-                  future: FirebaseFirestore.instance
-                      .collection('authors')
-                      .doc(favorite['authorId'])
-                      .get(),
-                  builder: (context, authorSnapshot) {
-                    if (authorSnapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (authorSnapshot.hasError || !authorSnapshot.hasData || !authorSnapshot.data!.exists) {
-                      return Center(child: Text(widget.localizations!.noAuthorInform));
-                    }
-
-                    final authorData = authorSnapshot.data!.data() as Map<String, dynamic>;
-                    final authorName = authorData['name'] ?? 'Bilinmeyen Yazar';
-
-                    return FutureBuilder<DocumentSnapshot>(
-                      future: FirebaseFirestore.instance
-                          .collection('authors')
-                          .doc(favorite['authorId'])
-                          .collection('courses')
-                          .doc(favorite['courseId'])
-                          .get(),
-                      builder: (context, courseSnapshot) {
-                        if (courseSnapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        } else if (courseSnapshot.hasError || !courseSnapshot.hasData || !courseSnapshot.data!.exists) {
-                          return Center(child: Text(widget.localizations!.noCourseInform));
-                        }
-
-                        final course = Course.fromFirestore(courseSnapshot.data!);
-
-                        return BuildCard(
-                          userId: widget.userId,
-                          authorId: favorite['authorId'],
-                          sectionId: '',
-                          course: course,
-                          authorName: authorName, // Burada çekilen yazar adı kullanılıyor
-                          icon: FontAwesomeIcons.graduationCap,
-                          courseName: course.name,
-                          description: course.description,
-                          rating: course.rating,
-                          level: course.level,
-                          isDark: widget.isDark,
-                          localizations: widget.localizations,
-                        );
-                      },
-                    );
-                  },
-                );
-
-              },
-            );
-          },
-        ),
+          final courses = snapshot.data!;
+          return ListView.builder(
+            itemCount: courses.length,
+            itemBuilder: (context, index) {
+              final course = courses[index];
+              return BuildCard(
+                price: course.price!,
+                courseImage: course.image!,
+                userId: widget.userId,
+                authorId: course.authorId!,
+                course: course,
+                authorName: 'Unknown Author',
+                icon: FontAwesomeIcons.graduationCap,
+                courseName: course.name ?? '',
+                description: course.description ?? 'No description available',
+                rating: course.rating ?? 0.0,
+                level: course.levelId!,
+                isDark: widget.isDark,
+                localizations: widget.localizations,
+              );
+            },
+          );
+        },
       ),
-
+      backgroundColor: widget.isDark ? Colors.black : Colors.white,
     );
   }
 }

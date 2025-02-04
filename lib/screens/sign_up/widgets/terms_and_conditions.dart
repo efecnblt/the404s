@@ -1,66 +1,59 @@
-import 'package:flutter/gestures.dart';
+// Updated terms_and_conditions.dart to ensure consistent navigation and UI
 import 'package:flutter/material.dart';
-import '../../../constants/styles.dart';
-import '../../../constants/colors.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TermsAndConditions extends StatelessWidget {
-  final bool isChecked;
-  final Function(bool) onChanged;
-  final double screenWidth;
-  final VoidCallback onTermsTap;
-  final VoidCallback onPrivacyTap;
+  final VoidCallback onAccept;
+  final String terms;
 
-  const TermsAndConditions({
-    super.key,
-    required this.isChecked,
-    required this.onChanged,
-    required this.screenWidth,
-    required this.onTermsTap,
-    required this.onPrivacyTap,
-  });
+  const TermsAndConditions(
+      {Key? key, required this.onAccept, required this.terms})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          value: isChecked,
-          checkColor: AppColors.primaryColor,
-          activeColor: AppColors.textColor,
-          onChanged: (bool? value) {
-            onChanged(value ?? false);
-          },
-        ),
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              text: AppLocalizations.of(context)?.agree ?? "I agree with the",
-              style: AppTextStyles.labelTextStyle(screenWidth * 0.045)
-                  .copyWith(color: AppColors.textColor),
-              children: <TextSpan>[
-                TextSpan(
-                  text: AppLocalizations.of(context)?.terms ?? "Terms of Service",
-                  style: AppTextStyles.labelTextStyle(screenWidth * 0.045)
-                      .copyWith(
-                    decoration: TextDecoration.underline,
-                  ),
-                  recognizer: TapGestureRecognizer()..onTap = onTermsTap,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Terms and Conditions'),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Text(
+                  terms,
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
                 ),
-                 TextSpan(text: AppLocalizations.of(context)?.and ?? "and"),
-                TextSpan(
-                  text: AppLocalizations.of(context)?.privacyPolicy ?? "Privacy Policy",
-                  style: AppTextStyles.labelTextStyle(screenWidth * 0.045)
-                      .copyWith(
-                    decoration: TextDecoration.underline,
-                  ),
-                  recognizer: TapGestureRecognizer()..onTap = onPrivacyTap,
-                ),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: onAccept,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: const Text(
+                  'Accept',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

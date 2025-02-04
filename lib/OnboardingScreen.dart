@@ -1,8 +1,5 @@
-
 import 'package:cyber_security_app/screens/login_or_signup_screen.dart';
 import 'package:flutter/material.dart';
-import 'generated/l10n.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // OnboardingPage widget'ınızın tanımı burada olmalı veya ayrı bir dosyada tanımlanmalıdır.
 
@@ -73,9 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       // Son sayfadaysa Login veya Signup ekranına geçiş yap
       Navigator.pushReplacement(
         context,
-
         MaterialPageRoute(builder: (context) => LoginSignupScreen()),
-
       );
     } else {
       _controller.nextPage(

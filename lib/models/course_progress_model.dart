@@ -1,32 +1,30 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-class UserProgress {
-  final String id; // Firestore document ID
-  final String courseId;
-  final String authorId;
+class CourseProgress {
+  final int id;
+  final int userId;
+  final int courseId;
   final double progress;
 
-  UserProgress({
+  CourseProgress({
     required this.id,
+    required this.userId,
     required this.courseId,
-    required this.authorId,
     required this.progress,
   });
 
-  factory UserProgress.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return UserProgress(
-      id: doc.id,
-      courseId: data['courseId'] ?? '',
-      authorId: data['authorId'] ?? '',
-      progress: (data['progress'] ?? 0.0).toDouble(),
+  factory CourseProgress.fromMap(Map<String, dynamic> map) {
+    return CourseProgress(
+      id: map['id'] ?? 0,
+      userId: map['userId'] ?? 0,
+      courseId: map['courseId'] ?? 0,
+      progress: (map['progress'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
+      'id': id,
+      'userId': userId,
       'courseId': courseId,
-      'authorId': authorId,
       'progress': progress,
     };
   }

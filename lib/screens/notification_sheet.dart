@@ -4,7 +4,7 @@ import '../../generated/l10n.dart';
 
 class NotificationSheet extends StatelessWidget {
   final List<Map<String, String>> notifications = [
-   const {
+    const {
       'title': 'Yeni Kurs Yayında!',
       'description':
           'Flutter ile ileri seviye dersler yayınlandı, şimdi keşfet!'
@@ -21,7 +21,7 @@ class NotificationSheet extends StatelessWidget {
     },
   ];
 
-   NotificationSheet({super.key});
+  NotificationSheet({super.key});
 
   @override
   Widget build(BuildContext context) {

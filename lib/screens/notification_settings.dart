@@ -6,7 +6,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class NotificationSettings extends StatefulWidget {
   final bool isDark;
   final AppLocalizations? localizations;
-  const NotificationSettings({super.key, required this.isDark,required this.localizations});
+  const NotificationSettings(
+      {super.key, required this.isDark, required this.localizations});
 
   @override
   State<NotificationSettings> createState() => _NotificationSettingsState();

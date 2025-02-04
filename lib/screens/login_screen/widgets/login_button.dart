@@ -1,45 +1,60 @@
 import 'package:flutter/material.dart';
-import '../../../constants/styles.dart';
-import '../../../constants/colors.dart';
-import '../../../generated/l10n.dart';
-import '../../../services/auth_service.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../services/auth_service.dart';
 
 class LoginButton extends StatelessWidget {
-  final double fontSize;
-  final String email;
-  final String password;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
 
   const LoginButton({
-    super.key,
-    required this.fontSize,
-    required this.email,
-    required this.password,
-  });
+    Key? key,
+    required this.emailController,
+    required this.passwordController,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
+    return ElevatedButton(
+      onPressed: () async {
+        final email = emailController.text.trim();
+        final password = passwordController.text.trim();
 
-    return GestureDetector(
-      onTap: () {
-        AuthService.signInWithEmailAndPassword(
-            context, "efecanbolat34@gmail.com", "123456");
+        // Check if fields are empty
+        if (email.isEmpty || password.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Please fill in all fields.'),
+            ),
+          );
+          return;
+        }
+
+        // Attempt login
+        print('Login button pressed with Email: $email, Password: $password');
+        try {
+          await AuthService.signInWithEmailAndPassword(
+              context, email, password);
+        } catch (e) {
+          print('Login failed: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Login failed. Please try again.',
+              ),
+            ),
+          );
+        }
       },
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
-        decoration: BoxDecoration(
-          color: AppColors.accentColor,
-          borderRadius: BorderRadius.circular(50),
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
         ),
-        child: Center(
-          child: Text(
-            AppLocalizations.of(context)!.login,
-            style: AppTextStyles.buttonTextStyle(fontSize),
-          ),
-        ),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      child: Text(
+        AppLocalizations.of(context)?.login ?? 'Login',
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }

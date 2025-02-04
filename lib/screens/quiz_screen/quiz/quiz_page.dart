@@ -9,7 +9,6 @@ class QuizPage extends StatefulWidget {
   final QuizQuestion question;
   final int totalQuestions;
   final List<String> shuffleAnswers;
-  
 
   QuizPage({
     required this.currentQuestionIndex,
@@ -71,7 +70,7 @@ class _QuizPageState extends State<QuizPage> {
       context,
       {
         'selectedAnswer': answer,
-        'correct': answer == widget.question.correctanswer,
+        'correct': answer == widget.question.correctAnswer,
         'timeTaken': elapsedTime,
       },
     );
@@ -90,7 +89,8 @@ class _QuizPageState extends State<QuizPage> {
             color: Colors.white,
           ),
         ),
-        automaticallyImplyLeading: false, // Prevents the back button from showing
+        automaticallyImplyLeading:
+            false, // Prevents the back button from showing
         centerTitle: true,
       ),
       body: Container(

@@ -9,15 +9,14 @@ class EmailField extends StatelessWidget {
   final Color shadowColor;
   final TextEditingController controller;
 
-  const EmailField({
-    super.key,
-    required this.fontSize,
-    required this.controller,
-    required this.fieldBackgroundColor,
-    required this.textColor,
-    required this.hintTextColor,
-    required this.shadowColor
-  });
+  const EmailField(
+      {super.key,
+      required this.fontSize,
+      required this.controller,
+      required this.fieldBackgroundColor,
+      required this.textColor,
+      required this.hintTextColor,
+      required this.shadowColor});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +44,8 @@ class EmailField extends StatelessWidget {
             style: TextStyle(color: textColor),
             controller: controller,
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)?.enterEmail ?? "Enter your email",
+              hintText: AppLocalizations.of(context)?.enterEmail ??
+                  "Enter your email",
               hintStyle: TextStyle(color: hintTextColor),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenHeight * 0.015,

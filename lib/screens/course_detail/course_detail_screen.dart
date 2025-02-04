@@ -1,33 +1,28 @@
-// lib/screens/course_detail_page.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_security_app/screens/purchase_screen.dart';
 import 'package:cyber_security_app/screens/author_profile.dart';
 import 'package:cyber_security_app/screens/video_player/video_player_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/authors.dart';
 import '../../models/course.dart';
-import '../../models/sections.dart';
-import '../../models/video.dart';
-import '../../services/auth_service.dart';
-import '../search_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../services/api_services.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final Course course;
   final bool isDark;
-  final String authorId;
-  final String userId;
-  final String sectionId;
+  final int authorId;
+  final int userId;
   final AppLocalizations? localizations;
 
-  const CourseDetailPage(
-      {super.key,
-        required this.course,
-        required this.authorId,
-        required this.userId,
-        required this.sectionId,
-        required this.isDark,
-        required this.localizations,});
+  const CourseDetailPage({
+    super.key,
+    required this.course,
+    required this.authorId,
+    required this.userId,
+    required this.isDark,
+    required this.localizations,
+  });
 
   @override
   _CourseDetailPageState createState() => _CourseDetailPageState();
@@ -35,192 +30,221 @@ class CourseDetailPage extends StatefulWidget {
 
 class _CourseDetailPageState extends State<CourseDetailPage> {
   bool isFavorite = false;
-  late Future<List<Video>> _videosFuture;
-  List<String> unlockedVideos = [];
-  List<String> completedVideos = [];
-  late Future<Author?> _authorFuture;
+  late Future<Author> _authorFuture;
+
+  bool isRegistered = false;
   Author? author;
-  bool isLoading = true;
-  List<bool> _isExpanded = [];
+  int? _studentId;
 
   @override
   void initState() {
     super.initState();
-    _authorFuture = AuthService.getAuthorData(widget.authorId);
-    //checkIfUserHasRated();
-
-    fetchHashtags();
-    _isExpanded = List.generate(widget.course.sections.length, (_) => false);
-    checkIfCourseIsInFavorites();
+    _fetchCategoryName();
+    _fetchStudentId().then((_) => checkIfCourseIsFavorite());
+    _checkIfCourseIsRegistered();
+    _authorFuture = ApiService.getAuthorById(widget.authorId);
   }
 
-  static final FirebaseAuth _auth = FirebaseAuth.instance;
-  Future<void> checkIfCourseIsInFavorites() async {
+  Future<void> _checkIfCourseIsRegistered() async {
+    setState(() {
+      isProcessing = true;
+    });
+
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) {
-        throw Exception("Kullanıcı oturumu açık değil.");
-      }
-
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      if (userDoc.exists) {
-        List<dynamic> favorites = userDoc.data()?['favorites'] ?? [];
-        setState(() {
-          isFavorite = favorites.any((favorite) =>
-          favorite['courseId'] == widget.course.id &&
-              favorite['authorId'] == widget.authorId);
-        });
-      }
-    } catch (e) {
-      print("Favori kontrolü sırasında hata oluştu: $e");
-    }
-  }
-
-  Future<void> addToFavorites() async {
-    try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) {
-        throw Exception("Kullanıcı oturumu açık değil.");
-      }
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update({
-        'favorites': FieldValue.arrayUnion([
-          {
-            'courseId': widget.course.id,
-            'courseName': widget.course.name,
-            'description': widget.course.description,
-            'level': widget.course.level,
-            'department': widget.course.department,
-            'rating': widget.course.rating,
-            'ratingCount': widget.course.ratingCount,
-            'hashtags': widget.course.hashtags,
-            'authorId': widget.authorId,
-          }
-        ])
+      final userCourses = await ApiService.getUserCourses(widget.userId);
+      final isRegisteredCourse = userCourses.any((course) {
+        return course['course'].courseID == widget.course.courseID;
       });
 
       setState(() {
-        isFavorite = true;
+        isRegistered = isRegisteredCourse;
+        isProcessing = false;
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.localizations!.addedFav)),
-      );
     } catch (e) {
-      print(' ${widget.localizations!.errorAddedFav}  $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.localizations!.errorAddedFav)),
-      );
-    }
-  }
-
-  Future<void> removeFromFavorites() async {
-    try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) {
-        throw Exception(widget.localizations!.userNotSignedIn);
-      }
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update({
-        'favorites': FieldValue.arrayRemove([
-          {
-            'courseId': widget.course.id,
-            'courseName': widget.course.name,
-            'description': widget.course.description,
-            'level': widget.course.level,
-            'department': widget.course.department,
-            'rating': widget.course.rating,
-            'ratingCount': widget.course.ratingCount,
-            'hashtags': widget.course.hashtags,
-            'authorId': widget.authorId,
-          }
-        ])
-      });
-
+      print('Error checking course registration: $e');
       setState(() {
-        isFavorite = false;
+        isRegistered = false;
+        isProcessing = false;
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.localizations!.removedFav)),
-      );
-    } catch (e) {
-      print(" ${widget.localizations!.errorRemovedFav} $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.localizations!.errorRemovedFav)),
-      );
     }
   }
 
-  void toggleFavorite() {
-    if (isFavorite) {
-      removeFromFavorites();
+  Widget _buildRegisteredText() {
+    if (isProcessing) {
+      return Text(
+        "Loading...",
+        style: TextStyle(
+          color: Color(0xFFFCFCFF),
+          fontSize: 16,
+          fontFamily: 'DM Sans',
+          fontWeight: FontWeight.w700,
+          height: 0,
+        ),
+      );
+    } else if (isRegistered) {
+      return Text(
+        widget.localizations!.startCourse,
+        style: TextStyle(
+          color: Color(0xFFFCFCFF),
+          fontSize: 16,
+          fontFamily: 'DM Sans',
+          fontWeight: FontWeight.w700,
+          height: 0,
+        ),
+      );
     } else {
-      addToFavorites();
+      return Text(
+        widget.localizations!.purchase,
+        style: TextStyle(
+          color: Color(0xFFFCFCFF),
+          fontSize: 16,
+          fontFamily: 'DM Sans',
+          fontWeight: FontWeight.w700,
+          height: 0,
+        ),
+      );
     }
   }
 
-  void fetchHashtags() async {
+  Future<void> _fetchCategoryName() async {
     try {
-      final courseDoc = await FirebaseFirestore.instance
-          .collection('authors')
-          .doc(widget.authorId)
-          .collection('courses')
-          .doc(widget.course.id)
-          .get();
+      // Fetch category data
+      final categoryResponse =
+          await ApiService.getCategoryById(widget.course.categoryId!);
+      final categoryName = categoryResponse['name'] ?? 'Unknown Category';
 
-      if (courseDoc.exists) {
-        final courseData = courseDoc.data();
+      setState(() {
+        widget.course.categoryName = categoryName;
+      });
+    } catch (e) {
+      print('Error fetching category: $e');
+    }
+  }
 
-        if (courseData != null && courseData.containsKey('hashtags')) {
+  Future<void> _fetchStudentId() async {
+    try {
+      final studentId = await ApiService.getStudentIdByUserId(widget.userId);
+      setState(() {
+        _studentId = studentId;
+      });
+      print('Student ID: $_studentId');
+    } catch (e) {
+      print('Error fetching studentId: $e');
+    }
+  }
+
+  Future<void> checkIfCourseIsFavorite() async {
+    if (_studentId == null) {
+      await _fetchStudentId();
+    }
+
+    try {
+      final status = await ApiService.checkFavoriteStatus(
+          _studentId!, widget.course.courseID);
+      setState(() {
+        isFavorite = status;
+      });
+    } catch (e) {
+      print('Error checking favorite status: $e');
+    }
+  }
+
+  Future<void> toggleFavorite() async {
+    if (_studentId == null) {
+      await _fetchStudentId();
+    }
+
+    try {
+      if (isFavorite) {
+        // Remove from favorites
+        final statusCode = await ApiService.removeFromFavorites(
+            widget.course.courseID, _studentId!);
+        if (statusCode == 200) {
           setState(() {
-            hashtags = List<String>.from(courseData['hashtags'] ?? []);
+            isFavorite = false;
           });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(widget.localizations?.removedFav ??
+                    'Removed from favorites')),
+          );
         } else {
-          print("Hashtags alanı mevcut değil.");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(widget.localizations?.errorRemovedFav ??
+                    'Failed to remove from favorites')),
+          );
         }
       } else {
-        print("Kurs belgesi bulunamadı.");
+        // Add to favorites
+        final statusCode = await ApiService.addToFavorites(
+            widget.course.courseID, _studentId!);
+        if (statusCode == 200) {
+          setState(() {
+            isFavorite = true;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    widget.localizations?.addedFav ?? 'Added to favorites')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(widget.localizations?.errorAddedFav ??
+                    'Failed to add to favorites')),
+          );
+        }
       }
     } catch (e) {
-      print("Hashtags verileri alınırken hata oluştu: $e");
+      print('Error toggling favorite: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An unexpected error occurred.')),
+      );
     }
   }
+
+  bool isProcessing = false; // Flag to prevent multiple API calls
 
   bool isExpanded = false; // Metin genişletme durumunu kontrol etmek için
 
-  void navigateToSearch(String query) {
-    // Arama sayfasına yönlendirme işlemi burada yapılacak.
-    // Örneğin:
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SearchPage(
-          searchHashtag: query,
-          userId: widget.userId,
-          course: widget.course,
-          authorId: widget.authorId,
-          sectionId: widget.sectionId,
-          localizations: widget.localizations,
-        ),
+  List<String> _parseHashtags(String? hashtags) {
+    if (hashtags == null || hashtags.isEmpty) return [];
+    return hashtags.split(',').map((tag) => tag.trim()).toList();
+  }
+
+// Add this widget to display the hashtags
+  Widget _buildHashtagsSection() {
+    final hashtags = _parseHashtags(widget.course.hashtags);
+    if (hashtags.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Wrap(
+        spacing: 8.0,
+        runSpacing: 4.0,
+        children: hashtags.map((tag) {
+          return GestureDetector(
+            onTap: () {
+              print(tag);
+            },
+            child: Text(
+              '#$tag     ',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
-  List<String> hashtags = [];
-
   @override
   Widget build(BuildContext context) {
+    ApiService.getCategoryById(widget.course.categoryId!);
+    ApiService.getStudentIdByUserId(widget.userId);
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -254,18 +278,22 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           ),
           actions: [
             IconButton(
-              padding: EdgeInsets.only(right: 15),
               icon: Icon(
-                size: 32,
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : Colors.white,
+                isFavorite
+                    ? FontAwesomeIcons.solidHeart
+                    : FontAwesomeIcons.heart,
+                color: isFavorite ? Colors.red : Colors.grey,
               ),
-              onPressed: toggleFavorite,
+              onPressed: () {
+                setState(() {
+                  toggleFavorite();
+                });
+              },
             ),
           ],
         ),
         extendBodyBehindAppBar: true,
-        backgroundColor: widget.isDark ? Colors.black :Colors.white,
+        backgroundColor: widget.isDark ? Colors.black : Colors.white,
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -275,7 +303,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   gradient: LinearGradient(
                     begin: Alignment(0.00, -1.00),
                     end: Alignment(0, 1),
-                    colors: widget.isDark ?  [Colors.grey.shade700, Colors.grey.shade900]  :[Color(0xFF21C8F6), Color(0xFF637BFF)],
+                    colors: widget.isDark
+                        ? [Colors.grey.shade700, Colors.grey.shade900]
+                        : [Color(0xFF21C8F6), Color(0xFF637BFF)],
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
@@ -299,7 +329,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 ),
                 child: Center(
                   child: Container(
-
                     margin: EdgeInsets.only(top: 90, right: 20, left: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -311,10 +340,11 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                widget.course.name,
+                                widget.course.name!,
                                 style: TextStyle(
                                   height: 1.2,
-                                  fontSize: MediaQuery.of(context).size.height * 0.04,
+                                  fontSize:
+                                      MediaQuery.of(context).size.height * 0.04,
                                   fontFamily: 'Prompt',
                                   fontWeight: FontWeight.w400,
                                   color: widget.isDark
@@ -325,7 +355,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                               Padding(
                                 padding: EdgeInsets.only(right: 25, top: 10),
                                 child: Text(
-                                  widget.course.department,
+                                  widget.course.categoryName ?? "",
                                   textAlign: TextAlign.justify,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 3,
@@ -334,7 +364,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                     fontFamily: 'Prompt',
                                     fontWeight: FontWeight.w400,
                                     height: 1.2,
-                                    fontSize: MediaQuery.of(context).size.height * 0.02,
+                                    fontSize:
+                                        MediaQuery.of(context).size.height *
+                                            0.02,
                                     color: widget.isDark
                                         ? Colors.white
                                         : Colors.black54,
@@ -342,41 +374,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                 ),
                               ),
                               SizedBox(height: 20),
-                              Wrap(
-                                spacing: 2,
-                                runSpacing: 5,
-                                children: hashtags.map((hashtag) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      navigateToSearch(hashtag);
-                                    },
-                                    child: Card(
-                                      color: Color(0xff185e32),
-                                      elevation: 4,
-                                      shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 2, color: Colors.transparent),
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 10,
-                                          horizontal: 15,
-                                        ),
-                                        child: Text(
-                                          hashtag,
-                                          style: TextStyle(
-                                            fontSize: MediaQuery.of(context).size.height * 0.018,
-                                            fontFamily: 'Prompt',
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
+                              _buildHashtagsSection(),
                             ],
                           ),
                         ),
@@ -404,10 +402,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Text(
                         isExpanded
-                            ? widget.course.description
-                            : widget.course.description.length > 300
-                            ? widget.course.description.substring(0, 300)
-                            : widget.course.description,
+                            ? widget.course.description!
+                            : widget.course.description!.length > 300
+                                ? widget.course.description!.substring(0, 300)
+                                : widget.course.description!,
                         textAlign: TextAlign.justify,
                         style: TextStyle(
                           fontFamily: 'Prompt',
@@ -417,7 +415,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                         ),
                       ),
                     ),
-                    if (widget.course.description.length > 300)
+                    if (widget.course.description!.length > 300)
                       GestureDetector(
                         onTap: () {
                           setState(() {
@@ -425,7 +423,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                           });
                         },
                         child: Text(
-                          isExpanded ? widget.localizations!.showLess : widget.localizations!.showMore,
+                          isExpanded
+                              ? widget.localizations!.showLess
+                              : widget.localizations!.showMore,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.blue,
@@ -504,54 +504,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                       }
                     },
                   ),
-                  //Sections List
-                  /*FutureBuilder<List<Section>>(
-                    future: AuthService.fetchSections(
-                        widget.authorId, widget.course.id),
-                    // Fetch the sections
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text("Error: ${snapshot.error}"));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text("No sections available"));
-                      }
-
-                      // Section data is available
-                      List<Section> sections = snapshot.data!;
-
-                      return ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                        shrinkWrap: true,
-                        // Add this to ensure the ListView takes only the space it needs
-                        physics: NeverScrollableScrollPhysics(),
-                        // Disable ListView's own scrolling
-                        itemCount: sections.length,
-                        itemBuilder: (context, index) {
-                          Section section = sections[index];
-                          return ExpansionTile(
-                            title: Text(
-                              section.title,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            children: section.videos.map((video) {
-                              return ListTile(
-                                style: ListTileStyle.drawer,
-                                leading: Icon(Icons.play_circle_fill),
-                                title: Text(
-                                  video.title,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                subtitle:
-                                    Text("Duration: ${video.duration} mins"),
-                              );
-                            }).toList(),
-                          );
-                        },
-                      );
-                    },
-                  ),*/
                 ],
               ),
               SizedBox(
@@ -618,17 +570,33 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => VideoPlayerPage(
-                            course: widget.course,
-                            authorId: widget.authorId,
-                          ),
-                        ),
-                      );
-                    },
+                    onTap: isProcessing
+                        ? null
+                        : () {
+                            if (isRegistered) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => VideoPlayerPage(
+                                    userId: widget.userId,
+                                    courseId: widget.course.courseID,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PurchaseScreen(
+                                    course: widget.course,
+                                    isDark: widget.isDark,
+                                    userId: widget.userId,
+                                    localizations: widget.localizations,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                     child: Container(
                       width: 170,
                       height: 55,
@@ -660,21 +628,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            widget.localizations!.startCourse,
-                            style: TextStyle(
-                              color: Color(0xFFFCFCFF),
-                              fontSize: 16,
-                              fontFamily: 'DM Sans',
-                              fontWeight: FontWeight.w700,
-                              height: 0,
-                            ),
-                          ),
-                        ],
+                        children: [_buildRegisteredText()],
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
               SizedBox(
@@ -698,7 +655,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       height: 125,
       padding: const EdgeInsets.all(15),
       decoration: ShapeDecoration(
-        color:widget.isDark ? Colors.grey.shade800: Color(0xFFF1F1FA),
+        color: widget.isDark ? Colors.grey.shade800 : Color(0xFFF1F1FA),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -738,17 +695,17 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 ),
               ),
               child: ClipOval(
-                child: author?.imageUrl != null
+                child: author?.imageURL != null
                     ? Image.network(
-                  author!.imageUrl, // Load image from URL
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                        "images/default_author.png"); // Fallback image
-                  },
-                )
+                        author!.imageURL!, // Load image from URL
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                              "images/default_author.png"); // Fallback image
+                        },
+                      )
                     : Image.asset(
-                    "images/default_author.png"), // Fallback if no URL
+                        "images/default_author.png"), // Fallback if no URL
               ),
             ),
           ),
@@ -762,7 +719,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     maxLines: 1,
                     author?.name ?? widget.localizations!.unknownAuthor,
                     style: TextStyle(
-                      color: widget.isDark?  Colors.white  :Color(0xFF161719),
+                      color: widget.isDark ? Colors.white : Color(0xFF161719),
                       fontSize: 20,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -788,11 +745,13 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               child: Row(
                 children: [
                   Text(
-                    author!.courseCount >= 50
+                    author!.courseCount! >= 50
                         ? '${widget.localizations!.fiftyCourse}'
                         : "${(author?.courseCount ?? 0).toString()} ${widget.localizations!.courses}",
                     style: TextStyle(
-                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF888888),
+                      color: widget.isDark
+                          ? Colors.grey.shade400
+                          : Color(0xFF888888),
                       fontSize: 14,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -807,7 +766,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     width: 4,
                     height: 4,
                     decoration: ShapeDecoration(
-                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF90909F),
+                      color: widget.isDark
+                          ? Colors.grey.shade400
+                          : Color(0xFF90909F),
                       shape: OvalBorder(),
                     ),
                   ),
@@ -815,11 +776,13 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     width: 10,
                   ),
                   Text(
-                    author!.studentCount >= 1000
+                    author!.studentCount! >= 1000
                         ? widget.localizations!.thousandStudent
                         : "${(author?.studentCount ?? 0).toString()} ${widget.localizations!.students}",
                     style: TextStyle(
-                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF888888),
+                      color: widget.isDark
+                          ? Colors.grey.shade400
+                          : Color(0xFF888888),
                       fontSize: 14,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -840,7 +803,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     maxLines: 1,
                     widget.localizations!.authorReviews,
                     style: TextStyle(
-                      color: widget.isDark ?  Colors.grey.shade400 :Color(0xFF888888),
+                      color: widget.isDark
+                          ? Colors.grey.shade400
+                          : Color(0xFF888888),
                       fontSize: 14,
                       fontFamily: 'Prompt',
                       fontWeight: FontWeight.w400,
@@ -860,44 +825,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     );
   }
 
-  Future<List<ExpansionPanel>> _buildSectionPanels(
-      Course course, String authorId) async {
-    List<ExpansionPanel> panels = [];
-
-    for (Section section in course.sections) {
-      List<Video> videos =
-      await AuthService.fetchVideos(authorId, course.id, section.id);
-
-      panels.add(
-        ExpansionPanel(
-          headerBuilder: (BuildContext context, bool isExpanded) {
-            return ListTile(
-              title: Text(section.title),
-              subtitle: Text("${widget.localizations!.videos}: ${videos.length}"),
-            );
-          },
-          body: Column(
-            children: videos.map<Widget>((video) {
-              return ListTile(
-                leading: Icon(Icons.play_circle_fill),
-                title: Text(video.title),
-                subtitle: Text("${widget.localizations!.duration} ${video.duration} ${widget.localizations!.mins}"),
-                onTap: () {
-                  print("${widget.localizations!.selectedVideo}: ${video.title}");
-                  // Burada video oynatma işlemi başlatılabilir
-                  // Örneğin: navigateToVideoPlayer(video.url);
-                },
-              );
-            }).toList(),
-          ),
-          isExpanded: false, // You might want to manage this state
-        ),
-      );
-    }
-
-    return panels;
-  }
-
   // Function to build the star rating row
   Widget buildStarRating(double rating, {int starCount = 5}) {
     return Row(
@@ -914,7 +841,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           rating.toString(),
           style: TextStyle(
             fontSize: 12,
-            color: widget.isDark?Colors.white:Colors.black,
+            color: widget.isDark ? Colors.white : Colors.black,
             fontFamily: 'Prompt',
             fontWeight: FontWeight.bold,
           ),
@@ -938,43 +865,3 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     return rating >= starValue ? Colors.yellow.shade900 : Colors.grey;
   }
 }
-
-/*
-const SizedBox(height: 20),
-
-// Bölümler
-ListView.builder(
-itemCount: widget.course.sections.length,
-itemBuilder: (context, index) {
-final section = widget.course.sections[index];
-return ExpansionTile(
-title: Text(
-section.title,
-style: TextStyle(
-fontSize: 18,
-fontWeight: FontWeight.w600,
-color: widget.isDark ? Colors.white : Colors.black87,
-),
-),
-children: section.videos.map((video) {
-return ListTile(
-leading:
-Icon(Icons.play_arrow, color: Colors.blue)
-   ,
-title: Text(
-video.title,
-style: TextStyle(
-color:
-widget.isDark ? Colors.white : Colors.black87,
-),
-),
-onTap: () {
-
-}
-   ,
-);
-}).toList(),
-);
-},
-),
-*/

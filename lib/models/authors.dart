@@ -1,53 +1,49 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'course.dart';
-
 class Author {
-  final String id;
-  final String name;
-  final String imageUrl;
-  final String department;
-  final int courseCount;
-  final int studentCount;
-  final double rating;
-  final List<Course> courses; // List of courses
+  final int authorID;
+  final String? name;
+  final String? biography;
+  final int? departmentID;
+  final double? rating;
+  final int? studentCount;
+  final int? courseCount;
+  final String? imageURL;
+  String? departmentName;
 
   Author({
-    required this.id,
-    required this.name,
-    required this.department,
-    required this.imageUrl,
-    required this.courseCount,
-    required this.studentCount,
-    required this.rating,
-    required this.courses,
+    required this.authorID,
+    this.name,
+    this.biography,
+    this.departmentID,
+    this.rating,
+    this.studentCount,
+    this.courseCount,
+    this.imageURL,
+    this.departmentName,
   });
 
-  factory Author.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    List<dynamic> coursesData = data['courses'] ?? [];
-    List<Course> coursesList = coursesData.map((courseData) => Course.fromMap(courseData)).toList();
+  factory Author.fromMap(Map<String, dynamic> map) {
     return Author(
-      id: doc.id,
-      name: data['name'] ?? '',
-      department: data['department'] ?? '',
-      imageUrl: data['image_url'] ?? '',
-      courseCount: (data['courseCount'] ?? 0).toInt(),
-      studentCount: (data['studentCount'] ?? 0).toInt(),
-      rating: (data['rating'] ?? 0.0).toDouble(),
-      courses: coursesList,
+      authorID: map['authorID'] ?? 0,
+      name: map['name'],
+      biography: map['biography'],
+      departmentID: map['departmentID'],
+      rating: (map['rating'] as num?)?.toDouble(),
+      studentCount: map['studentCount'],
+      courseCount: map['courseCount'],
+      imageURL: map['imageURL'],
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
+      'authorID': authorID,
       'name': name,
-      'department': department,
-      'image_url': imageUrl,
-      'course_count': courseCount,
-      'studentCount': studentCount,
+      'biography': biography,
+      'departmentID': departmentID,
       'rating': rating,
-      'courses': courses.map((course) => course.toMap()).toList(),
+      'studentCount': studentCount,
+      'courseCount': courseCount,
+      'imageURL': imageURL,
     };
   }
 }

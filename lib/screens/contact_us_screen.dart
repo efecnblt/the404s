@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 
 class ContactUsPage extends StatelessWidget {
   final bool isDark;
   final AppLocalizations? localizations;
-  ContactUsPage({super.key, required this.isDark,required this.localizations});
-  // TextEditingController’ları tanımlıyoruz
+  ContactUsPage({super.key, required this.isDark, required this.localizations});
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController messageController = TextEditingController();
@@ -22,7 +19,7 @@ class ContactUsPage extends StatelessWidget {
           color: isDark ? Colors.white : Colors.black,
         ),
         title: Text(
-          localizations!.contactUs ,
+          localizations!.contactUs,
           style: TextStyle(
             color: isDark ? Colors.white : Colors.black,
           ),

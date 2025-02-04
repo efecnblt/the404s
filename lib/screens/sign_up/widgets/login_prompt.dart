@@ -1,42 +1,38 @@
-import 'package:cyber_security_app/screens/login_or_signup_screen.dart';
+// Updated login_prompt.dart to ensure UI consistency
 import 'package:flutter/material.dart';
-import '../../../constants/styles.dart';
-import '../../login_screen/login_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPrompt extends StatelessWidget {
-  final double screenWidth;
+  final VoidCallback onLoginPressed;
+  final String message;
 
-  const LoginPrompt({
-    super.key,
-    required this.screenWidth,
-  });
+  const LoginPrompt(
+      {Key? key, required this.onLoginPressed, required this.message})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Text(
-            AppLocalizations.of(context)?.alreadyHaveAnAcc ?? "Already have an account?",
-            style: AppTextStyles.labelTextStyle(screenWidth * 0.05)
-                .copyWith(color: Colors.white),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          message,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.black54,
           ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginSignupScreen(),
-                  ));
-            },
-            child: Text(
-              AppLocalizations.of(context)?.login ?? "Login",
-              style: AppTextStyles.linkTextStyle(screenWidth * 0.05),
+        ),
+        TextButton(
+          onPressed: onLoginPressed,
+          child: const Text(
+            'Log In',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

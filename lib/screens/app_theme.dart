@@ -1,7 +1,6 @@
-// theme/app_theme.dart
 import 'package:flutter/material.dart';
 
-class LightTheme{
+class LightTheme {
   static const Color backgroundColor = Colors.white;
   static const Color textColor = Colors.black;
   static Color subTitleColor = Colors.grey;
@@ -10,13 +9,14 @@ class LightTheme{
 
   //Dashboard Req.
   static const Color cardBackgroundColor = Color(0xFFF5F5F5);
-  static const List<Color> progressCardBackground = [Color(0xFF21C8F6), Color(0xFF637BFF)];
-  static const Color instructorAndLevel =  Color(0xFF90909F);
-
+  static const List<Color> progressCardBackground = [
+    Color(0xFF21C8F6),
+    Color(0xFF637BFF)
+  ];
+  static const Color instructorAndLevel = Color(0xFF90909F);
 }
 
-
-class DarkTheme{
+class DarkTheme {
   static const Color backgroundColor = Colors.black;
   static const Color textColor = Colors.white;
   static Color subTitleColor = Colors.white;
@@ -25,7 +25,9 @@ class DarkTheme{
 
   //Dashboard Req.
   static const Color cardBackgroundColor = Color(0xFF2F2F2F);
-  static const List<Color> progressCardBackground = [Color(0xFF2F2F2F), Color(0xFF2F2F2F)];
-  static const Color instructorAndLevel =  Color(0xFF90909F);
-
+  static const List<Color> progressCardBackground = [
+    Color(0xFF2F2F2F),
+    Color(0xFF2F2F2F)
+  ];
+  static const Color instructorAndLevel = Color(0xFF90909F);
 }

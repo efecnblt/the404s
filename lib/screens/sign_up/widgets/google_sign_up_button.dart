@@ -1,45 +1,32 @@
+// Updated google_sign_up_button.dart to ensure proper navigation and maintain UI
 import 'package:flutter/material.dart';
-import '../../../constants/colors.dart';
-import '../../../constants/styles.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-class GoogleSignUpButton extends StatelessWidget {
-  final double screenWidth;
-  final double screenHeight;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-  const GoogleSignUpButton({
-    super.key,
-    required this.screenWidth,
-    required this.screenHeight,
-  });
+class GoogleSignUpButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const GoogleSignUpButton({Key? key, required this.onPressed})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // Google ile kayıt olma işlemi
-      },
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
-        decoration: BoxDecoration(
-          color: AppColors.accentColor,
-          borderRadius: BorderRadius.circular(50),
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: const Icon(FontAwesomeIcons.google, color: Colors.red),
+      label: const Text(
+        'Sign Up with Google',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              "images/Google_logo.png",
-              width: screenWidth * 0.05,
-              height: screenWidth * 0.05,
-            ),
-            SizedBox(width: screenWidth * 0.02),
-            Text(
-              AppLocalizations.of(context)?.signUpWithGoogle ?? "Sign Up with Google",
-              style: AppTextStyles.buttonTextStyle(screenWidth * 0.05),
-            ),
-          ],
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blueAccent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
   }

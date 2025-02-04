@@ -17,7 +17,7 @@ class GoogleSignInButton extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        AuthService.signInWithGoogle(context);
+        //  AuthService.signInWithGoogle(context);
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 30),
@@ -50,7 +50,8 @@ class GoogleSignInButton extends StatelessWidget {
             ),
             SizedBox(width: screenWidth * 0.02),
             Text(
-              AppLocalizations.of(context)?.loginWithGoogle ?? "Log in with Google",
+              AppLocalizations.of(context)?.loginWithGoogle ??
+                  "Log in with Google",
               style: TextStyle(
                 color: Color(0xFFFCFCFF),
                 fontSize: 18,

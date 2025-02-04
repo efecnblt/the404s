@@ -1,6 +1,7 @@
 // components/build_card.dart
 import 'dart:math';
 
+import 'package:cyber_security_app/services/api_services.dart';
 import 'package:flutter/material.dart';
 
 List<Color> colors = [
@@ -113,109 +114,160 @@ class CourseCard extends StatelessWidget {
     required this.courseName,
     required this.rating,
     required this.instructor,
-    required this.level,
+    required this.levelId,
     required this.progress,
+    required this.authorId,
+    this.levelName,
+    this.authorName,
   });
 
   final String courseName;
+  final int authorId;
   final double rating;
   final String instructor;
-  final String level;
+  final int levelId;
+  String? levelName;
+  String? authorName;
   final double progress; // Progress percentage
   final Random random = Random();
+
+  Future<Map<String, String>> _fetchAuthorAndLevelInfo(
+      int authorId, int levelId) async {
+    try {
+      // Fetch authors
+      final authorsData = await ApiService.getAllAuthors();
+      final author = authorsData.firstWhere(
+        (author) => author['authorID'] == authorId,
+        orElse: () => {'name': 'Unknown'},
+      );
+
+      // Fetch levels
+      final levelMap = await ApiService.matchLevelIdAndName();
+      final levelName = levelMap[levelId] ?? 'Unknown Level';
+
+      return {
+        'authorName': author['name'] ?? 'Unknown',
+        'levelName': levelName,
+      };
+    } catch (e) {
+      print('Error fetching author or level info: $e');
+      return {
+        'authorName': 'Unknown',
+        'levelName': 'Unknown',
+      };
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     if (!courseColors.containsKey(courseName)) {
       int randomIndex = random.nextInt(colors.length);
-      courseColors[courseName] = colors[randomIndex]; // Reuse color for the same course
+      courseColors[courseName] =
+          colors[randomIndex]; // Reuse color for the same course
     }
     // Use previously assigned color
     Color progressBarColor = courseColors[courseName]!;
-    return Container(
-      height: 120,
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding:  EdgeInsets.only(left: 15, right: 15),
-      decoration: BoxDecoration(
-        color: Colors.transparent, // Background color
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center, // Center alignment
-        children: [
-          Text(
-            courseName,
-            textAlign: TextAlign.center, // Center text alignment
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 10,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
+
+    return FutureBuilder<Map<String, String>>(
+        future: _fetchAuthorAndLevelInfo(authorId, levelId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            final data = snapshot.data ?? {};
+            final authorName = data['authorName'] ?? 'Unknown';
+            final levelName = data['levelName'] ?? 'Unknown';
+            return Container(
+              height: 120,
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.only(left: 15, right: 15),
+              decoration: BoxDecoration(
+                color: Colors.transparent, // Background color
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.center, // Center alignment
                 children: [
-                  const Icon(Icons.star, size: 16, color: Colors.amber),
-                  const SizedBox(width: 5),
                   Text(
-                    rating.toString(),
+                    courseName,
+                    textAlign: TextAlign.center, // Center text alignment
                     style: const TextStyle(
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
+                  const SizedBox(height: 2),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 10,
+                    runSpacing: 10,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.star, size: 16, color: Colors.amber),
+                          const SizedBox(width: 5),
+                          Text(
+                            rating.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      _buildDot(),
+                      Text(
+                        authorName,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      _buildDot(),
+                      Text(
+                        levelName,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  // Progress Bar
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          height: 15,
+                          color: Colors.grey[300], // Grey background color
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              height: 10, // Smaller height for green bar
+                              width: MediaQuery.of(context).size.width *
+                                  progress, // Width based on progress
+                              color: progressBarColor, // Green color
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-              _buildDot(),
-              Text(
-                instructor,
-                style: const TextStyle(color: Colors.white),
-              ),
-              _buildDot(),
-              Text(
-                level,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          // Progress Bar
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  height: 15,
-                  color: Colors.grey[300], // Grey background color
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      height: 10, // Smaller height for green bar
-                      width: MediaQuery.of(context).size.width * progress, // Width based on progress
-                      color: progressBarColor, // Green color
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+            );
+          }
+        });
   }
 
   Widget _buildDot() {

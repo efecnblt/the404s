@@ -1,128 +1,77 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cyber_security_app/models/sections.dart';
-
 class Course {
-  final String id;
-  final String name;
-  final String description;
-  final String level;
-  final String department;
-  List<String> hashtags;
-  final double rating;
-  final int ratingCount;
-  List<dynamic> sections;
+  final int courseID;
+  final String? name;
+  int? categoryId;
+  final String? description;
+  final int? authorId;
+  final double? rating;
+  final int? ratingCount;
+  final double? price;
+  final double? discount;
+  final int? totalStudentCount;
+  final String? image;
+  final String? hashtags;
+  final int? levelId;
+  String? authorName;
+  String? categoryName;
 
   Course({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.level,
-    required this.rating,
-    required this.sections,
-    required this.ratingCount,
-    required this.department,
-    required this.hashtags
+    required this.courseID,
+    this.name,
+    this.categoryId,
+    this.description,
+    this.authorId,
+    this.rating,
+    this.ratingCount,
+    this.price,
+    this.discount,
+    this.totalStudentCount,
+    this.image,
+    this.hashtags,
+    this.levelId,
+    this.authorName,
+    this.categoryName
   });
 
-  Future<void> loadSections(String authorId) async {
-    QuerySnapshot sectionSnapshot = await FirebaseFirestore.instance
-        .collection('authors')
-        .doc(authorId)
-        .collection('courses')
-        .doc(id)
-        .collection('sections')
-        .orderBy('order')
-        .get();
-
-    sections = sectionSnapshot.docs.map((doc) => Section.fromFirestore(doc)).toList();
-  }
-
-  factory Course.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-
-
-    // Handle sections
-    List<dynamic> sectionsData = (data['sections'] is List)
-        ? data['sections']
-        : (data['sections'] is Map ? (data['sections'] as Map).values.toList() : []);
-    List<Section> sectionsList = sectionsData.where((section) => section is Map<String, dynamic>)
-        .map((sectionData) => Section.fromMap(sectionData as Map<String, dynamic>))
-        .toList();
-
-    // Handle hashtags
-    List<String> hashtagsList = (data['hashtags'] is List)
-        ? List<String>.from(data['hashtags'].whereType<String>())
-        : (data['hashtags'] is String ? [data['hashtags']] : []);
-
-    // Handle description
-    final String description = (data['description'] is List)
-        ? (data['description'] as List).join('\n')
-        : (data['description'] ?? '');
-
-    // Handle learning outcomes
-    final List<String> learningOutcomes = (data['learning_outcomes'] is List)
-        ? List<String>.from(data['learning_outcomes'].whereType<String>())
-        : [];
-
+  factory Course.fromMap(Map<String, dynamic> map) {
     return Course(
-      id: doc.id,
-      name: data['name'] ?? '',
-      description: description,
-      level: data['level'] ?? '',
-      department: data['department'] ?? '',
-      rating: (data['rating'] ?? 0.0).toDouble(),
-      ratingCount: data['rating_count'] ?? 0,
-      hashtags: hashtagsList,
-      sections: sectionsList,
-      // Assuming Course has a field for learning outcomes
+      courseID: map['courseID'] ?? 0,
+      name: map['name'],
+      categoryId: map['categoryId'],
+      description: _cleanDescription(map['description']),
+      authorId: map['authorId'],
+      rating: (map['rating'] as num?)?.toDouble(),
+      ratingCount: map['ratingCount'],
+      price: (map['price'] as num?)?.toDouble(),
+      discount: (map['discount'] as num?)?.toDouble(),
+      totalStudentCount: map['totalStudentCount'],
+      image: map['image'],
+      hashtags: map['hashtags'],
+      levelId: map['levelId'],
     );
   }
-
-
-
-
-
-  factory Course.fromMap(Map<String, dynamic> data, {String id = ''}) {
-    List<dynamic> sectionsData = (data['sections'] is List) ? data['sections'] : [];
-    List<Section> sectionsList = sectionsData.where((section) => section is Map<String, dynamic>)
-        .map((sectionData) => Section.fromMap(sectionData as Map<String, dynamic>))
-        .toList();
-
-
-    return Course(
-      id: id,
-      name: data['name'] ?? '',
-      description: data['description'] ?? '',
-      level: data['level'] ?? '',
-      department: data['department'] ?? '',
-      rating: (data['rating'] ?? 0.0).toDouble(),
-      ratingCount: data['rating_count'] ?? 0,
-      hashtags: List<String>.from(data['hashtags'] ?? []),
-      sections: sectionsList,
-    );
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return toMap()..remove('id');
-  }
-
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'courseID': courseID,
       'name': name,
-      'description': description.split('\n'), // Convert string back to list
-      'level': level,
-      'department': department,
+      'categoryId': categoryId,
+      'description': description,
+      'authorId': authorId,
       'rating': rating,
-      'rating_count': ratingCount,
+      'ratingCount': ratingCount,
+      'price': price,
+      'discount': discount,
+      'totalStudentCount': totalStudentCount,
+      'image': image,
       'hashtags': hashtags,
-      'sections': sections.map((section) => section.toMap()).toList(),
-
+      'levelId': levelId,
     };
   }
 
-
-
+    static String _cleanDescription(String? description) {
+    if (description == null) return '';
+    // Remove [n] patterns from the description
+    return description.replaceAll(RegExp(r'\[\d+\]'), '').trim();
+  }
 }

@@ -22,7 +22,7 @@ class SignUpPrompt extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SignUpScreen()),
+              MaterialPageRoute(builder: (context) => SignUpPage()),
             );
           },
           child: Text(

@@ -49,7 +49,7 @@ class ResultsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    "$score / ${questions.length*100}",
+                    "$score / ${questions.length * 100}",
                     style: const TextStyle(
                       color: Colors.amber,
                       fontSize: 32,
@@ -66,7 +66,7 @@ class ResultsPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final question = questions[index];
                   final selected = selectedAnswers[index];
-                  final isCorrect = selected == question.correctanswer;
+                  final isCorrect = selected == question.correctAnswer;
 
                   return Card(
                     color: isCorrect
@@ -96,7 +96,7 @@ class ResultsPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "Correct Answer: ${question.correctanswer}",
+                            "Correct Answer: ${question.correctAnswer}",
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 14,
@@ -105,8 +105,7 @@ class ResultsPage extends StatelessWidget {
                         ],
                       ),
                       leading: CircleAvatar(
-                        backgroundColor:
-                            isCorrect ? Colors.green : Colors.red,
+                        backgroundColor: isCorrect ? Colors.green : Colors.red,
                         child: Icon(
                           isCorrect ? Icons.check : Icons.close,
                           color: Colors.white,

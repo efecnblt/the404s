@@ -1,40 +1,27 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-
 class Category {
-  final String id;
-  final String title;
-  final String description;
-  final IconData iconData;
-  final List<String> courseIds;
+  final int categoryId;
+  final String? name;
+  final String? description;
 
   Category({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.iconData,
-    required this.courseIds,
+    required this.categoryId,
+    this.name,
+    this.description,
   });
 
-  factory Category.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  factory Category.fromMap(Map<String, dynamic> map) {
     return Category(
-      id: doc.id,
-      title: data['title'] ?? '',
-      description: data['description'] ?? '',
-      iconData: IconData(data['icon_code'] ?? 0, fontFamily: 'MaterialIcons'),
-      courseIds: List<String>.from(data['courseIds'] ?? []),
+      categoryId: map['categoryId'] ?? 0,
+      name: map['name'],
+      description: map['description'],
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
-      'title': title,
+      'categoryId': categoryId,
+      'name': name,
       'description': description,
-      'icon_code': iconData.codePoint,
-      'courseIds': courseIds,
     };
   }
-
-  Icon get icon => Icon(iconData);
 }

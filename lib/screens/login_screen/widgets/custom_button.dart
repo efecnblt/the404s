@@ -2,18 +2,23 @@ import 'package:flutter/cupertino.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
   final List<Color> colors;
-  const CustomButton({super.key, required this.text, required this.onPressed, required this.colors});
+  final VoidCallback onPressed;
+
+  const CustomButton({
+    required this.text,
+    required this.colors,
+    required this.onPressed,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: onPressed, // Ensure the onPressed is properly called
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 30),
         height: 65,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 15),
         decoration: ShapeDecoration(
           gradient: LinearGradient(
             begin: Alignment(-0.94, 0.34),
@@ -32,6 +37,7 @@ class CustomButton extends StatelessWidget {
             )
           ],
         ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 15),
         child: Center(
           child: Text(
             text,
